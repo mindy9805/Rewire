@@ -81,6 +81,18 @@ html[data-font='xl'] { font-size: 20px; }
   }
 }
 
+/* ===== 站內「關閉動畫」設定：與系統偏好效果相同，由 ThemeSync 在 <html> 加上 data-motion="reduce" ===== */
+html[data-motion='reduce'] *,
+html[data-motion='reduce'] *::before,
+html[data-motion='reduce'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+/* Tailwind 的 motion-reduce: 只看系統偏好，這裡讓站內設定也隱藏純裝飾的動態圖形（例如呼吸圓圈） */
+html[data-motion='reduce'] .motion-reduce\:hidden { display: none !important; }
+
 /* 列印：隱藏導覽，只留內容 */
 @media print {
   header, nav, aside, .no-print { display: none !important; }

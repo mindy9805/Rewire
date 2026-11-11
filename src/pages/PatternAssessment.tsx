@@ -17,6 +17,7 @@ import { nowIso, uid } from '../lib/id';
 import { formatDate, toDateKey } from '../lib/date';
 import type { PatternAssessment as PA, PatternHabitId } from '../types';
 import { weakeningLegacy } from '../content/legacyHabits';
+import { scrollBehavior } from '../lib/motion';
 
 /** 單次評估結果顯示 */
 function Result({ a }: { a: PA }) {
@@ -82,7 +83,7 @@ export default function PatternAssessment() {
     setAnswers({});
     setPriority([]);
     setViewId(rec.id);
-    requestAnimationFrame(() => document.getElementById('result')?.scrollIntoView({ behavior: 'smooth' }));
+    requestAnimationFrame(() => document.getElementById('result')?.scrollIntoView({ behavior: scrollBehavior() }));
   };
 
   return (

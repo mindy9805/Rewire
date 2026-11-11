@@ -22,6 +22,7 @@ import { DeleteButton } from '../components/pattern/EntryList';
 import { nowIso, uid } from '../lib/id';
 import { formatDate, toDateKey } from '../lib/date';
 import type { PatternHabitId } from '../types';
+import { scrollBehavior } from '../lib/motion';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -79,7 +80,7 @@ export default function PatternHabitPage() {
         </div>
       </header>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button className="btn-primary btn-sm" onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: 'smooth' })}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
+        <button className="btn-primary btn-sm" onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: scrollBehavior() })}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
         <button className="btn-secondary btn-sm" aria-pressed={focused} onClick={toggleFocus}>{focused ? '✓ 我正在調整這個習慣' : '我想調整這個習慣'}</button>
         <Link to={`/challenge?type=pattern&habit=${h.id}`} className="btn-ghost btn-sm">用 14 天挑戰練習</Link>
       </div>

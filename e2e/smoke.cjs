@@ -797,6 +797,22 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.goto(BASE + '#/nope');
     await page.getByText('這條小徑還沒有被走出來').waitFor();
   });
+  await step('外觀與動畫：關閉動畫會保存並套用到頁面，可改回跟隨系統', async () => {
+    await page.goto(BASE + '#/data');
+    const g = page.getByRole('group', { name: '動畫' });
+    await g.getByRole('button', { name: '關閉動畫' }).click();
+    if ((await store(page)).settings.motion !== 'reduce') throw new Error('未保存');
+    await page.waitForFunction(() => document.documentElement.dataset.motion === 'reduce', null, { timeout: 3000 });
+    // 重新整理後仍維持關閉（index.html 會在 React 載入前套用）
+    await page.reload();
+    if ((await page.evaluate(() => document.documentElement.dataset.motion)) !== 'reduce') throw new Error('重新整理後未套用');
+    const dur = await page.evaluate(() => getComputedStyle(document.querySelector('.icon-btn')).transitionDuration);
+    if (!dur.startsWith('1e-05s') && !dur.startsWith('0.00001s') && !dur.startsWith('0s')) throw new Error('轉場未停用：' + dur);
+    // 頂部列按鈕也能切換回來
+    await page.getByRole('button', { name: /動畫：已關閉/ }).click();
+    await page.waitForFunction(() => document.documentElement.dataset.motion === undefined, null, { timeout: 3000 });
+    if ((await store(page)).settings.motion !== 'system') throw new Error('未改回');
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();

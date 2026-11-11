@@ -11,6 +11,7 @@ import { EmptyState, TextArea } from '../ui/basics';
 import { nowIso, uid } from '../../lib/id';
 import type { Negotiation } from '../../types';
 import { DeleteButton, EntryCard } from '../pattern/EntryList';
+import { scrollBehavior } from '../../lib/motion';
 
 type Form = Omit<Negotiation, 'id' | 'createdAt' | 'updatedAt'>;
 const blank: Form = { situation: '', myNeeds: '', theirNeeds: '', commonGoal: '', boundaries: '', flexible: '', options: [], note: '' };
@@ -100,7 +101,7 @@ export default function NegotiationTool() {
             const best = [...n.options].sort((a, b) => mutualScore(b) - mutualScore(a))[0];
             return (
               <EntryCard key={n.id} title={n.situation} at={n.updatedAt} actions={<>
-                <button className="icon-btn h-9 w-9" aria-label="編輯協商紀錄" onClick={() => { setEditing(n); setF({ situation: n.situation, myNeeds: n.myNeeds, theirNeeds: n.theirNeeds, commonGoal: n.commonGoal, boundaries: n.boundaries, flexible: n.flexible, options: n.options, note: n.note }); window.scrollBy({ top: -9999, behavior: 'smooth' }); }}><Pencil className="h-4 w-4" aria-hidden /></button>
+                <button className="icon-btn h-9 w-9" aria-label="編輯協商紀錄" onClick={() => { setEditing(n); setF({ situation: n.situation, myNeeds: n.myNeeds, theirNeeds: n.theirNeeds, commonGoal: n.commonGoal, boundaries: n.boundaries, flexible: n.flexible, options: n.options, note: n.note }); window.scrollBy({ top: -9999, behavior: scrollBehavior() }); }}><Pencil className="h-4 w-4" aria-hidden /></button>
                 <DeleteButton collection="negotiations" id={n.id} label="協商紀錄" />
               </>}>
                 {n.commonGoal && <p><span className="text-muted">共同目標：</span>{n.commonGoal}</p>}

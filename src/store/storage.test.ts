@@ -83,6 +83,19 @@ describe('Playful Growth 資料', () => {
   });
 });
 
+describe('動畫設定', () => {
+  it('舊資料沒有 motion 欄位時預設跟隨系統，其他外觀設定保留', () => {
+    const d = normalize({ version: 1, settings: { theme: 'dark', fontScale: 'lg' } });
+    expect(d.settings.motion).toBe('system');
+    expect(d.settings.theme).toBe('dark');
+    expect(d.settings.fontScale).toBe('lg');
+  });
+  it('只接受 system／reduce，無效值改回預設', () => {
+    expect(normalize({ settings: { motion: 'reduce' } }).settings.motion).toBe('reduce');
+    expect(normalize({ settings: { motion: 'fast' } }).settings.motion).toBe('system');
+  });
+});
+
 describe('validateBackup', () => {
   it('接受本網站匯出的備份', () => {
     const data = createEmptyData();

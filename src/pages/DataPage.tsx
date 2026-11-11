@@ -1,8 +1,8 @@
 /**
- * 資料與隱私：本地儲存說明、完整備份（JSON）、Markdown 匯出、匯入還原（含格式驗證）、清除所有紀錄
+ * 資料與隱私：本地儲存說明、外觀與動畫設定、完整備份（JSON）、Markdown 匯出、匯入還原（含格式驗證）、清除所有紀錄
  */
 import { useRef, useState } from 'react';
-import { Download, Upload, Trash2, ShieldCheck, FileText } from 'lucide-react';
+import { Download, Upload, Trash2, ShieldCheck, FileText, Palette } from 'lucide-react';
 import { useStore } from '../store/AppStore';
 import { useToast } from '../components/ui/Toast';
 import { useConfirm } from '../components/ui/Confirm';
@@ -10,13 +10,50 @@ import { Card, SectionTitle } from '../components/ui/basics';
 import { createBackup, validateBackup, COLLECTION_KEYS } from '../store/storage';
 import { downloadText } from '../lib/clipboard';
 import { allToMarkdown, stamp } from '../lib/exporters';
+import type { FontScale, MotionMode, Settings, ThemeMode } from '../types';
+
+/** 外觀設定的選項（與頂部列按鈕使用同一組設定值） */
+const themeOptions: { value: ThemeMode; label: string }[] = [
+  { value: 'system', label: '跟隨系統' },
+  { value: 'light', label: '淺色' },
+  { value: 'dark', label: '深色' },
+];
+const fontOptions: { value: FontScale; label: string }[] = [
+  { value: 'sm', label: '小' },
+  { value: 'md', label: '中' },
+  { value: 'lg', label: '大' },
+  { value: 'xl', label: '特大' },
+];
+const motionOptions: { value: MotionMode; label: string }[] = [
+  { value: 'system', label: '跟隨系統' },
+  { value: 'reduce', label: '關閉動畫' },
+];
+
+/** 一組互斥的選項按鈕（以 aria-pressed 標示目前選擇，可用鍵盤 Tab＋Enter 操作） */
+function OptionGroup<T extends string>({ label, options, value, onChange }: { label: string; options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
+  return (
+    <div role="group" aria-label={label}>
+      <p className="field-label">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)} className={value === o.value ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DataPage() {
-  const { data, replaceAll, resetAll } = useStore();
+  const { data, update, replaceAll, resetAll } = useStore();
   const toast = useToast();
   const confirm = useConfirm();
   const file = useRef<HTMLInputElement>(null);
   const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const setSettings = (patch: Partial<Settings>) => update((p) => ({ ...p, settings: { ...p.settings, ...patch } }));
+  // 系統是否已開啟「減少動態效果」：用來說明「跟隨系統」目前的實際效果
+  const systemReduced = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const count = COLLECTION_KEYS.reduce((s, k) => s + (data[k] as unknown[]).length, 0) + Object.keys(data.challenge).length;
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +96,21 @@ export default function DataPage() {
           <li>建議每週匯出一次完整備份（JSON），存到雲端硬碟或電腦中。</li>
         </ul>
         <p className="mt-3 text-sm text-muted">目前共有 {count} 筆紀錄。</p>
+      </Card>
+      <Card>
+        <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><Palette className="h-5 w-5 text-accent" aria-hidden />外觀與動畫</h2>
+        <p className="mt-1 text-sm text-muted">設定只保存在這台裝置，清除紀錄時也會保留。</p>
+        <div className="mt-4 space-y-4">
+          <OptionGroup label="主題" options={themeOptions} value={data.settings.theme} onChange={(theme) => setSettings({ theme })} />
+          <OptionGroup label="字體大小" options={fontOptions} value={data.settings.fontScale} onChange={(fontScale) => setSettings({ fontScale })} />
+          <div>
+            <OptionGroup label="動畫" options={motionOptions} value={data.settings.motion} onChange={(motion) => setSettings({ motion })} />
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              關閉後，頁面轉場、卡片彈出、轉盤旋轉、花園成長與夥伴「小芽」的動作都會停止，內容與功能不受影響。
+              {data.settings.motion === 'system' && (systemReduced ? '你的裝置目前已開啟「減少動態效果」，所以動畫已經停用。' : '你的裝置目前沒有開啟「減少動態效果」，所以會顯示柔和的動畫。')}
+            </p>
+          </div>
+        </div>
       </Card>
       <Card>
         <h2 className="font-serif text-lg font-bold">匯出備份</h2>

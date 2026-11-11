@@ -115,10 +115,14 @@ export interface ChallengeDay {
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontScale = 'sm' | 'md' | 'lg' | 'xl';
+/** 動畫設定：跟隨系統「減少動態效果」偏好，或在本站內直接關閉動畫 */
+export type MotionMode = 'system' | 'reduce';
 
 export interface Settings {
   theme: ThemeMode;
   fontScale: FontScale;
+  /** 動畫：'system' 跟隨系統設定；'reduce' 本站內關閉動畫與轉場 */
+  motion: MotionMode;
   rightPanelOpen: boolean;
   /** 是否已關閉首次本地儲存提示 */
   storageNoticeDismissed: boolean;

@@ -11,8 +11,7 @@ import { useToast } from '../ui/Toast';
 import { CardView, drawCard } from './MoodBox';
 import { randomQuest } from './QuestPicker';
 import QuestPicker from './QuestPicker';
-
-const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+import { prefersReducedMotion } from '../../lib/motion';
 
 export default function SurpriseWheel() {
   const { data, update } = useStore();
@@ -33,7 +32,7 @@ export default function SurpriseWheel() {
     const target = 360 * 5 + (360 - (idx * seg + seg / 2));
     setResult(null);
     const finish = () => { setSpinning(false); setResult(items[idx]); setNonce((n) => n + 1); };
-    if (reducedMotion()) { setRotation(target % 360); finish(); return; }
+    if (prefersReducedMotion()) { setRotation(target % 360); finish(); return; }
     setSpinning(true);
     setRotation((r) => r - (r % 360) + target);
     window.clearTimeout(timer.current);
