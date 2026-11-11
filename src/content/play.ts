@@ -314,6 +314,14 @@ export const buddyLines: Record<BuddyMood, string[]> = {
   resting: ['今天就安安靜靜地待一下吧。', '休息也很重要，我陪你。'],
   encouraging: ['做到一點點也算數喔。', '不完美也沒關係，你願意試就很棒了。'],
 };
+/** 彩蛋：連續點小芽 7 次時說的悄悄話（原創，輕鬆、不帶任何要求） */
+export const buddySecretLines = [
+  '被你發現了！其實我每天都在偷偷長高一點點。🌱',
+  '你戳了我七下，葉子都笑開了。謝謝你陪我玩。',
+  '悄悄告訴你：好奇心，就是大腦最喜歡的肥料。',
+];
+/** 彩蛋：在任何頁面（不在輸入框時）用鍵盤打出 rewire */
+export const KEYWORD_EGG = { word: 'rewire', message: '🌿 你打出了 rewire —— 每一次好奇，都在大腦裡走出一條新的小徑。' };
 /** 好一陣子沒來時的歡迎語（自然、不帶責備） */
 export const buddyWelcomeBack = ['好久不見！很高興再見到你。花園一直都在這裡。', '歡迎回來，想從哪裡開始都可以。'];
 

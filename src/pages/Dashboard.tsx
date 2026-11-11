@@ -1,5 +1,5 @@
 /**
- * 學習進度儀表板
+ * 學習儀表板
  * 所有統計都由使用者實際輸入的資料計算；無資料時顯示空狀態，不產生假成績。
  */
 import { Link } from 'react-router-dom';
@@ -47,7 +47,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Dashboard" title="學習進度儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
+      <SectionTitle eyebrow="Dashboard" title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
 
       <Hideable id="play" title="自願參與與輕鬆探索">
         <PlayDashboard />

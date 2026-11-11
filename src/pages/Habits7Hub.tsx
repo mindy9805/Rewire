@@ -12,6 +12,7 @@ import { H7Icon, Recommendations, SourceLegend, StageMap, StatusChip } from '../
 import { h7StageProgress, h7Status, planProgress } from '../lib/habits7';
 import { downloadText } from '../lib/clipboard';
 import { habits7ToMarkdown, stamp } from '../lib/exporters';
+import Phrased from '../components/ui/Phrased';
 
 export default function Habits7Hub() {
   const { data } = useStore();
@@ -32,7 +33,7 @@ export default function Habits7Hub() {
     <div className="space-y-10 motion-safe:animate-fade-up">
       <header className="rounded-3xl bg-gradient-to-br from-soft via-bg to-apricot/30 p-6 sm:p-10">
         <p className="font-display text-sm italic text-accent">{H7_MODULE}</p>
-        <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{H7_TITLE}</h1>
+        <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl"><Phrased text={H7_TITLE} /></h1>
         <p className="mt-3 text-lg text-muted">{H7_SUBTITLE}</p>
         <div className="mt-6 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">{H7_CORE.map((l) => <p key={l}>{l}</p>)}</div>
         <p className="mt-4 text-xs text-muted">理論參考：Stephen R. Covey《The 7 Habits of Highly Effective People》（繁中版《與成功有約》）。本站僅以七個習慣名稱作為概念標籤，所有解說、工具與題目皆為原創。</p>

@@ -10,6 +10,21 @@ const ok = (name) => { results.push(['✓', name]); };
 const fail = (name, e) => { results.push(['✗', `${name} — ${e.message.split('\n')[0]}`]); };
 async function step(name, fn) { try { await fn(); ok(name); } catch (e) { fail(name, e); } }
 const store = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1') || '{}'));
+// 連點小芽直到出現悄悄話（需在 1.5 秒內連續點 7 次；頁面忙碌導致某次點擊變慢時會重新計數，所以最多點 14 次）
+async function tapUntilSecret(page, buddy) {
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(300);
+  const secret = /被你發現了|戳了七下|悄悄告訴你/;
+  const seen = [];
+  for (let i = 0; i < 14; i++) {
+    // force：不等跳躍動畫停止（動畫約 1.8 秒，等待會超過「連續點擊」的判定間隔）
+    await buddy.getByRole('button', { name: /和小芽打招呼/ }).click({ force: true });
+    const t = await buddy.getByRole('status').textContent();
+    seen.push(t.replace('小芽說：', '').slice(0, 6));
+    if (secret.test(t)) return;
+  }
+  throw new Error('連點 14 次仍未出現悄悄話：' + seen.join('／'));
+}
 const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足夠好了', '犯錯是我成長的方式', '我的想法不等於事實', '我的存在很重要', '今天是新的機會'];
 
 (async () => {
@@ -813,6 +828,83 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.waitForFunction(() => document.documentElement.dataset.motion === undefined, null, { timeout: 3000 });
     if ((await store(page)).settings.motion !== 'system') throw new Error('未改回');
   });
+  await step('彩蛋：點小芽換一句話，連點 7 次出現悄悄話與飄葉', async () => {
+    await page.goto(BASE + '#/');
+    const buddy = page.getByTestId('buddy').first();
+    const bubble = buddy.getByRole('status');
+    const before = await bubble.textContent();
+    await buddy.getByRole('button', { name: /和小芽打招呼/ }).click();
+    if ((await bubble.textContent()) === before) throw new Error('點擊後沒有換句');
+    await tapUntilSecret(page, buddy);
+    await page.getByTestId('leaf-burst').waitFor({ timeout: 2000 });
+  });
+  await step('彩蛋：鍵盤打出 rewire 出現提示；輸入框內打字不觸發', async () => {
+    await page.goto(BASE + '#/');
+    await page.locator('body').click({ position: { x: 5, y: 300 } });
+    await page.keyboard.type('rewire');
+    await page.getByText('你打出了 rewire').waitFor({ timeout: 2000 });
+    await page.goto(BASE + '#/journal');
+    await page.waitForTimeout(3000);
+    const field = page.getByRole('textbox').first();
+    await field.click();
+    await field.type('rewire');
+    await page.waitForTimeout(300);
+    if (await page.getByText('你打出了 rewire').count()) throw new Error('輸入框內不應觸發');
+  });
+  await step('關閉動畫時：彩蛋文字照常出現，但不播放飄葉', async () => {
+    await page.goto(BASE + '#/data');
+    await page.getByRole('group', { name: '動畫' }).getByRole('button', { name: '關閉動畫' }).click();
+    await page.goto(BASE + '#/');
+    const buddy = page.getByTestId('buddy').first();
+    await tapUntilSecret(page, buddy);
+    await page.waitForTimeout(200);
+    if (await page.getByTestId('leaf-burst').count()) throw new Error('關閉動畫仍播放飄葉');
+    await page.goto(BASE + '#/data');
+    await page.getByRole('group', { name: '動畫' }).getByRole('button', { name: '跟隨系統' }).click();
+  });
+  await step('我的計畫：只突顯一個進行中的計畫，其他計畫分開列出', async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    await p2.goto(BASE + '#/plans');
+    await p2.getByRole('heading', { name: '選一個計畫開始' }).waitFor();
+    await p2.getByRole('link', { name: '開始「14 天練習」' }).click();
+    await p2.waitForURL(/challenge\?day=1/);
+    await p2.getByRole('button', { name: '儲存並標記完成' }).click();
+    await p2.getByRole('button', { name: /已完成/ }).first().waitFor();
+    await p2.goto(BASE + '#/plans');
+    await p2.getByRole('heading', { name: '14 天練習', level: 2 }).waitFor();
+    await p2.getByRole('link', { name: '繼續第 2 天' }).waitFor();
+    await p2.getByRole('heading', { name: '其他計畫' }).waitFor();
+    // 首頁出現「繼續上次」
+    await p2.goto(BASE + '#/');
+    await p2.getByRole('link', { name: /繼續上次：14 天練習/ }).click();
+    await p2.waitForURL(/challenge\?day=2/);
+    await c2.close();
+  });
+  await step('章節段落進度列：顯示目前段落、可跳到指定段落', async () => {
+    await page.goto(BASE + '#/learn/ch2');
+    const bar = page.getByTestId('section-progress');
+    await bar.getByText(/第 1／\d+ 段/).waitFor();
+    await bar.getByRole('button', { name: /段落/ }).click();
+    await bar.getByRole('button', { name: /互動測驗/ }).click();
+    // 平滑捲動約需 1 秒：等到「互動測驗」段落停在進度列下方
+    await page.waitForFunction(() => { const t = document.querySelector('#quiz').getBoundingClientRect().top; return t > 60 && t < 200; }, null, { timeout: 3000 })
+      .catch(async () => { throw new Error('沒有跳到測驗段落：' + (await page.locator('#quiz').evaluate((el) => el.getBoundingClientRect().top))); });
+    await bar.getByText('互動測驗', { exact: false }).waitFor();
+  });
+  await step('打破慣性：第一屏就有自我評估主要按鈕；側邊欄分組可進入總覽', async () => {
+    await page.goto(BASE + '#/pattern');
+    const cta = page.getByRole('link', { name: '3 分鐘找出你的慣性' });
+    const box = await cta.boundingBox();
+    if (!box || box.y + box.height > 900) throw new Error('主要按鈕不在第一屏');
+    await cta.click();
+    await page.waitForURL(/pattern\/assessment/);
+    await page.getByRole('navigation', { name: '主要頁面' }).getByRole('link', { name: /^學習\s*（總覽）$/ }).click();
+    await page.waitForURL(/#\/learning$/);
+    await page.getByRole('heading', { name: '四大學習系統' }).waitFor();
+    // 章節清單只在深度導讀相關頁面出現
+    if (await page.getByRole('navigation', { name: '章節導覽' }).count()) throw new Error('學習總覽不應顯示章節清單');
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();
@@ -827,7 +919,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   const m = await mctx.newPage();
   m.on('pageerror', (e) => errors.push('mobile: ' + e.message));
   await step('手機版：所有頁面無橫向捲動', async () => {
-    const routes = ['', 'daily', 'learn', 'learn/ch1', 'learn/ch2', 'learn/ch6', 'learn/ch7', 'learn/ch9', 'lab', 'lab/habit-curve', 'challenge', 'journal', 'journal?tab=notes', 'dashboard', 'references', 'data', 'daily/read', 'pattern', 'pattern/approval', 'pattern/impress', 'pattern/promises', 'pattern/shortterm', 'pattern/assessment', 'pattern/workshop', 'challenge?type=pattern', 'habits7', 'habits7/proactive', 'habits7/end', 'habits7/first', 'habits7/winwin', 'habits7/understand', 'habits7/synergize', 'habits7/renew', 'habits7/plan', 'play', 'play/quest', 'play/surprise', 'play/wheel', 'play/stories', 'play/garden', 'play/collection', 'play/capsule'];
+    const routes = ['', 'daily', 'learn', 'learn/ch1', 'learn/ch2', 'learn/ch6', 'learn/ch7', 'learn/ch9', 'lab', 'lab/habit-curve', 'challenge', 'journal', 'journal?tab=notes', 'dashboard', 'references', 'data', 'daily/read', 'pattern', 'pattern/approval', 'pattern/impress', 'pattern/promises', 'pattern/shortterm', 'pattern/assessment', 'pattern/workshop', 'challenge?type=pattern', 'habits7', 'habits7/proactive', 'habits7/end', 'habits7/first', 'habits7/winwin', 'habits7/understand', 'habits7/synergize', 'habits7/renew', 'habits7/plan', 'play', 'play/quest', 'play/surprise', 'play/wheel', 'play/stories', 'play/garden', 'play/collection', 'play/capsule', 'plans', 'learning', 'me'];
     const bad = [];
     for (const r of routes) {
       await m.goto(BASE + '#/' + r);
@@ -837,14 +929,57 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     }
     if (bad.length) throw new Error(bad.join(', '));
   });
+  await step('手機版（新使用者）：首頁標題只在標點後換行、三個入口在第一屏、小芽置中', async () => {
+    const fresh = await browser.newContext({ ...devices['iPhone 13'] });
+    const m = await fresh.newPage();
+    await m.goto(BASE + '#/');
+    // 每個標題片段（inline-block）都應只佔一行；並確認無障礙名稱仍是完整的一句話
+    const multi = await m.evaluate(() => [...document.querySelectorAll('#hero-h [aria-hidden] > span')].filter((el) => el.getBoundingClientRect().height > parseFloat(getComputedStyle(el).lineHeight) * 1.5).map((el) => el.textContent));
+    await m.getByRole('heading', { name: '今天，你想怎麼探索自己？', level: 1 }).waitFor();
+    if (multi.length) throw new Error('片段被拆行：' + multi.join('、'));
+    const last = await m.getByRole('button', { name: /我想安靜一下/ }).boundingBox();
+    const vh = m.viewportSize().height;
+    if (!last || last.y + last.height > vh) throw new Error(`第三個入口超出第一屏：${last && last.y + last.height} > ${vh}`);
+    const b = await m.getByTestId('buddy').first().getByRole('button').boundingBox();
+    const center = b.x + b.width / 2;
+    if (Math.abs(center - m.viewportSize().width / 2) > 4) throw new Error('小芽未置中：' + center);
+    await fresh.close();
+  });
+  await step('iPhone SE 與 iPad：主要頁面無橫向捲動，頂部列品牌名稱完整顯示', async () => {
+    const bad = [];
+    for (const name of ['iPhone SE', 'iPad (gen 7)', 'iPad Pro 11 landscape']) {
+      const c = await browser.newContext({ ...devices[name] });
+      const p = await c.newPage();
+      for (const r of ['', 'play', 'daily', 'learn/ch1', 'pattern', 'habits7', 'habits7/first', 'dashboard', 'data', 'plans', 'learning', 'me']) {
+        await p.goto(BASE + '#/' + r);
+        await p.waitForTimeout(200);
+        const w = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+        if (w > 1) bad.push(`${name} ${r}:${w}px`);
+      }
+      const brand = await p.evaluate(() => { const el = [...document.querySelectorAll('header a span')].find((s) => s.textContent === 'Rewire'); return el ? el.scrollWidth - el.clientWidth : -1; });
+      if (brand !== 0) bad.push(`${name} 品牌名稱被截斷`);
+      await c.close();
+    }
+    if (bad.length) throw new Error(bad.join(', '));
+  });
   await step('手機版：底部導覽與抽屜選單', async () => {
     await m.goto(BASE + '#/');
     await m.getByRole('navigation', { name: '主要功能' }).waitFor();
     await m.getByRole('button', { name: '開啟章節與功能選單' }).click();
     await m.getByRole('dialog', { name: '網站選單' }).getByRole('link', { name: /66 天習慣養成/ }).click();
     await m.getByRole('heading', { name: '66 天習慣養成與非線性改變', level: 1 }).waitFor();
-    await m.getByRole('navigation', { name: '主要功能' }).getByRole('link', { name: '14 天練習' }).click();
-    await m.waitForURL(/challenge/);
+    // 底部導覽：今天／學習／每日練習／我的；子頁面會亮起所屬分組
+    const bn = m.getByRole('navigation', { name: '主要功能' });
+    if ((await bn.getByRole('link').count()) !== 4) throw new Error('底部導覽應為 4 項');
+    if ((await bn.getByRole('link', { name: '學習' }).getAttribute('aria-current')) !== 'page') throw new Error('章節頁應亮起「學習」');
+    await bn.getByRole('link', { name: '我的' }).click();
+    await m.waitForURL(/#\/me$/);
+    await m.getByRole('link', { name: /反思日誌/ }).waitFor();
+    await bn.getByRole('link', { name: '學習' }).click();
+    await m.waitForURL(/#\/learning$/);
+    await m.getByRole('link', { name: /深度導讀/ }).first().waitFor();
+    await bn.getByRole('link', { name: '每日練習' }).click();
+    await m.waitForURL(/#\/daily$/);
   });
   if (process.env.SHOT_DIR) {
     for (const [r, n] of [['', 'm-home2'], ['play/garden', 'm-garden'], ['play/stories?story=decline', 'm-story'], ['habits7', 'm-h7'], ['habits7/first', 'm-h7first'], ['habits7/renew', 'm-h7renew'], ['habits7/synergize', 'm-h7board'], ['pattern', 'm-pattern'], ['pattern/promises', 'm-promises'], ['challenge?type=pattern', 'm-pchallenge'], ['dashboard', 'm-dash'], ['', 'm-home'], ['daily/read', 'm-read'], ['learn/ch1', 'm-ch1'], ['challenge', 'm-challenge']]) {

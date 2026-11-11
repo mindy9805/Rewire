@@ -30,7 +30,7 @@ export default function MobileDrawer({ open, onClose }: { open: boolean; onClose
             <X className="h-5 w-5" aria-hidden />
           </button>
         </div>
-        <NavLists />
+        <NavLists showChapters />
       </div>
     </div>
   );

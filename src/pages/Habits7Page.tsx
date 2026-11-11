@@ -23,6 +23,8 @@ import { nowIso, uid } from '../lib/id';
 import { formatDate, toDateKey } from '../lib/date';
 import type { H7Id } from '../types';
 import { scrollBehavior } from '../lib/motion';
+import Phrased from '../components/ui/Phrased';
+import SectionProgress from '../components/ui/SectionProgress';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -67,7 +69,7 @@ export default function Habits7Page() {
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-soft text-accent"><H7Icon h={h} className="h-7 w-7" /></span>
         <div>
           <p className="font-display text-sm italic text-accent">Habit {h.no} · {h.en}</p>
-          <h1 className="text-3xl font-bold">{h.title}</h1>
+          <h1 className="text-3xl font-bold"><Phrased text={h.title} /></h1>
           <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">{stage.title}（{stage.en}）<StatusChip status={status} /></p>
         </div>
       </header>
@@ -75,6 +77,7 @@ export default function Habits7Page() {
         {status === '未開始' && <button className="btn-primary btn-sm" onClick={() => setStatus('learning')}>開始學習</button>}
         <button className="btn-secondary btn-sm" onClick={scrollToTool}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
       </div>
+      <SectionProgress pageKey={h.id} />
 
       <Sec id="definition" no={1} title="習慣定義與核心觀念">
         <p className="rounded-2xl bg-soft/60 p-4 font-serif text-lg leading-relaxed">{h.core}</p>

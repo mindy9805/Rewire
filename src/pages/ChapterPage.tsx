@@ -22,6 +22,8 @@ import NoteList from '../components/notes/NoteList';
 import { nowIso, uid } from '../lib/id';
 import type { ChapterId } from '../types';
 import type { ReactNode } from 'react';
+import Phrased from '../components/ui/Phrased';
+import SectionProgress from '../components/ui/SectionProgress';
 
 function Block({ id, icon: Icon, title, children }: { id: string; icon: typeof Target; title: string; children: ReactNode }) {
   return (
@@ -87,7 +89,7 @@ export default function ChapterPage() {
       </nav>
       <header className="mt-3">
         <p className="font-display text-sm italic text-accent">Chapter {chapter.number} · {chapter.enTitle}</p>
-        <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl">{chapter.title}</h1>
+        <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl"><Phrased text={chapter.title} /></h1>
         <p className="mt-2 text-lg text-muted">{chapter.subtitle}</p>
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
           <span className="flex items-center gap-1 text-muted"><Clock className="h-4 w-4" aria-hidden />約 {chapter.minutes} 分鐘</span>
@@ -96,6 +98,8 @@ export default function ChapterPage() {
           {progress?.completed && <span className="flex items-center gap-1 text-accent"><CheckCircle2 className="h-4 w-4" aria-hidden />已完成</span>}
         </div>
       </header>
+      {/* 黏在頂部的段落進度列：本章共有十多段，隨時知道讀到哪、可直接跳段 */}
+      <SectionProgress pageKey={chapter.id} />
 
       <Block id="objectives" icon={Target} title="學習目標">
         <ul className="grid gap-2 sm:grid-cols-2">

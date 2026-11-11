@@ -12,7 +12,7 @@ export default function Learn() {
   const cs = chapterStats(data);
   return (
     <div className="motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Learn" title="神經科學深度導讀" desc="每章包含學習目標、核心概念、深入解釋、生活案例、示意圖、應用方式、反思問題、互動測驗與研究來源。可依序閱讀，也可以從感興趣的章節開始。" />
+      <SectionTitle eyebrow="Learn" title="深度導讀" desc="每章包含學習目標、核心概念、深入解釋、生活案例、示意圖、應用方式、反思問題、互動測驗與研究來源。可依序閱讀，也可以從感興趣的章節開始。" />
       <div className="mb-6 max-w-md"><ProgressBar label="章節完成" value={cs.completed} max={cs.total} /></div>
       <ol className="space-y-3">
         {chapters.map((c) => {

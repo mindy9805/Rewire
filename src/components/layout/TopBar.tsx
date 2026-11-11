@@ -37,7 +37,7 @@ export default function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSea
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/90 backdrop-blur">
-      <div className="flex h-16 items-center gap-2 px-3 sm:px-5">
+      <div className="flex h-16 items-center gap-1 px-2 sm:gap-2 sm:px-5">
         <button className="icon-btn lg:hidden" onClick={onMenu} aria-label="開啟章節與功能選單">
           <Menu className="h-5 w-5" aria-hidden />
         </button>
@@ -46,7 +46,7 @@ export default function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSea
           <span className="truncate font-display text-lg font-bold text-forest">Rewire</span>
           <span className="hidden truncate font-serif text-sm text-muted sm:inline">｜重塑大腦的可能</span>
         </Link>
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
           <button
             onClick={onSearch}
             className="flex h-10 items-center gap-2 rounded-full border border-line bg-surface px-3 text-sm text-muted hover:border-accent md:w-56"

@@ -81,7 +81,8 @@ export const defaultHomeSections: Settings['homeSections'] = {
   garden: true,
   today: true,
   collection: true,
-  explore: true,
+  // 「自由探索」已移到「學習」頁，新使用者首頁預設收起（可在「自訂首頁」重新開啟）
+  explore: false,
   // 既有的完整內容區塊預設收起，可在「自訂首頁」重新開啟
   daily: false,
   pattern: false,

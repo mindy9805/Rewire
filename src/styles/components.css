@@ -1,0 +1,16 @@
+/* 共用元件 class：按鈕、表單欄位、標籤、閱讀排版、卡片互動。元件內優先使用這些 class，保持外觀一致。 */
+@layer components {
+  .btn { @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100; }
+  .btn-primary { @apply btn bg-accent text-onaccent hover:opacity-90; }
+  .btn-secondary { @apply btn border border-accent/40 bg-surface text-accent hover:bg-soft; }
+  .btn-ghost { @apply btn text-ink hover:bg-soft; }
+  .btn-danger { @apply btn bg-[#9B3D35] text-white hover:opacity-90; }
+  .btn-sm { @apply min-h-[2.25rem] px-3.5 py-1.5 text-xs; }
+  /* 圖示按鈕：44×44px，符合 iOS 建議的最小觸控範圍 */
+  .icon-btn { @apply inline-flex h-11 w-11 items-center justify-center rounded-full text-ink transition hover:bg-soft active:scale-95; }
+  .field-label { @apply mb-1.5 block text-sm font-medium text-ink; }
+  .field { @apply w-full rounded-xl border border-line bg-bg px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40; }
+  .chip { @apply inline-flex items-center rounded-full bg-soft px-2.5 py-0.5 text-xs text-ink; }
+  .prose-rw p { @apply mb-4 leading-[1.9] text-ink; }
+  .card-hover { @apply transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:scale-[.99]; }
+}

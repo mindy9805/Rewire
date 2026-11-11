@@ -28,6 +28,9 @@ import Habits7Plan from './pages/Habits7Plan';
 import Play from './pages/Play';
 import ReadingMode from './components/daily/ReadingMode';
 import NotFound from './pages/NotFound';
+import Plans from './pages/Plans';
+import Learning from './pages/Learning';
+import Me from './pages/Me';
 
 export default function App() {
   return (
@@ -46,6 +49,9 @@ export default function App() {
                 <Route path="lab" element={<BrainLab />} />
                 <Route path="lab/:toolId" element={<BrainLab />} />
                 <Route path="challenge" element={<Challenge />} />
+                <Route path="plans" element={<Plans />} />
+                <Route path="learning" element={<Learning />} />
+                <Route path="me" element={<Me />} />
                 <Route path="daily" element={<Daily />} />
                 {/* Break the Pattern｜打破慣性（舊網址 /habits 自動轉址） */}
                 <Route path="pattern" element={<PatternHub />} />
