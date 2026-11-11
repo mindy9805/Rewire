@@ -18,6 +18,9 @@ export default {
         apricot: v('apricot'), // 淺杏色 #E8CCB2
         accent: v('accent'), // 可互動元素的強調色（深色模式自動提亮）
         onaccent: v('onaccent'),
+        sageink: v('sageink'), // 鼠尾草綠的文字版（對比足夠）
+        deep: v('deep'), // 深色區塊底色（深色模式也維持深綠）
+        ondeep: v('ondeep'),
       },
       fontFamily: {
         sans: ['"Noto Sans TC"', 'system-ui', '-apple-system', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],

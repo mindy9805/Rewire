@@ -27,12 +27,15 @@ export default function PatternHub() {
           <Link to="/pattern/assessment" className="btn-primary"><ClipboardList className="h-4 w-4" aria-hidden />3 分鐘找出你的慣性</Link>
           <span className="text-xs text-muted">21 題・約 3 分鐘・沒有好壞之分，只是幫助你看見目前的模式。</span>
         </div>
-        <div className="mt-6 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">
-          {PATTERN_CORE.map((l) => <p key={l}>{l}</p>)}
-        </div>
       </header>
 
-      <section aria-labelledby="def-h" className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
+      {/* 理念、自律定義與正面功能：想了解時再展開，讓練習入口更早出現 */}
+      <details className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+        <summary className="cursor-pointer font-serif text-lg font-bold">本模組的理念：什麼是「自律」？這些習慣也有正面功能嗎？</summary>
+        <div className="mt-4 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">
+          {PATTERN_CORE.map((l) => <p key={l}>{l}</p>)}
+        </div>
+      <section aria-labelledby="def-h" className="mt-5 grid gap-4 md:grid-cols-[1.2fr_1fr]">
         <div className="rounded-2xl border border-line bg-surface p-5">
           <h2 id="def-h" className="font-serif text-lg font-bold">本模組如何定義「自律」</h2>
           <p className="mt-2 leading-relaxed">{DISCIPLINE_DEFINITION}</p>
@@ -45,6 +48,7 @@ export default function PatternHub() {
           </ul>
         </div>
       </section>
+      </details>
 
       <section aria-labelledby="entries-h">
         <h2 id="entries-h" className="sr-only">練習入口</h2>

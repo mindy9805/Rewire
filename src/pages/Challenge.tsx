@@ -202,7 +202,7 @@ export default function Challenge() {
   return (
     <div className="motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="mb-3 text-sm text-muted"><Link to="/plans" className="hover:text-accent">我的計畫</Link> / 14 天練習</nav>
-      <SectionTitle title="14 天練習" desc="每天一個小主題、一個具體行動。不需要連續，也可以隨時補做、重新練習或暫停——重要的是持續回來。" />
+      <SectionTitle level={1} title="14 天練習" desc="每天一個小主題、一個具體行動。不需要連續，也可以隨時補做、重新練習或暫停——重要的是持續回來。" />
       <div role="tablist" aria-label="挑戰類型" className="mb-6 inline-flex flex-wrap rounded-full border border-line bg-surface p-1">
         {([['neuro', '神經可塑性練習'], ['pattern', '打破慣性挑戰']] as const).map(([t, label]) => (
           <button key={t} role="tab" aria-selected={type === t} className={`rounded-full px-4 py-2 text-sm ${type === t ? 'bg-accent text-onaccent' : 'text-ink'}`} onClick={() => setParams(t === 'pattern' ? { type: 'pattern' } : {})}>

@@ -38,7 +38,7 @@ export default function Daily() {
 
   return (
     <div className="space-y-12 motion-safe:animate-fade-up">
-      <DailyRewireSection />
+      <DailyRewireSection asPageTitle />
 
       {/* 分頁：練習／我的紀錄 */}
       <div role="tablist" aria-label="每日心智練習" className="-mb-6 inline-flex rounded-full border border-line bg-surface p-1">
@@ -61,7 +61,7 @@ export default function Daily() {
             return (
               <button key={a.id} aria-pressed={on} onClick={() => { upsert('dailyLogs', { ...todayLog, practiceId: on ? 0 : a.id, updatedAt: nowIso() }); toast(on ? '已取消今日練習句' : `今天練習：「${a.text}」`); }}
                 className={`rounded-xl border px-3 py-2 text-left text-sm transition ${on ? 'border-accent bg-soft' : 'border-line bg-bg hover:border-accent/50'}`}>
-                <span className="font-display italic text-sage">{String(a.id).padStart(2, '0')}</span> <strong>{a.text}</strong>{on && <span className="chip ml-2">今日練習句</span>}
+                <span className="font-display italic text-sageink">{String(a.id).padStart(2, '0')}</span> <strong>{a.text}</strong>{on && <span className="chip ml-2">今日練習句</span>}
                 {related.length > 0 && <span className="mt-0.5 block text-xs text-muted">相關習慣：{related.join('、')}</span>}
               </button>
             );

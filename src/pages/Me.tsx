@@ -19,11 +19,11 @@ export default function Me() {
     { to: '/play/garden', icon: Flower2, title: '心智花園', desc: `${data.garden.plants.length} 株植物與裝飾` },
     { to: '/play/collection', icon: Award, title: '成長收藏冊', desc: badges ? `已收藏 ${badges} 枚徽章` : '完成任何練習或紀錄，都可能解鎖收藏。' },
     { to: '/play/capsule', icon: Mail, title: '時光膠囊', desc: data.capsules.length ? `${data.capsules.length} 個膠囊` : '寫一封信給未來的自己。' },
-    { to: '/data', icon: Database, title: '資料與隱私', desc: '備份、還原、外觀與動畫設定。' },
+    { to: '/data', icon: Database, title: '資料與隱私', desc: '備份、還原、外觀、朗讀聲音與動畫設定。' },
   ];
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Me" title="我的" desc="你留下的紀錄、收藏與設定都在這裡。所有內容只保存在這台裝置的瀏覽器。" />
+      <SectionTitle level={1} eyebrow="Me" title="我的" desc="你留下的紀錄、收藏與設定都在這裡。所有內容只保存在這台裝置的瀏覽器。" />
       <ul className="grid gap-3 sm:grid-cols-2">
         {items.map(({ to, icon: Icon, title, desc }) => (
           <li key={to}>

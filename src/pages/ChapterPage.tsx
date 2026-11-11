@@ -109,7 +109,8 @@ export default function ChapterPage() {
             <button key={m} type="button" aria-pressed={(m === 'full') === full} onClick={() => setMode(m)} className={`rounded-full px-3 py-1.5 ${(m === 'full') === full ? 'bg-accent text-onaccent' : 'text-ink'}`}>{label}</button>
           ))}
         </div>
-        <p id="mode-hint" className="mt-1.5 text-xs text-muted">{full ? '想先抓重點？精簡版只看學習目標、核心概念、互動練習、摘要與測驗。' : '精簡版：只看學習目標、核心概念、互動練習、摘要與測驗。'}</p>
+        {/* 完整版較長：用淺杏色提示框提醒可以切換精簡版 */}
+        <p id="mode-hint" className={`mt-2 text-xs ${full ? 'inline-block rounded-xl bg-apricot/25 px-3 py-1.5 text-ink' : 'text-muted'}`}>{full ? `完整版約 ${chapter.minutes} 分鐘。想先抓重點？精簡版只看學習目標、核心概念、互動練習、摘要與測驗。` : '精簡版：只看學習目標、核心概念、互動練習、摘要與測驗。'}</p>
       </header>
       {/* 黏在頂部的段落進度列：本章共有十多段，隨時知道讀到哪、可直接跳段 */}
       <SectionProgress pageKey={`${chapter.id}-${full ? 'full' : 'brief'}`} />
@@ -121,21 +122,23 @@ export default function ChapterPage() {
       </Block>
 
       <Block id="concepts" icon={Lightbulb} title="核心概念">
-        <dl className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {chapter.coreConcepts.map((k) => {
             const src = `概念：${k.term}`;
             const saved = !!highlightOf(src);
             return (
               <div key={k.term} className="relative rounded-2xl border border-line bg-surface p-4 pr-12">
-                <dt className="font-serif font-bold text-accent">{k.term}</dt>
-                <dd className="mt-1 text-sm leading-relaxed">{k.definition}</dd>
+                <dl>
+                  <dt className="font-serif font-bold text-accent">{k.term}</dt>
+                  <dd className="mt-1 text-sm leading-relaxed">{k.definition}</dd>
+                </dl>
                 <button className="icon-btn absolute right-2 top-2" aria-pressed={saved} aria-label={saved ? `取消收藏「${k.term}」` : `收藏「${k.term}」`} onClick={() => toggleHighlight(src, `${k.term}：${k.definition}`)}>
                   {saved ? <BookmarkCheck className="h-4 w-4 text-accent" aria-hidden /> : <Bookmark className="h-4 w-4" aria-hidden />}
                 </button>
               </div>
             );
           })}
-        </dl>
+        </div>
       </Block>
 
       {full && (<>
@@ -156,10 +159,10 @@ export default function ChapterPage() {
                 {s.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
               </div>
               {s.callout && (
-                <aside className="rounded-2xl border-l-4 border-apricot bg-apricot/20 px-4 py-3 text-sm leading-relaxed">
+                <div role="note" className="rounded-2xl border-l-4 border-apricot bg-apricot/20 px-4 py-3 text-sm leading-relaxed">
                   <p className="font-medium">{s.callout.label}</p>
                   <p>{s.callout.text}</p>
-                </aside>
+                </div>
               )}
             </section>
           );
@@ -186,7 +189,7 @@ export default function ChapterPage() {
         <ol className="space-y-2">
           {chapter.applications.map((a, i) => (
             <li key={a} className="flex gap-3 rounded-xl bg-surface p-3 text-sm leading-relaxed shadow-card">
-              <span className="font-display text-lg text-sage">{i + 1}</span>{a}
+              <span className="font-display text-lg text-sageink">{i + 1}</span>{a}
             </li>
           ))}
         </ol>
@@ -207,7 +210,7 @@ export default function ChapterPage() {
           <p className="font-serif text-lg leading-relaxed">{chapter.reflection}</p>
           <label htmlFor="ch-reflection" className="sr-only">寫下你的反思</label>
           <textarea id="ch-reflection" className="field mt-4 min-h-[6rem]" value={reflection} onChange={(e) => setReflection(e.target.value)} placeholder="沒有標準答案，寫下此刻真實的想法就好。" />
-          <button className="btn-primary mt-3" onClick={saveReflection} disabled={!reflection.trim()}>儲存反思</button>
+          <button className="btn-secondary mt-3" onClick={saveReflection} disabled={!reflection.trim()}>儲存反思</button>
         </div>
       </Block>
 
@@ -267,7 +270,7 @@ export default function ChapterPage() {
 
       <Block id="notes" icon={NotebookPen} title="本章筆記">
         <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
-          <NoteEditor label="新增個人反思或筆記" onSubmit={(content, tags) => {
+          <NoteEditor secondary label="新增個人反思或筆記" onSubmit={(content, tags) => {
             const t = nowIso();
             upsert('notes', { id: uid(), chapterId: chapter.id, kind: 'reflection', content, tags, createdAt: t, updatedAt: t });
             toast('已儲存筆記');

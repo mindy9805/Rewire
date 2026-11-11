@@ -48,7 +48,7 @@ export default function DailyLogForm({ date = toDateKey(), markCompleted = false
           {affirmations.map((a) => (
             <label key={a.id} className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${form.favoriteId === a.id ? 'border-accent bg-soft' : 'border-line bg-bg hover:border-accent/60'}`}>
               <input type="radio" name={`fav-${date}`} className="accent-[rgb(var(--accent))]" checked={form.favoriteId === a.id} onChange={() => set('favoriteId', a.id)} />
-              <span className="font-display italic text-sage">{String(a.id).padStart(2, '0')}</span>
+              <span className="font-display italic text-sageink">{String(a.id).padStart(2, '0')}</span>
               {a.text}
             </label>
           ))}

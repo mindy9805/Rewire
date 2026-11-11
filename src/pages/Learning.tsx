@@ -22,7 +22,7 @@ export default function Learning() {
   ];
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Learn" title="學習" desc="四個學習系統各有不同視角，可以從任何一個開始。想先動手，就到知識實驗室；想持續練習，就選一個計畫。" />
+      <SectionTitle level={1} eyebrow="Learn" title="學習" desc="四個學習系統各有不同視角，可以從任何一個開始。想先動手，就到知識實驗室；想持續練習，就選一個計畫。" />
       <section aria-labelledby="systems-h">
         <h2 id="systems-h" className="text-lg font-bold">四大學習系統</h2>
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">

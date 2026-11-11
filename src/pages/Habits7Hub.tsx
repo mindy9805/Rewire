@@ -3,7 +3,7 @@
  * 互動工具入口、跨模組推薦、21 天探索計畫與個人實踐紀錄。
  */
 import { Link } from 'react-router-dom';
-import { CalendarRange, Download } from 'lucide-react';
+import { ArrowRight, CalendarRange, Download } from 'lucide-react';
 import { H7_CORE, H7_MODULE, H7_SUBTITLE, H7_TITLE, h7Habits } from '../content/habits7';
 import { useStore } from '../store/AppStore';
 import { useToast } from '../components/ui/Toast';
@@ -19,6 +19,14 @@ export default function Habits7Hub() {
   const toast = useToast();
   const sp = h7StageProgress(data);
   const pp = planProgress(data);
+  // 主要按鈕的下一步：21 天計畫進行中 → 學習中的習慣 → 第一個未完成的習慣
+  const learning = h7Habits.find((h) => data.h7Progress[h.id]?.status === 'learning');
+  const firstOpen = h7Habits.find((h) => data.h7Progress[h.id]?.status !== 'done');
+  const start = pp.started && pp.nextDay
+    ? { to: `/habits7/plan?day=${pp.nextDay}`, label: `繼續 21 天計畫：第 ${pp.nextDay} 天` }
+    : learning ? { to: `/habits7/${learning.id}`, label: `繼續：${learning.title}` }
+    : firstOpen ? { to: `/habits7/${firstOpen.id}`, label: firstOpen.no === 1 ? '從習慣一開始' : `下一個：${firstOpen.title}` }
+    : { to: '/habits7/plan', label: '回顧 21 天探索計畫' };
   const records = [
     { label: '影響圈整理', n: data.circles.length, to: '/habits7/proactive#tool' },
     { label: '人生羅盤領域', n: Object.values(data.lifeCompass.areas).filter((a) => Object.values(a).some((v) => v.trim())).length, to: '/habits7/end#tool' },
@@ -35,8 +43,16 @@ export default function Habits7Hub() {
         <p className="font-display text-sm italic text-accent">{H7_MODULE}</p>
         <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl"><Phrased text={H7_TITLE} /></h1>
         <p className="mt-3 text-lg text-muted">{H7_SUBTITLE}</p>
-        <div className="mt-6 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">{H7_CORE.map((l) => <p key={l}>{l}</p>)}</div>
-        <p className="mt-4 text-xs text-muted">理論參考：Stephen R. Covey《The 7 Habits of Highly Effective People》（繁中版《與成功有約》）。本站僅以七個習慣名稱作為概念標籤，所有解說、工具與題目皆為原創。</p>
+        {/* 第一屏就有明確的下一步：繼續計畫 → 繼續學習中的習慣 → 從習慣一開始 */}
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link to={start.to} className="btn-primary">{start.label}<ArrowRight className="h-4 w-4" aria-hidden /></Link>
+          {!pp.started && <Link to="/habits7/plan" className="text-sm text-accent underline">或參加 21 天探索計畫</Link>}
+        </div>
+        <details className="mt-5">
+          <summary className="cursor-pointer text-sm text-accent">為什麼是這七個習慣？（理念與理論來源）</summary>
+          <div className="mt-3 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">{H7_CORE.map((l) => <p key={l}>{l}</p>)}</div>
+          <p className="mt-3 text-xs text-muted">理論參考：Stephen R. Covey《The 7 Habits of Highly Effective People》（繁中版《與成功有約》）。本站僅以七個習慣名稱作為概念標籤，所有解說、工具與題目皆為原創。</p>
+        </details>
       </header>
 
       <section aria-labelledby="map-h">

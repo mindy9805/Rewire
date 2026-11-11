@@ -28,7 +28,7 @@ export default function CollapsibleSection({ id, no, title, defaultOpen = false,
       <h2 id={`${id}-h`} className="text-xl font-bold">
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls={`${id}-body`}
           className="flex w-full items-baseline gap-2 rounded-lg py-1 text-left hover:text-accent">
-          <span className="font-display text-base italic text-sage">{String(no).padStart(2, '0')}</span>
+          <span className="font-display text-base italic text-sageink">{String(no).padStart(2, '0')}</span>
           <span className="flex-1">{title}</span>
           <ChevronDown className={`h-5 w-5 shrink-0 self-center text-muted transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
         </button>

@@ -33,7 +33,7 @@ export default function Records() {
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/me" className="hover:text-accent">我的</Link> / 我的紀錄</nav>
-      <SectionTitle title="我的紀錄" desc="所有練習、測驗與書寫，依日期整理在這裡。點「查看」會回到原本的工具；紀錄仍保存在原來的位置。" />
+      <SectionTitle level={1} title="我的紀錄" desc="所有練習、測驗與書寫，依日期整理在這裡。點「查看」會回到原本的工具；紀錄仍保存在原來的位置。" />
       {all.length === 0 ? (
         <EmptyState title="還沒有任何紀錄" desc="完成任何一個練習或寫下一則反思，就會出現在這裡。" action={<Link to="/" className="btn-primary btn-sm">回到「今天」</Link>} />
       ) : (

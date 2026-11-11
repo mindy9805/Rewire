@@ -32,7 +32,7 @@ export default function HomeHero() {
     </button>
   );
   return (
-    <section aria-labelledby="hero-h" className="relative overflow-hidden rounded-3xl bg-forest px-5 py-7 text-[#FAF8F4] sm:px-10 sm:py-12">
+    <section aria-labelledby="hero-h" className="relative overflow-hidden rounded-3xl bg-deep px-5 py-7 text-[#FAF8F4] sm:px-10 sm:py-12">
       <svg aria-hidden className="absolute inset-0 h-full w-full opacity-25" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
         {[[80, 300], [220, 180], [380, 250], [520, 120], [680, 200], [740, 60], [300, 60]].map(([x, y], i, arr) => (
           <g key={i}>

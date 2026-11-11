@@ -50,7 +50,7 @@ export default function Habits7Plan() {
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/plans" className="hover:text-accent">我的計畫</Link> / <Link to="/habits7" className="hover:text-accent">7 Habits</Link> / 21 天探索計畫</nav>
-      <SectionTitle title="21 天七習慣探索計畫" desc="每個習慣三天：第一天理解概念、第二天完成行動實驗、第三天反思並調整策略。不需要連續完成，中斷後隨時可以繼續。" />
+      <SectionTitle level={1} title="21 天七習慣探索計畫" desc="每個習慣三天：第一天理解概念、第二天完成行動實驗、第三天反思並調整策略。不需要連續完成，中斷後隨時可以繼續。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm">{PLAN_NOTE}</p>
       <ProgressBar label="探索計畫進度" value={pp.done} max={21} />
       {data.h7Plan.startedAt && <p className="text-xs text-muted">開始於 {formatDate(isoToDateKey(data.h7Plan.startedAt))}</p>}
@@ -90,7 +90,7 @@ export default function Habits7Plan() {
         </div>
       </article>
 
-      <section aria-labelledby="review-h" className="rounded-3xl bg-forest p-6 text-[#FAF8F4] sm:p-8">
+      <section aria-labelledby="review-h" className="rounded-3xl bg-deep p-6 text-[#FAF8F4] sm:p-8">
         <h2 id="review-h" className="font-serif text-xl font-bold">課程結束回顧</h2>
         <p className="mt-1 text-sm text-[#E9EEE7]">已完成 {pp.done}/21 天。{pp.done === 21 ? '恭喜走完 21 天！這是探索的結束，也是持續練習的開始。' : '隨時可以先寫下目前的回顧，之後再更新。'}</p>
         <label htmlFor="final-review" className="mt-3 block text-sm">這 21 天，我最想帶走的是哪一個習慣？下一步想怎麼繼續？</label>

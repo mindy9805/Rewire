@@ -125,6 +125,8 @@ export interface Settings {
   motion: MotionMode;
   /** 章節閱讀模式：'full' 完整版；'brief' 精簡版（只看目標、概念、互動、摘要與測驗） */
   readingMode: 'full' | 'brief';
+  /** 朗讀聲音（瀏覽器的 voiceURI）；空字串＝自動挑選台灣女聲 */
+  voiceURI: string;
   rightPanelOpen: boolean;
   /** 是否已關閉首次本地儲存提示 */
   storageNoticeDismissed: boolean;

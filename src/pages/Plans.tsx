@@ -37,10 +37,10 @@ export default function Plans() {
   const others = all.filter((p) => p.id !== current?.id);
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
-      <SectionTitle title="我的計畫" desc="把學到的東西變成每天的小行動。一次專心一個計畫就好；不需要連續，中斷後隨時可以回來。" />
+      <SectionTitle level={1} title="我的計畫" desc="把學到的東西變成每天的小行動。一次專心一個計畫就好；不需要連續，中斷後隨時可以回來。" />
 
       {current ? (
-        <section aria-labelledby="current-plan" className="rounded-3xl bg-forest p-5 text-[#FAF8F4] sm:p-8">
+        <section aria-labelledby="current-plan" className="rounded-3xl bg-deep p-5 text-[#FAF8F4] sm:p-8">
           <p className="flex items-center gap-2 text-sm text-[#E8CCB2]"><CalendarCheck className="h-4 w-4" aria-hidden />目前進行中</p>
           <h2 id="current-plan" className="mt-1 font-serif text-2xl font-bold">{current.title}</h2>
           {current.note && <p className="mt-1 text-sm text-[#E9EEE7]">{current.note}</p>}

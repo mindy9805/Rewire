@@ -4,7 +4,7 @@
  * - 手機：單欄閱讀，章節導覽改為抽屜選單，底部固定主要功能導覽。
  * - 全站彩蛋：不在輸入框時用鍵盤打出 rewire，會出現提示與飄葉動畫。
  */
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopBar from './TopBar';
 import Sidebar from './Sidebar';
@@ -77,7 +77,10 @@ export default function Layout() {
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-16">
           <div className="mx-auto max-w-4xl">
             <StorageNotice />
-            <Outlet />
+            {/* 頁面按需載入：載入期間保留頂部列與導覽，只在內容區顯示「載入中」 */}
+            <Suspense fallback={<p className="py-16 text-center text-sm text-muted" role="status">載入中…</p>}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
         {rightOpen && <RightPanel />}

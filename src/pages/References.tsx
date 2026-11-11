@@ -38,7 +38,7 @@ export default function References() {
 
   return (
     <div className="space-y-10 motion-safe:animate-fade-up">
-      <SectionTitle title="研究來源" desc="本站優先引用同行評審論文與學術專書。作者、標題、年份與 DOI 依原始出版資訊整理；無法完整確認的資料標示「待查證」。建議點擊 DOI 連結閱讀原文。" />
+      <SectionTitle level={1} title="研究來源" desc="本站優先引用同行評審論文與學術專書。作者、標題、年份與 DOI 依原始出版資訊整理；無法完整確認的資料標示「待查證」。建議點擊 DOI 連結閱讀原文。" />
       <section aria-labelledby="ev-h">
         <h2 id="ev-h" className="mb-3 text-xl font-bold">科學證據檢視卡</h2>
         <p className="mb-4 text-sm text-muted">用「研究設計、樣本與限制、合理推論、過度簡化」等問題，練習批判性閱讀。</p>
