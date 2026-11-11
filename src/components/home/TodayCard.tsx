@@ -12,6 +12,7 @@ import { quests } from '../../content/play';
 import { useStore } from '../../store/AppStore';
 import { dailyPick } from '../../lib/activity';
 import { todaysRecall, type RecallItem } from '../../lib/recall';
+import { unlockSpeech } from '../../lib/speech';
 
 function Recall({ item }: { item: RecallItem }) {
   const [open, setOpen] = useState(false);
@@ -65,7 +66,7 @@ export default function TodayCard() {
       <p className="mt-4 font-serif text-2xl font-bold">「{aff.text}」</p>
       <p className="mt-2 text-sm leading-relaxed"><span className="font-medium text-accent">今天的小行動：</span>{aff.action}</p>
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Link to="/daily/read" className="btn-primary btn-sm">開始每日心智練習<ArrowRight className="h-3.5 w-3.5" aria-hidden /></Link>
+        <Link onClick={unlockSpeech} to="/daily/read" className="btn-primary btn-sm">開始每日心智練習<ArrowRight className="h-3.5 w-3.5" aria-hidden /></Link>
         <Link to="/play/quest" className="text-sm text-accent underline">或來個 30 秒小冒險：{quest.title}</Link>
       </div>
       {recall && <div className="mt-5 border-t border-line pt-4"><Recall item={recall} /></div>}

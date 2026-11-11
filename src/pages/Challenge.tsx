@@ -21,6 +21,7 @@ import type { ChallengeDayRecord } from '../types';
 import PatternChallenge from '../components/pattern/PatternChallenge';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
+import { unlockSpeech } from '../lib/speech';
 
 const emptyRecord: ChallengeDayRecord = { completed: false, note: '', affirmationReflection: '', microActionDone: false, feeling: '' };
 
@@ -137,7 +138,7 @@ function NeuroChallenge() {
           </ol>
           {aff.note && <p className="mt-3 text-xs">備註：{aff.note}</p>}
           <p className="mt-3 text-xs text-muted">暫時沒有認同感也沒關係，這只是一個練習提示。</p>
-          <Link to={`/daily/read?back=${encodeURIComponent(`/challenge?day=${day}`)}`} className="btn-secondary btn-sm mt-3">進入七句朗讀模式（另存於每日心智練習）</Link>
+          <Link onClick={unlockSpeech} to={`/daily/read?back=${encodeURIComponent(`/challenge?day=${day}`)}`} className="btn-secondary btn-sm mt-3">進入七句朗讀模式（另存於每日心智練習）</Link>
         </section>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">

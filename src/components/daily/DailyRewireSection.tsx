@@ -10,6 +10,7 @@ import { useToast } from '../ui/Toast';
 import { copyText } from '../../lib/clipboard';
 import { allAffirmationsText } from '../../lib/daily';
 import { toDateKey } from '../../lib/date';
+import { unlockSpeech } from '../../lib/speech';
 
 /** asPageTitle：在「每日心智練習」頁當作頁面標題（h1）；在首頁等其他地方是區塊標題（h2） */
 export default function DailyRewireSection({ showAll = true, asPageTitle = false }: { showAll?: boolean; asPageTitle?: boolean }) {
@@ -24,7 +25,7 @@ export default function DailyRewireSection({ showAll = true, asPageTitle = false
       <H id="daily-title" className="mt-2 font-serif text-2xl font-bold sm:text-3xl">{DAILY_TITLE}</H>
       <p className="mt-2 max-w-2xl text-muted">{DAILY_SUBTITLE}</p>
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Link to="/daily/read" className="btn-primary">
+        <Link onClick={unlockSpeech} to="/daily/read" className="btn-primary">
           <Play className="h-4 w-4" aria-hidden /> 開始今日練習
         </Link>
         <button className="btn-secondary" onClick={async () => toast((await copyText(allAffirmationsText())) ? '已複製全部七句話' : '複製失敗', 'info')}>

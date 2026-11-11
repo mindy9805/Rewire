@@ -3,6 +3,8 @@
  * - 一次呈現一句，文字置中；可上一句／下一句／重新開始／離開；顯示進度（例如 3／7）。
  * - 鍵盤：← → 切換、Esc 離開。
  * - 朗讀輔助：瀏覽器支援時可用 SpeechSynthesis 朗讀；不支援時提示自行朗讀。
+ *   手機（特別是 iPhone）只允許在點擊當下開始朗讀，所以「朗讀這句」「自動朗讀開關」「上一句／下一句／重新開始」
+ *   都在點擊（或按鍵）事件中直接呼叫 speak()，不放在 useEffect 裡。
  * - 讀完七句後顯示今日反思問題與紀錄表單；抵達最後一頁即記錄「今日已完成朗讀」。
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -13,6 +15,7 @@ import { useStore } from '../../store/AppStore';
 import { getDailyLog } from '../../lib/daily';
 import { nowIso } from '../../lib/id';
 import { speak, speechSupported, stopSpeaking } from '../../lib/speech';
+import SpeechStatus from '../ui/SpeechStatus';
 import DailyLogForm from './DailyLogForm';
 
 const TOTAL = affirmations.length;
@@ -28,17 +31,34 @@ export default function ReadingMode() {
   const heading = useRef<HTMLHeadingElement>(null);
   const canSpeak = speechSupported();
   const markedRef = useRef(false);
+  const stepRef = useRef(step);
+  stepRef.current = step;
 
   const exit = useCallback(() => {
     stopSpeaking();
     navigate(backTo);
   }, [navigate, backTo]);
 
-  // 每次換句時把焦點移到語句，讓螢幕閱讀器讀出；開啟自動朗讀時播放語音
+  // 每次換句時把焦點移到語句，讓螢幕閱讀器讀出（朗讀改在點擊事件中處理）
   useEffect(() => {
     heading.current?.focus();
-    if (step < TOTAL && autoSpeak) speak(affirmations[step].text);
-  }, [step, autoSpeak]);
+  }, [step]);
+
+  /** 換句：在點擊／按鍵事件中呼叫；開啟自動朗讀時同步念出新的一句 */
+  const autoRef = useRef(autoSpeak);
+  autoRef.current = autoSpeak;
+  const goTo = useCallback((next: number) => {
+    const n = Math.max(0, Math.min(next, TOTAL));
+    setStep(n);
+    if (autoRef.current && n < TOTAL) speak(affirmations[n].text);
+    else stopSpeaking();
+  }, []);
+  /** 自動朗讀開關：打開時立刻在這次點擊中念出目前這句（也同時解除手機的朗讀限制） */
+  const toggleAuto = () => {
+    if (autoSpeak) { stopSpeaking(); setAutoSpeak(false); return; }
+    setAutoSpeak(true);
+    if (step < TOTAL) speak(affirmations[step].text);
+  };
 
   // 抵達完成頁：記錄今日已完成朗讀（只記一次，不覆蓋既有反思內容）
   useEffect(() => {
@@ -53,8 +73,8 @@ export default function ReadingMode() {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (['INPUT', 'TEXTAREA'].includes(tag)) return;
-      if (e.key === 'ArrowRight') setStep((s) => Math.min(s + 1, TOTAL));
-      if (e.key === 'ArrowLeft') setStep((s) => Math.max(s - 1, 0));
+      if (e.key === 'ArrowRight') goTo(stepRef.current + 1);
+      if (e.key === 'ArrowLeft') goTo(stepRef.current - 1);
       if (e.key === 'Escape') exit();
     };
     window.addEventListener('keydown', onKey);
@@ -62,7 +82,7 @@ export default function ReadingMode() {
       window.removeEventListener('keydown', onKey);
       stopSpeaking();
     };
-  }, [exit]);
+  }, [exit, goTo]);
 
   const a = affirmations[step];
   const done = step === TOTAL;
@@ -85,12 +105,12 @@ export default function ReadingMode() {
           {done ? '完成 7／7' : `${step + 1}／${TOTAL}`}
         </p>
         {canSpeak ? (
-          <button className="btn-ghost btn-sm" onClick={() => { if (autoSpeak) stopSpeaking(); setAutoSpeak((v) => !v); }} aria-pressed={autoSpeak}>
+          <button className="btn-ghost btn-sm" onClick={toggleAuto} aria-pressed={autoSpeak}>
             {autoSpeak ? <Volume2 className="h-4 w-4" aria-hidden /> : <VolumeX className="h-4 w-4" aria-hidden />}
             {autoSpeak ? '自動朗讀：開' : '自動朗讀：關'}
           </button>
         ) : (
-          <span className="text-xs text-muted">此瀏覽器不支援語音，請自行朗讀</span>
+          <span className="max-w-[12rem] text-right text-xs text-muted">這個瀏覽器不支援朗讀，可以改用 Safari／Chrome，或自己慢慢唸</span>
         )}
       </header>
 
@@ -112,9 +132,12 @@ export default function ReadingMode() {
             <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-muted">{a.meaning}</p>
             {a.note && <p className="mx-auto mt-4 max-w-md rounded-xl bg-apricot/30 px-3 py-2 text-xs">{a.note}</p>}
             {canSpeak && (
-              <button className="btn-secondary btn-sm mt-6" onClick={() => speak(a.text)}>
-                <Volume2 className="h-4 w-4" aria-hidden /> 朗讀這句
-              </button>
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <button className="btn-secondary btn-sm" onClick={() => speak(a.text)}>
+                  <Volume2 className="h-4 w-4" aria-hidden /> 朗讀這句
+                </button>
+                <SpeechStatus />
+              </div>
             )}
           </div>
         ) : (
@@ -136,14 +159,14 @@ export default function ReadingMode() {
       </main>
 
       <footer className="relative z-10 flex items-center justify-center gap-2 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <button className="btn-secondary" onClick={() => setStep((s) => Math.max(s - 1, 0))} disabled={step === 0}>
+        <button className="btn-secondary" onClick={() => goTo(step - 1)} disabled={step === 0}>
           <ArrowLeft className="h-4 w-4" aria-hidden /> 上一句
         </button>
-        <button className="btn-ghost" onClick={() => { setStep(0); setSaved(false); }}>
+        <button className="btn-ghost" onClick={() => { goTo(0); setSaved(false); }}>
           <RotateCcw className="h-4 w-4" aria-hidden /> 重新開始
         </button>
         {!done ? (
-          <button className="btn-primary" onClick={() => setStep((s) => s + 1)}>
+          <button className="btn-primary" onClick={() => goTo(step + 1)}>
             {step === TOTAL - 1 ? '完成' : '下一句'} <ArrowRight className="h-4 w-4" aria-hidden />
           </button>
         ) : (

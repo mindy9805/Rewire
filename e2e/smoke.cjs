@@ -1066,6 +1066,45 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     if ((await draft()) !== null) throw new Error('送出後應清除暫存');
     await c2.close();
   });
+  await step('（一）朗讀：點擊當下同步呼叫 speak，自動朗讀在換句的點擊中念出', async () => {
+    const c2 = await browser.newContext();
+    // 記錄每次 speak 的文字，以及是否發生在點擊事件「當下」（模擬 iOS 的限制）
+    await c2.addInitScript(() => {
+      window.__spoken = [];
+      let inClick = false;
+      window.addEventListener('click', () => { inClick = true; setTimeout(() => { inClick = false; }, 0); }, true);
+      window.addEventListener('keydown', () => { inClick = true; setTimeout(() => { inClick = false; }, 0); }, true);
+      const synth = window.speechSynthesis;
+      synth.speak = (u) => { window.__spoken.push({ text: u.text, lang: u.lang, inClick }); setTimeout(() => { u.onstart && u.onstart(); u.onend && u.onend(); }, 20); };
+    });
+    const p2 = await c2.newPage();
+    const spoken = () => p2.evaluate(() => window.__spoken.filter((x) => x.text.trim()));
+    await p2.goto(BASE + '#/daily/read');
+    await p2.getByRole('button', { name: '朗讀這句' }).click();
+    let sp = await spoken();
+    if (sp.length !== 1 || !sp[0].text.includes('我現在是安全的') || !sp[0].inClick || sp[0].lang !== 'zh-TW') throw new Error('朗讀這句 ' + JSON.stringify(sp));
+    // 打開自動朗讀：在這次點擊中念出目前這句；按下一句：在點擊中念出下一句
+    await p2.getByRole('button', { name: /自動朗讀：關/ }).click();
+    await p2.getByRole('button', { name: '下一句' }).click();
+    await p2.keyboard.press('ArrowRight');
+    sp = await spoken();
+    const texts = sp.map((x) => x.text);
+    if (!texts.some((t) => t.includes('我的大腦可以改變')) || !texts.some((t) => t.includes('我已經足夠好了'))) throw new Error('自動朗讀 ' + JSON.stringify(texts));
+    if (!sp.every((x) => x.inClick)) throw new Error('有朗讀不是在點擊當下發生 ' + JSON.stringify(sp));
+    await c2.close();
+  });
+  await step('（一）朗讀：不支援時隱藏按鈕並顯示替代說明；資料頁有朗讀檢查', async () => {
+    const c2 = await browser.newContext();
+    await c2.addInitScript(() => { delete window.speechSynthesis; delete window.SpeechSynthesisUtterance; });
+    const p2 = await c2.newPage();
+    await p2.goto(BASE + '#/daily/read');
+    await p2.getByText('這個瀏覽器不支援朗讀，可以改用 Safari／Chrome，或自己慢慢唸').first().waitFor();
+    if (await p2.getByRole('button', { name: '朗讀這句' }).count()) throw new Error('不支援時不應顯示朗讀按鈕');
+    await p2.goto(BASE + '#/data');
+    await p2.getByText('朗讀檢查（聽不到聲音時使用）').click();
+    await p2.getByTestId('speech-check').getByText('否').first().waitFor();
+    await c2.close();
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();

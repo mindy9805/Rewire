@@ -28,6 +28,7 @@ import SectionProgress from '../components/ui/SectionProgress';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
+import { unlockSpeech } from '../lib/speech';
 
 /** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
 const OPEN_BY_DEFAULT = new Set(['definition', 'strategies', 'selfcheck']);
@@ -139,7 +140,7 @@ export default function Habits7Page() {
         </div>
         <h3 className="mt-6 flex items-center gap-2 font-serif text-lg font-bold"><Sparkles className="h-5 w-5 text-accent" aria-hidden />相關的每日心智語句</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-2">{h.links.affirmationIds.slice(0, h.links.affirmationIds.length > 2 ? 7 : 2).map((id) => <AffirmationCard key={id} a={affirmationMap[id]} compact />)}</div>
-        <Link to={`/daily/read?back=${encodeURIComponent(`/habits7/${h.id}`)}`} className="btn-secondary mt-4">進入每日朗讀練習</Link>
+        <Link onClick={unlockSpeech} to={`/daily/read?back=${encodeURIComponent(`/habits7/${h.id}`)}`} className="btn-secondary mt-4">進入每日朗讀練習</Link>
       </Sec>
 
       <section aria-labelledby="finish-h" className="mt-14 rounded-3xl border border-accent/40 bg-surface p-5 sm:p-7">
