@@ -24,6 +24,8 @@ import type { ChapterId } from '../types';
 import type { ReactNode } from 'react';
 import Phrased from '../components/ui/Phrased';
 import SectionProgress from '../components/ui/SectionProgress';
+import { celebrate } from '../lib/celebrate';
+import CompletionCard from '../components/ui/CompletionCard';
 
 function Block({ id, icon: Icon, title, children }: { id: string; icon: typeof Target; title: string; children: ReactNode }) {
   return (
@@ -76,7 +78,9 @@ export default function ChapterPage() {
   const toggleComplete = () => {
     const done = !progress?.completed;
     update((p) => ({ ...p, chapters: { ...p.chapters, [chapter.id]: { ...p.chapters[chapter.id], completed: done, completedAt: done ? nowIso() : undefined } } }));
-    toast(done ? `已完成第 ${chapter.number} 章 🎉` : '已取消完成標記', done ? 'success' : 'info');
+    // 完成時由下方的完成卡說明，不再另外跳提示（避免和解鎖提示疊在一起）
+    if (done) celebrate();
+    else toast('已取消完成標記', 'info');
   };
   const saveReflection = () => {
     const t = nowIso();
@@ -221,6 +225,12 @@ export default function ChapterPage() {
           <CheckCircle2 className="h-4 w-4" aria-hidden />
           {progress?.completed ? '已完成本章（點擊取消）' : '標記本章為已完成'}
         </button>
+        {/* 完成卡：帶走一句話＋一個下一步（下一章，最後一章則回到學習總覽） */}
+        {progress?.completed && (
+          <CompletionCard title={`第 ${chapter.number} 章完成了`} takeaway={chapter.summary[0]}
+            next={next ? { to: `/learn/${next.id}`, label: `下一章：第 ${next.number} 章` } : { to: '/learning', label: '回到「學習」看看其他系統' }}
+            note={{ chapterId: chapter.id, source: `第 ${chapter.number} 章重點`, tags: ['完成卡', '深度導讀'] }} />
+        )}
       </Block>
 
       {!full && (

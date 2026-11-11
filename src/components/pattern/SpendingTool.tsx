@@ -70,7 +70,7 @@ export default function SpendingTool({ affirmationIds }: { affirmationIds: numbe
         <legend className="field-label">購買原因（可複選）</legend>
         <div className="flex flex-wrap gap-2">
           {spendingReasons.map((r) => (
-            <button key={r.id} type="button" aria-pressed={reasons.includes(r.id)} onClick={() => setReasons((x) => (x.includes(r.id) ? x.filter((y) => y !== r.id) : [...x, r.id]))} className={reasons.includes(r.id) ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{r.label}</button>
+            <button key={r.id} type="button" aria-pressed={reasons.includes(r.id)} onClick={() => setReasons((x) => (x.includes(r.id) ? x.filter((y) => y !== r.id) : [...x, r.id]))} className="btn-toggle">{r.label}</button>
           ))}
         </div>
       </fieldset>

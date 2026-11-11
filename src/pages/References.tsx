@@ -38,7 +38,7 @@ export default function References() {
 
   return (
     <div className="space-y-10 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="References" title="研究來源" desc="本站優先引用同行評審論文與學術專書。作者、標題、年份與 DOI 依原始出版資訊整理；無法完整確認的資料標示「待查證」。建議點擊 DOI 連結閱讀原文。" />
+      <SectionTitle title="研究來源" desc="本站優先引用同行評審論文與學術專書。作者、標題、年份與 DOI 依原始出版資訊整理；無法完整確認的資料標示「待查證」。建議點擊 DOI 連結閱讀原文。" />
       <section aria-labelledby="ev-h">
         <h2 id="ev-h" className="mb-3 text-xl font-bold">科學證據檢視卡</h2>
         <p className="mb-4 text-sm text-muted">用「研究設計、樣本與限制、合理推論、過度簡化」等問題，練習批判性閱讀。</p>
@@ -49,8 +49,7 @@ export default function References() {
         <div className="mb-4 space-y-3">
           <div role="group" aria-label="依模組篩選" className="flex flex-wrap gap-2">
             {FILTERS.map((f) => (
-              <button key={f.id} type="button" aria-pressed={filter === f.id} onClick={() => { setFilter(f.id); setShowAll(false); }}
-                className={filter === f.id ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>
+              <button key={f.id} type="button" aria-pressed={filter === f.id} onClick={() => { setFilter(f.id); setShowAll(false); }} className="btn-toggle">
                 {f.label}{f.ids && <span className="ml-1 opacity-70">{all.filter((r) => f.ids!.has(r.id)).length}</span>}
               </button>
             ))}

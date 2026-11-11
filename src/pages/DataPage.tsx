@@ -36,7 +36,7 @@ function OptionGroup<T extends string>({ label, options, value, onChange }: { la
       <p className="field-label">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
-          <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)} className={value === o.value ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>
+          <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)} className="btn-toggle">
             {o.label}
           </button>
         ))}
@@ -86,7 +86,7 @@ export default function DataPage() {
 
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Data & Privacy" title="資料與隱私" desc="Rewire 沒有帳號、沒有後端伺服器。你的所有紀錄都只保存在這台裝置的瀏覽器（LocalStorage）。" />
+      <SectionTitle title="資料與隱私" desc="Rewire 沒有帳號、沒有後端伺服器。你的所有紀錄都只保存在這台裝置的瀏覽器（LocalStorage）。" />
       <Card>
         <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><ShieldCheck className="h-5 w-5 text-accent" aria-hidden />本地儲存說明</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed">

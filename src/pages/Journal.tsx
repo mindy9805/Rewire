@@ -175,7 +175,7 @@ export default function Journal() {
   const q = params.get('q') ?? '';
   return (
     <div className="motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Journal" title="個人反思日誌" desc="記錄每天的觀察與感受，也管理你在各章節收藏的重點與反思。所有內容只存在這台裝置的瀏覽器中。" />
+      <SectionTitle title="反思日誌" desc="記錄每天的觀察與感受，也管理你在各章節收藏的重點與反思。所有內容只存在這台裝置的瀏覽器中。" />
       <div role="tablist" aria-label="日誌與筆記" className="mb-6 inline-flex rounded-full border border-line bg-surface p-1">
         {(['journal', 'notes'] as const).map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} className={`rounded-full px-5 py-2 text-sm ${tab === t ? 'bg-accent text-onaccent' : 'text-ink'}`} onClick={() => setParams(t === 'notes' ? { tab: 'notes' } : {})}>

@@ -51,7 +51,7 @@ export function FocusPicker({ headingLevel = 2 }: { headingLevel?: 2 | 3 }) {
               <p className="mt-1 text-sm text-muted">{h.cardScene}</p>
               <p className="mt-2 text-sm">💭 {h.cardPrompt}</p>
               <div className="mt-auto flex flex-wrap gap-2 pt-3">
-                <button className={on ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} aria-pressed={on} onClick={() => toggle(h.id)} aria-label={`${on ? '取消選擇' : '選擇'}「${h.short}」`}>
+                <button className="btn-toggle" aria-pressed={on} onClick={() => toggle(h.id)} aria-label={`${on ? '取消選擇' : '選擇'}「${h.short}」`}>
                   {on && <Check className="h-4 w-4" aria-hidden />}{on ? '已選擇' : '我想調整'}
                 </button>
                 <Link to={`/pattern/${h.id}`} className="btn-ghost btn-sm" aria-label={`開始探索「${h.short}」`}>開始探索 <ArrowRight className="h-4 w-4" aria-hidden /></Link>

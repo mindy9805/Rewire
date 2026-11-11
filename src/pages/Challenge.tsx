@@ -19,6 +19,8 @@ import { downloadText } from '../lib/clipboard';
 import { challengeToMarkdown, stamp } from '../lib/exporters';
 import type { ChallengeDayRecord } from '../types';
 import PatternChallenge from '../components/pattern/PatternChallenge';
+import { celebrate } from '../lib/celebrate';
+import CompletionCard from '../components/ui/CompletionCard';
 
 const emptyRecord: ChallengeDayRecord = { completed: false, note: '', affirmationReflection: '', microActionDone: false, feeling: '' };
 
@@ -57,7 +59,8 @@ function NeuroChallenge() {
     if (completed) {
       const msg = gentleFeedback[(day - 1) % gentleFeedback.length];
       setFeedback(msg);
-      toast(`Day ${day} 完成 · ${msg}`);
+      // 鼓勵的話與完成卡已顯示在頁面上，不再另外跳提示
+      celebrate();
     } else {
       setFeedback('');
       toast('已取消完成勾選，隨時可以重新練習。', 'info');
@@ -145,6 +148,11 @@ function NeuroChallenge() {
           </button>
         </div>
         {feedback && <p className="mt-4 rounded-xl bg-soft px-4 py-3 text-sm text-accent" role="status">🌱 {feedback}</p>}
+        {saved.completed && (
+          <CompletionCard title={`第 ${day} 天完成了`} takeaway={`${info.knowledge.split('。')[0]}。`} takeawayLabel="今天帶走一句話"
+            next={day < 14 ? { to: `/challenge?day=${day + 1}`, label: `看看第 ${day + 1} 天` } : { to: '/plans', label: '回到「我的計畫」' }}
+            note={{ chapterId: info.chapterId, source: `14 天練習 第 ${day} 天`, tags: ['完成卡', '14 天練習'] }} />
+        )}
         <div className="mt-6 flex justify-between">
           <button className="btn-ghost btn-sm" disabled={day === 1} onClick={() => goDay(day - 1)}>← Day {day - 1 || ''}</button>
           <button className="btn-ghost btn-sm" disabled={day === 14} onClick={() => goDay(day + 1)}>Day {day < 14 ? day + 1 : ''} →</button>
@@ -194,7 +202,7 @@ export default function Challenge() {
   return (
     <div className="motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="mb-3 text-sm text-muted"><Link to="/plans" className="hover:text-accent">我的計畫</Link> / 14 天練習</nav>
-      <SectionTitle eyebrow="14-Day Challenge" title="14 天練習" desc="每天一個小主題、一個具體行動。不需要連續，也可以隨時補做、重新練習或暫停——重要的是持續回來。" />
+      <SectionTitle title="14 天練習" desc="每天一個小主題、一個具體行動。不需要連續，也可以隨時補做、重新練習或暫停——重要的是持續回來。" />
       <div role="tablist" aria-label="挑戰類型" className="mb-6 inline-flex flex-wrap rounded-full border border-line bg-surface p-1">
         {([['neuro', '神經可塑性練習'], ['pattern', '打破慣性挑戰']] as const).map(([t, label]) => (
           <button key={t} role="tab" aria-selected={type === t} className={`rounded-full px-4 py-2 text-sm ${type === t ? 'bg-accent text-onaccent' : 'text-ink'}`} onClick={() => setParams(t === 'pattern' ? { type: 'pattern' } : {})}>

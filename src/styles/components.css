@@ -13,4 +13,8 @@
   .chip { @apply inline-flex items-center rounded-full bg-soft px-2.5 py-0.5 text-xs text-ink; }
   .prose-rw p { @apply mb-4 leading-[1.9] text-ink; }
   .card-hover { @apply transition hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:scale-[.99]; }
+  /* 選項按鈕（篩選、設定、多選）：選中時淺色底＋勾勾，與「動作」用的實心主要按鈕區分，選取狀態不只靠顏色 */
+  .btn-toggle { @apply btn btn-sm border border-line bg-surface text-ink hover:border-accent/60; }
+  .btn-toggle[aria-pressed='true'] { @apply border-accent bg-soft font-medium text-accent; }
+  .btn-toggle[aria-pressed='true']::before { content: '✓'; }
 }

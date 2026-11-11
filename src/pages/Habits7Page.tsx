@@ -26,6 +26,8 @@ import { scrollBehavior } from '../lib/motion';
 import Phrased from '../components/ui/Phrased';
 import SectionProgress from '../components/ui/SectionProgress';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
+import { celebrate } from '../lib/celebrate';
+import CompletionCard from '../components/ui/CompletionCard';
 
 /** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
 const OPEN_BY_DEFAULT = new Set(['definition', 'strategies', 'selfcheck']);
@@ -54,7 +56,9 @@ export default function Habits7Page() {
       else progress[h.id] = { status: s, startedAt: p.h7Progress[h.id]?.startedAt || nowIso(), completedAt: s === 'done' ? nowIso() : undefined };
       return { ...p, h7Progress: progress };
     });
-    toast(s === 'done' ? `已完成「${h.title}」🎉` : s === 'learning' ? '已標記為學習中' : '已重設為未開始', s === 'none' ? 'info' : 'success');
+    // 完成時由完成卡說明，不再另外跳提示
+    if (s === 'done') celebrate();
+    else toast(s === 'learning' ? '已標記為學習中' : '已重設為未開始', s === 'none' ? 'info' : 'success');
   };
   const scrollToTool = () => document.getElementById('tool')?.scrollIntoView({ behavior: scrollBehavior() });
 
@@ -162,6 +166,11 @@ export default function Habits7Page() {
           {status !== '已完成' ? <button className="btn-primary" onClick={() => setStatus('done')}><CheckCircle2 className="h-4 w-4" aria-hidden />標記本章為已完成</button> : <button className="btn-secondary" onClick={() => setStatus('learning')}>已完成（點擊改回學習中）</button>}
           {status !== '未開始' && <button className="btn-ghost btn-sm" onClick={() => setStatus('none')}>重設為未開始</button>}
         </div>
+        {status === '已完成' && (
+          <CompletionCard title={`習慣${'一二三四五六七'[h.no - 1]}「${h.title}」完成了`} takeaway={h.quickAction} takeawayLabel="帶走一個小行動"
+            next={next ? { to: `/habits7/${next.id}`, label: `下一個習慣：${next.title}` } : { to: '/habits7/plan', label: '看看 21 天探索計畫' }}
+            note={{ chapterId: 'general', source: `7 Habits：${h.title}`, tags: ['完成卡', '7 Habits', h.title] }} />
+        )}
       </section>
 
       <section aria-labelledby="ref-h" className="mt-10">

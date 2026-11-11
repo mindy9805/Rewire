@@ -63,7 +63,7 @@ export default function MicroCommitTool({ affirmationIds, habitId = 'promises' }
         <fieldset className="sm:col-span-2">
           <legend className="field-label">難度</legend>
           <div className="flex gap-2">
-            {([1, 2, 3] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={level === l ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{LEVEL[l]}</button>)}
+            {([1, 2, 3] as const).map((l) => <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className="btn-toggle">{LEVEL[l]}</button>)}
           </div>
         </fieldset>
         <button className="btn-primary justify-self-start" type="submit" disabled={!text.trim()}>建立微承諾</button>

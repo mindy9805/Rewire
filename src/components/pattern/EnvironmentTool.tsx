@@ -42,7 +42,7 @@ export default function EnvironmentTool({ affirmationIds }: { affirmationIds: nu
             <legend className="px-1 text-sm font-medium">{i + 1}. {it.text}</legend>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {environmentScale.map((s, si) => (
-                <button key={s} type="button" aria-pressed={ratings[it.id] === si + 1} onClick={() => setRatings((x) => ({ ...x, [it.id]: si + 1 }))} className={ratings[it.id] === si + 1 ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{s}</button>
+                <button key={s} type="button" aria-pressed={ratings[it.id] === si + 1} onClick={() => setRatings((x) => ({ ...x, [it.id]: si + 1 }))} className="btn-toggle">{s}</button>
               ))}
             </div>
           </fieldset>

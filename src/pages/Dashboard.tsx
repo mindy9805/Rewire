@@ -49,7 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Dashboard" title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
+      <SectionTitle title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
 
       {/* 新使用者：整頁只顯示一個空狀態與一個開始按鈕，不顯示一整排 0 */}
       {!hasAny ? (
@@ -74,7 +74,7 @@ export default function Dashboard() {
       <Card>
         <h2 className="font-serif text-lg font-bold">每日心智練習 Daily Rewire</h2>
         {ds.totalDays === 0 && data.dailyLogs.length === 0 ? (
-          <div className="mt-4"><EmptyState title="還沒有每日練習紀錄" action={<Link to="/daily/read" className="btn-primary btn-sm">開始今日練習</Link>} /></div>
+          <div className="mt-4"><EmptyState title="還沒有每日練習紀錄" action={<Link to="/daily/read" className="btn-secondary btn-sm">開始今日練習</Link>} /></div>
         ) : (
           <div className="mt-4 grid gap-5 md:grid-cols-2">
             <div>
