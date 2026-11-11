@@ -9,6 +9,7 @@ import { useStore } from '../../store/AppStore';
 import { useToast } from '../ui/Toast';
 import { getDailyLog } from '../../lib/daily';
 import { nowIso } from '../../lib/id';
+import { unlockSpeech } from '../../lib/speech';
 
 export default function PracticeAffirmation({ ids, onClose }: { ids: number[]; onClose?: () => void }) {
   const { data, upsert } = useStore();
@@ -38,7 +39,7 @@ export default function PracticeAffirmation({ ids, onClose }: { ids: number[]; o
         })}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <Link to="/daily/read" className="btn-ghost btn-sm">進入七句朗讀模式</Link>
+        <Link onClick={unlockSpeech} to="/daily/read" className="btn-ghost btn-sm">進入七句朗讀模式</Link>
         {onClose && <button className="btn-ghost btn-sm" onClick={onClose}>關閉</button>}
       </div>
     </div>

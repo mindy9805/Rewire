@@ -26,6 +26,7 @@ import Phrased from '../components/ui/Phrased';
 import SectionProgress from '../components/ui/SectionProgress';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
+import { unlockSpeech } from '../lib/speech';
 
 function Block({ id, icon: Icon, title, children }: { id: string; icon: typeof Target; title: string; children: ReactNode }) {
   return (
@@ -246,7 +247,7 @@ export default function ChapterPage() {
         <div className="grid gap-4 md:grid-cols-2">
           {chapter.affirmationIds.map((id) => <AffirmationCard key={id} a={affirmationMap[id]} compact />)}
         </div>
-        <Link to={`/daily/read?back=${encodeURIComponent(`/learn/${chapter.id}`)}`} className="btn-secondary mt-4">
+        <Link onClick={unlockSpeech} to={`/daily/read?back=${encodeURIComponent(`/learn/${chapter.id}`)}`} className="btn-secondary mt-4">
           <Sparkles className="h-4 w-4" aria-hidden /> 進入每日朗讀練習
         </Link>
       </Block>

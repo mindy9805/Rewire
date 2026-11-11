@@ -18,6 +18,7 @@ import { nowIso, uid } from '../lib/id';
 import { formatDate, isoToDateKey, toDateKey } from '../lib/date';
 import type { PatternHabitId, Workshop } from '../types';
 import Phrased from '../components/ui/Phrased';
+import { unlockSpeech } from '../lib/speech';
 
 const newWorkshop = (habitId: PatternHabitId): Workshop => {
   const t = nowIso();
@@ -179,7 +180,7 @@ export default function PatternWorkshop() {
               <div className="rounded-2xl bg-soft/60 p-4">
                 <p className="font-medium text-accent">每日七句心智練習</p>
                 <p className="mt-1">與這個習慣相關的語句：{h.affirmationIds.map((id) => `「${affirmationMap[id].text}」`).join('、')}</p>
-                <Link to="/daily/read" className="btn-secondary btn-sm mt-2">開始今日練習</Link>
+                <Link onClick={unlockSpeech} to="/daily/read" className="btn-secondary btn-sm mt-2">開始今日練習</Link>
               </div>
               <div className="rounded-2xl bg-soft/60 p-4">
                 <p className="font-medium text-accent">今天的行動紀錄</p>
