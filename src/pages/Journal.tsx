@@ -17,6 +17,7 @@ import { nowIso, uid } from '../lib/id';
 import { downloadText } from '../lib/clipboard';
 import { journalToMarkdown, notesToMarkdown, stamp } from '../lib/exporters';
 import type { JournalEntry } from '../types';
+import { scrollBehavior } from '../lib/motion';
 
 type Draft = Pick<JournalEntry, 'date' | 'title' | 'content' | 'mood' | 'tags'>;
 const newDraft = (): Draft => ({ date: toDateKey(), title: '', content: '', mood: 0, tags: [] });
@@ -102,7 +103,7 @@ function JournalTab({ initialQ }: { initialQ: string }) {
                     <p className="text-xs text-muted">{formatDate(j.date)}{m && ` · ${m.emoji} ${m.label}`}</p>
                     <p className="mt-1 font-serif text-lg font-bold">{j.title || '（未命名）'}</p>
                   </div>
-                  <button className="icon-btn" aria-label="編輯日誌" onClick={() => { setEditing(j); setDraft({ date: j.date, title: j.title, content: j.content, mood: j.mood, tags: j.tags }); setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}><Pencil className="h-4 w-4" aria-hidden /></button>
+                  <button className="icon-btn" aria-label="編輯日誌" onClick={() => { setEditing(j); setDraft({ date: j.date, title: j.title, content: j.content, mood: j.mood, tags: j.tags }); setShowForm(true); window.scrollTo({ top: 0, behavior: scrollBehavior() }); }}><Pencil className="h-4 w-4" aria-hidden /></button>
                   <button className="icon-btn" aria-label="刪除日誌" onClick={async () => { if (await confirm({ title: '刪除這篇日誌？', message: '刪除後無法復原。', confirmText: '刪除', danger: true })) { remove('journal', j.id); toast('已刪除日誌'); } }}><Trash2 className="h-4 w-4" aria-hidden /></button>
                 </div>
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{j.content}</p>

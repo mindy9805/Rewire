@@ -17,7 +17,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap"
     />
-    <!-- 在 React 載入前先套用主題與字級，避免畫面閃爍 -->
+    <!-- 在 React 載入前先套用主題、字級與動畫設定，避免畫面閃爍 -->
     <script>
       (function () {
         try {
@@ -25,13 +25,14 @@
           var dark = s.theme === 'dark' || (s.theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           if (dark) document.documentElement.classList.add('dark');
           document.documentElement.dataset.font = s.fontScale || 'md';
+          if (s.motion === 'reduce') document.documentElement.dataset.motion = 'reduce';
         } catch (e) {}
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-DUNzI99x.js"></script>
+    <script type="module" crossorigin src="./assets/index-BfGzg0Uy.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/react-Bloanmkr.js">
     <link rel="modulepreload" crossorigin href="./assets/recharts-CMenXUoN.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-HQHUoHaK.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-CxmM3Toc.css">
   </head>
   <body>
     <noscript>此網站需要啟用 JavaScript 才能使用互動功能。</noscript>

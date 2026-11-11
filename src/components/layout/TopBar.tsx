@@ -1,7 +1,7 @@
-/** 頂部列：品牌、搜尋、字體大小、主題切換、右側面板開關與閱讀進度條 */
+/** 頂部列：品牌、搜尋、字體大小、主題切換、動畫開關、右側面板開關與閱讀進度條 */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Search, Sun, Moon, Monitor, PanelRightOpen, PanelRightClose, AArrowUp } from 'lucide-react';
+import { Menu, Search, Sun, Moon, Monitor, PanelRightOpen, PanelRightClose, AArrowUp, Sparkles, CirclePause } from 'lucide-react';
 import { useStore } from '../../store/AppStore';
 import type { FontScale, ThemeMode } from '../../types';
 
@@ -12,7 +12,7 @@ const themeLabel: Record<ThemeMode, string> = { system: '跟隨系統', light: '
 
 export default function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () => void }) {
   const { data, update } = useStore();
-  const { theme, fontScale, rightPanelOpen } = data.settings;
+  const { theme, fontScale, motion, rightPanelOpen } = data.settings;
   const [progress, setProgress] = useState(0);
 
   // 閱讀進度：依目前頁面捲動比例計算
@@ -61,6 +61,16 @@ export default function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSea
           </button>
           <button className="icon-btn" onClick={() => setSettings({ theme: nextTheme })} aria-label={`主題：${themeLabel[theme]}（點擊切換為${themeLabel[nextTheme]}）`} title={`主題：${themeLabel[theme]}`}>
             <ThemeIcon className="h-5 w-5" aria-hidden />
+          </button>
+          {/* 動畫開關：手機版空間有限時隱藏，改在「資料與隱私 → 外觀與動畫」設定 */}
+          <button
+            className="icon-btn hidden sm:inline-flex"
+            onClick={() => setSettings({ motion: motion === 'reduce' ? 'system' : 'reduce' })}
+            aria-label={motion === 'reduce' ? '動畫：已關閉（點擊改為跟隨系統）' : '動畫：跟隨系統（點擊關閉動畫）'}
+            aria-pressed={motion === 'reduce'}
+            title={motion === 'reduce' ? '動畫：已關閉' : '動畫：跟隨系統'}
+          >
+            {motion === 'reduce' ? <CirclePause className="h-5 w-5" aria-hidden /> : <Sparkles className="h-5 w-5" aria-hidden />}
           </button>
           <button
             className="icon-btn hidden xl:inline-flex"

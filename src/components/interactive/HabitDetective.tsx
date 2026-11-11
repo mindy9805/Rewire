@@ -11,6 +11,7 @@ import { EmptyState, TextArea, TextField } from '../ui/basics';
 import { nowIso, uid } from '../../lib/id';
 import { formatDateTime } from '../../lib/date';
 import type { HabitLog } from '../../types';
+import { scrollBehavior } from '../../lib/motion';
 
 type Form = Omit<HabitLog, 'id' | 'createdAt' | 'updatedAt'>;
 const blank: Form = { behavior: '', time: '', place: '', emotion: '', cue: '', need: '', reward: '', cost: '', alternative: '' };
@@ -101,7 +102,7 @@ export default function HabitDetective() {
                   <p className="font-medium">{l.behavior}</p>
                   <p className="text-xs text-muted">{formatDateTime(l.createdAt)}{l.time && ` · ${l.time}`}{l.place && ` · ${l.place}`}</p>
                 </div>
-                <button className="icon-btn" aria-label="編輯這筆紀錄" onClick={() => { setEditing(l); setForm({ behavior: l.behavior, time: l.time, place: l.place, emotion: l.emotion, cue: l.cue, need: l.need, reward: l.reward, cost: l.cost, alternative: l.alternative }); window.scrollBy({ top: -9999, behavior: 'smooth' }); }}>
+                <button className="icon-btn" aria-label="編輯這筆紀錄" onClick={() => { setEditing(l); setForm({ behavior: l.behavior, time: l.time, place: l.place, emotion: l.emotion, cue: l.cue, need: l.need, reward: l.reward, cost: l.cost, alternative: l.alternative }); window.scrollBy({ top: -9999, behavior: scrollBehavior() }); }}>
                   <Pencil className="h-4 w-4" aria-hidden />
                 </button>
                 <button className="icon-btn" aria-label="刪除這筆紀錄" onClick={async () => { if (await confirm({ title: '刪除這筆習慣紀錄？', message: '刪除後無法復原。', confirmText: '刪除', danger: true })) { remove('habitLogs', l.id); toast('已刪除紀錄'); } }}>

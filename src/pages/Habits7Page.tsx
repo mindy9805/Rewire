@@ -22,6 +22,7 @@ import { h7Status, selfCheckAverage } from '../lib/habits7';
 import { nowIso, uid } from '../lib/id';
 import { formatDate, toDateKey } from '../lib/date';
 import type { H7Id } from '../types';
+import { scrollBehavior } from '../lib/motion';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -57,7 +58,7 @@ export default function Habits7Page() {
     });
     toast(s === 'done' ? `已完成「${h.title}」🎉` : s === 'learning' ? '已標記為學習中' : '已重設為未開始', s === 'none' ? 'info' : 'success');
   };
-  const scrollToTool = () => document.getElementById('tool')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToTool = () => document.getElementById('tool')?.scrollIntoView({ behavior: scrollBehavior() });
 
   return (
     <article className="motion-safe:animate-fade-up">
