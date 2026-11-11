@@ -4,6 +4,7 @@
  */
 import { useId, useState, type ReactNode, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { Inbox, X } from 'lucide-react';
+import Phrased from './Phrased';
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <div className={`rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-6 ${className}`}>{children}</div>;
@@ -14,7 +15,7 @@ export function SectionTitle({ eyebrow, title, desc, id }: { eyebrow?: string; t
     <div className="mb-5">
       {eyebrow && <p className="font-display text-xs uppercase tracking-[0.2em] text-accent">{eyebrow}</p>}
       <h2 id={id} className="mt-1 font-serif text-xl font-bold leading-snug text-ink sm:text-2xl">
-        {title}
+        <Phrased text={title} />
       </h2>
       {desc && <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted sm:text-base">{desc}</p>}
     </div>

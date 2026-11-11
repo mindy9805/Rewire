@@ -8,6 +8,7 @@ import { useStore } from '../../store/AppStore';
 import { useToast } from '../ui/Toast';
 import { computeUnlocks } from '../../lib/activity';
 import { badges, gardenThemes, plantMap } from '../../content/play';
+import { celebrate } from '../../lib/celebrate';
 
 export function unlockName(key: string): string {
   const [type, id] = key.split(':');
@@ -35,6 +36,8 @@ export default function GrowthWatcher() {
     if (!meaningful.length) return;
     if (first.current && meaningful.length > 1) toast(`🌱 根據你過去的練習，已整理出 ${meaningful.length} 個收藏，到「成長收藏冊」看看吧`);
     else meaningful.slice(0, 2).forEach((k) => toast(`🌱 解鎖了${unlockName(k)}`));
+    // 解鎖是值得小小慶祝的時刻（首次載入的整理不播放，避免一打開就有動畫）
+    if (!first.current) celebrate();
     first.current = false;
   }, [data, update, toast]);
 

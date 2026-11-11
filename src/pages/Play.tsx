@@ -5,6 +5,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { PLAY_PROMISE } from '../content/systems';
 import Buddy from '../components/play/Buddy';
+import Phrased from '../components/ui/Phrased';
 import MoodBox from '../components/play/MoodBox';
 import QuestPicker from '../components/play/QuestPicker';
 import SurpriseWheel from '../components/play/SurpriseWheel';
@@ -36,7 +37,7 @@ export default function Play() {
         <Link to="/play" className="btn-ghost btn-sm"><ArrowLeft className="h-4 w-4" aria-hidden />輕鬆探索</Link>
         <header>
           <p className="font-display text-sm italic text-accent">{g.en}</p>
-          <h1 className="text-3xl font-bold">{g.emoji} {g.title}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">{g.emoji} {g.title}</h1>
           <p className="mt-1 text-muted">{g.desc}</p>
         </header>
         {data.settings.buddyVisible && <Buddy mood={g.mood} size={64} />}
@@ -49,18 +50,21 @@ export default function Play() {
       <header className="rounded-3xl bg-gradient-to-br from-soft via-bg to-apricot/30 p-6 sm:p-10">
         <p className="font-display text-sm italic text-accent">Playful Growth</p>
         <h1 className="mt-2 text-3xl font-bold sm:text-4xl">輕鬆探索</h1>
-        <p className="mt-3 font-serif text-lg">{PLAY_PROMISE}</p>
+        <p className="mt-3 font-serif text-lg"><Phrased text={PLAY_PROMISE} /></p>
         <p className="mt-2 text-sm text-muted">每個互動都可以直接開始，也可以隨時跳過。沒有每日任務、沒有連續天數、沒有排行榜。</p>
       </header>
       {data.settings.buddyVisible && <Buddy mood="welcome" />}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {GAMES.map((g) => (
           <li key={g.id}>
-            <Link to={`/play/${g.id}`} className="card-hover flex h-full flex-col rounded-2xl border border-line bg-surface p-5">
-              <span className="text-3xl" aria-hidden>{g.emoji}</span>
-              <span className="mt-2 font-serif text-lg font-bold">{g.title}</span>
-              <span className="text-xs text-muted">{g.en}</span>
-              <span className="mt-1 text-sm">{g.desc}</span>
+            {/* 手機：表情符號在左、文字在右的橫向卡片；sm 以上改為直式卡片 */}
+            <Link to={`/play/${g.id}`} className="card-hover group flex h-full items-center gap-4 rounded-2xl border border-line bg-surface p-4 sm:flex-col sm:items-start sm:gap-0 sm:p-5">
+              <span className="text-3xl transition-transform group-hover:scale-110" aria-hidden>{g.emoji}</span>
+              <span className="flex min-w-0 flex-col sm:mt-2">
+                <span className="font-serif text-lg font-bold">{g.title}</span>
+                <span className="text-xs text-muted">{g.en}</span>
+                <span className="mt-1 text-sm">{g.desc}</span>
+              </span>
             </Link>
           </li>
         ))}

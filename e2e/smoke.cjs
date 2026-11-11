@@ -10,6 +10,17 @@ const ok = (name) => { results.push(['✓', name]); };
 const fail = (name, e) => { results.push(['✗', `${name} — ${e.message.split('\n')[0]}`]); };
 async function step(name, fn) { try { await fn(); ok(name); } catch (e) { fail(name, e); } }
 const store = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1') || '{}'));
+// 連點小芽直到出現悄悄話（需在 1.5 秒內連續點 7 次；頁面忙碌導致某次點擊變慢時會重新計數，所以最多點 14 次）
+async function tapUntilSecret(page, buddy) {
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(300);
+  const secret = /被你發現了|戳了七下|悄悄告訴你/;
+  for (let i = 0; i < 14; i++) {
+    await buddy.getByRole('button', { name: /和小芽打招呼/ }).click();
+    if (secret.test(await buddy.getByRole('status').textContent())) return;
+  }
+  throw new Error('連點 14 次仍未出現悄悄話');
+}
 const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足夠好了', '犯錯是我成長的方式', '我的想法不等於事實', '我的存在很重要', '今天是新的機會'];
 
 (async () => {
@@ -813,6 +824,40 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.waitForFunction(() => document.documentElement.dataset.motion === undefined, null, { timeout: 3000 });
     if ((await store(page)).settings.motion !== 'system') throw new Error('未改回');
   });
+  await step('彩蛋：點小芽換一句話，連點 7 次出現悄悄話與飄葉', async () => {
+    await page.goto(BASE + '#/');
+    const buddy = page.getByTestId('buddy').first();
+    const bubble = buddy.getByRole('status');
+    const before = await bubble.textContent();
+    await buddy.getByRole('button', { name: /和小芽打招呼/ }).click();
+    if ((await bubble.textContent()) === before) throw new Error('點擊後沒有換句');
+    await tapUntilSecret(page, buddy);
+    await page.getByTestId('leaf-burst').waitFor({ timeout: 2000 });
+  });
+  await step('彩蛋：鍵盤打出 rewire 出現提示；輸入框內打字不觸發', async () => {
+    await page.goto(BASE + '#/');
+    await page.locator('body').click({ position: { x: 5, y: 300 } });
+    await page.keyboard.type('rewire');
+    await page.getByText('你打出了 rewire').waitFor({ timeout: 2000 });
+    await page.goto(BASE + '#/journal');
+    await page.waitForTimeout(3000);
+    const field = page.getByRole('textbox').first();
+    await field.click();
+    await field.type('rewire');
+    await page.waitForTimeout(300);
+    if (await page.getByText('你打出了 rewire').count()) throw new Error('輸入框內不應觸發');
+  });
+  await step('關閉動畫時：彩蛋文字照常出現，但不播放飄葉', async () => {
+    await page.goto(BASE + '#/data');
+    await page.getByRole('group', { name: '動畫' }).getByRole('button', { name: '關閉動畫' }).click();
+    await page.goto(BASE + '#/');
+    const buddy = page.getByTestId('buddy').first();
+    await tapUntilSecret(page, buddy);
+    await page.waitForTimeout(200);
+    if (await page.getByTestId('leaf-burst').count()) throw new Error('關閉動畫仍播放飄葉');
+    await page.goto(BASE + '#/data');
+    await page.getByRole('group', { name: '動畫' }).getByRole('button', { name: '跟隨系統' }).click();
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();
@@ -834,6 +879,48 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
       await m.waitForTimeout(250);
       const w = await m.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       if (w > 1) bad.push(`${r}:${w}px`);
+    }
+    if (bad.length) throw new Error(bad.join(', '));
+  });
+  await step('手機版：首頁標題只在標點後換行、三個入口在第一屏、小芽置中', async () => {
+    await m.goto(BASE + '#/');
+    // 逐字量測位置：同一個片段（兩個標點之間）的字都必須在同一行
+    const multi = await m.evaluate(() => {
+      const node = document.querySelector('#hero-h .text-phrase').firstChild;
+      const text = node.textContent;
+      const top = (i) => { const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1); return Math.round(r.getBoundingClientRect().top); };
+      const broken = [];
+      let start = 0;
+      for (let i = 0; i <= text.length; i++) {
+        if (i === text.length || /[，、：；？！。]/.test(text[i])) {
+          for (let j = start + 1; j < i; j++) if (top(j) !== top(start)) { broken.push(text.slice(start, i)); break; }
+          start = i + 1;
+        }
+      }
+      return broken;
+    });
+    if (multi.length) throw new Error('片段被拆行：' + multi.join('、'));
+    const last = await m.getByRole('button', { name: /我想安靜一下/ }).boundingBox();
+    const vh = m.viewportSize().height;
+    if (!last || last.y + last.height > vh) throw new Error(`第三個入口超出第一屏：${last && last.y + last.height} > ${vh}`);
+    const b = await m.getByTestId('buddy').first().getByRole('button').boundingBox();
+    const center = b.x + b.width / 2;
+    if (Math.abs(center - m.viewportSize().width / 2) > 4) throw new Error('小芽未置中：' + center);
+  });
+  await step('iPhone SE 與 iPad：主要頁面無橫向捲動，頂部列品牌名稱完整顯示', async () => {
+    const bad = [];
+    for (const name of ['iPhone SE', 'iPad (gen 7)', 'iPad Pro 11 landscape']) {
+      const c = await browser.newContext({ ...devices[name] });
+      const p = await c.newPage();
+      for (const r of ['', 'play', 'daily', 'learn/ch1', 'pattern', 'habits7', 'habits7/first', 'dashboard', 'data']) {
+        await p.goto(BASE + '#/' + r);
+        await p.waitForTimeout(200);
+        const w = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+        if (w > 1) bad.push(`${name} ${r}:${w}px`);
+      }
+      const brand = await p.evaluate(() => { const el = [...document.querySelectorAll('header a span')].find((s) => s.textContent === 'Rewire'); return el ? el.scrollWidth - el.clientWidth : -1; });
+      if (brand !== 0) bad.push(`${name} 品牌名稱被截斷`);
+      await c.close();
     }
     if (bad.length) throw new Error(bad.join(', '));
   });

@@ -2,6 +2,7 @@
  * 首頁主要入口：「今天，你想怎麼探索自己？」
  * 三個大按鈕：給我一個小驚喜／今天想玩個小遊戲／我想安靜一下。
  * 點擊後在下方展開對應內容，30 秒內就能開始；每個面板都能關閉或跳過。
+ * 版型：手機上三個按鈕改為橫向小卡（圖示在左），減少首屏高度；sm 以上為三欄大卡。
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { Gift, Gamepad2, Moon, X } from 'lucide-react';
 import { HOME_TITLE, quietOptions } from '../../content/play';
 import { PLAY_PROMISE, PRODUCT_TAGLINE } from '../../content/systems';
 import MoodBox from '../play/MoodBox';
+import Phrased from '../ui/Phrased';
 
 type Panel = 'surprise' | 'game' | 'quiet' | null;
 const GAME_TILES = [
@@ -21,27 +23,30 @@ export default function HomeHero() {
   const [panel, setPanel] = useState<Panel>(null);
   const btn = (id: Exclude<Panel, null>, Icon: typeof Gift, label: string, hint: string) => (
     <button onClick={() => setPanel(panel === id ? null : id)} aria-expanded={panel === id} aria-controls="hero-panel"
-      className={`flex flex-col items-start gap-1 rounded-3xl p-5 text-left transition hover:-translate-y-0.5 ${panel === id ? 'bg-[#FAF8F4] text-[#36594B]' : 'bg-white/10 text-[#FAF8F4] hover:bg-white/15'}`}>
-      <Icon className="h-7 w-7" aria-hidden />
-      <span className="mt-1 font-serif text-lg font-bold">{label}</span>
-      <span className="text-xs opacity-80">{hint}</span>
+      className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left transition hover:-translate-y-0.5 active:scale-[.98] sm:flex-col sm:items-start sm:gap-1 sm:rounded-3xl sm:p-5 ${panel === id ? 'bg-[#FAF8F4] text-[#36594B]' : 'bg-white/10 text-[#FAF8F4] hover:bg-white/15'}`}>
+      <Icon className="h-6 w-6 shrink-0 sm:h-7 sm:w-7" aria-hidden />
+      <span className="flex min-w-0 flex-col sm:mt-1">
+        <span className="font-serif text-base font-bold sm:text-lg">{label}</span>
+        <span className="text-xs opacity-80">{hint}</span>
+      </span>
     </button>
   );
   return (
-    <section aria-labelledby="hero-h" className="relative overflow-hidden rounded-3xl bg-forest px-5 py-8 text-[#FAF8F4] sm:px-10 sm:py-12">
+    <section aria-labelledby="hero-h" className="relative overflow-hidden rounded-3xl bg-forest px-5 py-7 text-[#FAF8F4] sm:px-10 sm:py-12">
       <svg aria-hidden className="absolute inset-0 h-full w-full opacity-25" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
         {[[80, 300], [220, 180], [380, 250], [520, 120], [680, 200], [740, 60], [300, 60]].map(([x, y], i, arr) => (
           <g key={i}>
-            {i > 0 && <line x1={arr[i - 1][0]} y1={arr[i - 1][1]} x2={x} y2={y} stroke="#A8BBA3" strokeWidth="1.5" />}
+            {/* 神經連結：載入時依序「畫」出每一條線（減少動畫時直接顯示完成的樣子） */}
+            {i > 0 && <line x1={arr[i - 1][0]} y1={arr[i - 1][1]} x2={x} y2={y} stroke="#A8BBA3" strokeWidth="1.5" pathLength={1} strokeDasharray="1" className="animate-draw" style={{ animationDelay: `${i * 0.25}s` }} />}
             <circle cx={x} cy={y} r={i % 2 ? 5 : 8} fill={i % 2 ? '#E8CCB2' : '#A8BBA3'} className="motion-safe:animate-twinkle" style={{ animationDelay: `${i * 0.4}s` }} />
           </g>
         ))}
       </svg>
       <div className="relative">
         <p className="font-display text-sm italic text-[#E8CCB2]">Rewire｜重塑大腦的可能</p>
-        <h1 id="hero-h" className="mt-2 font-serif text-3xl font-bold leading-tight sm:text-4xl">{HOME_TITLE}</h1>
-        <p className="mt-2 text-[#E9EEE7]">{PLAY_PROMISE}</p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <h1 id="hero-h" className="mt-2 font-serif text-[1.6rem] font-bold leading-tight min-[380px]:text-[1.75rem] sm:text-4xl"><Phrased text={HOME_TITLE} /></h1>
+        <p className="mt-2 text-[#E9EEE7]"><Phrased text={PLAY_PROMISE} /></p>
+        <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3">
           {btn('surprise', Gift, '給我一個小驚喜', '抽一張今日心情小卡')}
           {btn('game', Gamepad2, '今天想玩個小遊戲', '冒險、轉盤或小劇場')}
           {btn('quiet', Moon, '我想安靜一下', '呼吸、靜坐或看看花園')}

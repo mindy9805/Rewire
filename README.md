@@ -31,7 +31,7 @@
 ```
 rewire/
 ├── docs/                      # ★ 建置好的網站（GitHub Pages 直接提供這個資料夾）
-├── index.html                 # HTML 入口（含主題預載，避免閃爍）
+├── index.html                 # HTML 入口（預先套用主題、字級與動畫設定，避免閃爍）
 ├── public/                    # PWA：manifest、Service Worker、圖示
 ├── src/
 │   ├── content/               # ★ 學習內容（與程式邏輯分離，修改文字只需改這裡）
@@ -45,8 +45,15 @@ rewire/
 │   │   ├── habits7.ts         #   7 Habits：七個習慣、推薦規則、21 天計畫、工具內容
 │   │   ├── breakPattern.ts    #   打破慣性：七個習慣、21 題評估、工作坊、14 天挑戰任務
 │   │   └── legacyHabits.ts    #   舊版自我檢視名稱（僅顯示已保存的舊資料）
+│   ├── index.css              # 樣式入口：只負責匯入 styles/ 與 Tailwind
+│   ├── styles/                # ★ 樣式（依用途拆分）
+│   │   ├── tokens.css         #   品牌色（淺色／深色）與字級變數：改色只改這裡
+│   │   ├── base.css           #   基礎排版、標題斷行、焦點樣式
+│   │   ├── components.css     #   共用 class：.btn、.icon-btn、.field、.chip、.card-hover
+│   │   ├── motion.css         #   減少動畫／站內關閉動畫
+│   │   └── print.css          #   列印
 │   ├── store/                 # LocalStorage 資料層（版本、容錯讀取、匯入驗證）
-│   ├── lib/                   # 統計、搜尋、匯出、日期、改寫規則、語音
+│   ├── lib/                   # 統計、搜尋、匯出、日期、改寫規則、語音、動畫偏好、小慶祝事件
 │   ├── components/
 │   │   ├── layout/            #   頂部列、側邊欄、右側面板、手機導覽、搜尋
 │   │   ├── interactive/       #   章節互動元件、測驗
@@ -56,11 +63,28 @@ rewire/
 │   │   ├── habits7/           #   7 Habits：七個工具、學習地圖、儀表板資料區
 │   │   ├── pattern/           #   打破慣性：七個工具、挑戰、儀表板資料區
 │   │   ├── notes/             #   筆記編輯與清單
-│   │   └── ui/                #   共用 UI（Toast、確認視窗、表單欄位）
+│   │   ├── play/              #   輕鬆探索：小芽、花園、轉盤、盲盒、飄葉慶祝
+│   │   ├── home/              #   首頁主視覺與三個入口
+│   │   └── ui/                #   共用 UI（Toast、確認視窗、表單欄位、依標點斷行的標題 Phrased）
 │   └── pages/                 # 各頁面
 ├── e2e/smoke.cjs              # 端對端測試（Playwright）
 └── scripts/make-icons.cjs     # 由 icon.svg 產生 PNG 圖示
 ```
+
+### 維護慣例
+
+- **改文字**：只改 `src/content/`；元件不寫死內容。
+- **改顏色或字級**：改 `src/styles/tokens.css`，深色模式在同一個檔案。
+- **動畫**：keyframes 統一寫在 `tailwind.config.js`，元件用 `motion-safe:animate-*`；需要用 JS 判斷時呼叫 `src/lib/motion.ts` 的 `prefersReducedMotion()`，系統偏好與站內「關閉動畫」都會生效。
+- **小慶祝**：呼叫 `src/lib/celebrate.ts` 的 `celebrate()`，`LeafBurst` 會播放飄葉，關閉動畫時自動略過。
+- **標題**：較長的中文標題用 `<Phrased text={...} />`，只在標點後換行，手機上不會出現單字落行。
+- **響應式**：以手機為基準撰寫，再用 `sm:`（640px）、`md:`（768px）、`lg:`（1024px，顯示側邊欄）、`xl:`（1280px，顯示右側面板）往上加。
+
+### 彩蛋
+
+- 點一下成長夥伴「小芽」會跳一下並換一句話；連續點 7 次會說出悄悄話並飄下葉子。
+- 在任何頁面（不在輸入框時）用鍵盤打出 `rewire`。
+- 解鎖新的徽章、植物或景觀時，會飄下葉子小小慶祝一下。
 
 ## 本機開發
 

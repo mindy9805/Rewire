@@ -1,0 +1,38 @@
+/* 設計變數：品牌色（淺色／深色）與字級。Tailwind 的顏色名稱都對應到這裡的變數，改色只需改這個檔案。 */
+/* ===== 品牌色（以 RGB 數值定義，搭配 Tailwind 透明度語法） ===== */
+:root {
+  --bg: 250 248 244; /* 奶油白 #FAF8F4 */
+  --surface: 255 255 255;
+  --soft: 233 238 231; /* 淺灰綠 #E9EEE7 */
+  --ink: 48 54 48; /* 深灰黑 #303630 */
+  --muted: 92 102 94; /* 次要文字（對比度 > 4.5:1） */
+  --line: 221 227 218;
+  --sage: 168 187 163; /* 鼠尾草綠 #A8BBA3 */
+  --forest: 54 89 75; /* 深森林綠 #36594B */
+  --apricot: 232 204 178; /* 淺杏色 #E8CCB2 */
+  --accent: 54 89 75; /* 互動強調色＝深森林綠 */
+  --onaccent: 250 248 244;
+  color-scheme: light;
+}
+
+/* 深色模式：降低亮度、保留品牌色調 */
+.dark {
+  --bg: 27 32 29;
+  --surface: 36 42 38;
+  --soft: 46 54 49;
+  --ink: 233 238 231;
+  --muted: 178 189 180;
+  --line: 62 72 66;
+  --sage: 140 164 135;
+  --forest: 168 187 163;
+  --apricot: 120 96 76;
+  --accent: 168 199 160;
+  --onaccent: 27 32 29;
+  color-scheme: dark;
+}
+
+/* ===== 字體大小切換（作用在根元素，所有 rem 單位同步縮放） ===== */
+html[data-font='sm'] { font-size: 15px; }
+html[data-font='md'] { font-size: 16px; }
+html[data-font='lg'] { font-size: 18px; }
+html[data-font='xl'] { font-size: 20px; }

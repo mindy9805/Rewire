@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-// 品牌色以 CSS 變數定義（見 src/index.css），淺色／深色模式只需切換變數即可。
+// 品牌色以 CSS 變數定義（見 src/styles/tokens.css），淺色／深色模式只需切換變數即可。
 const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
@@ -36,6 +36,10 @@ export default {
         pop: { '0%': { opacity: '0', transform: 'scale(.92)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
         wiggle: { '0%,100%': { transform: 'rotate(0)' }, '92%': { transform: 'rotate(0)' }, '95%': { transform: 'rotate(-4deg)' }, '98%': { transform: 'rotate(4deg)' } },
         grow: { '0%': { transform: 'scaleY(.3)', opacity: '0' }, '100%': { transform: 'scaleY(1)', opacity: '1' } },
+        // 小慶祝：葉子從上方飄落並輕輕旋轉
+        'leaf-fall': { '0%': { transform: 'translateY(-10vh) rotate(0deg)', opacity: '0' }, '10%': { opacity: '1' }, '100%': { transform: 'translateY(105vh) rotate(320deg)', opacity: '0' } },
+        // 首頁神經連結線：搭配 pathLength=1、stroke-dasharray=1，從 1 畫到 0
+        draw: { from: { strokeDashoffset: '1' }, to: { strokeDashoffset: '0' } },
       },
       animation: {
         'fade-up': 'fade-up .4s ease-out both',
@@ -45,6 +49,8 @@ export default {
         pop: 'pop .35s ease-out both',
         wiggle: 'wiggle 4s ease-in-out infinite',
         grow: 'grow .6s ease-out both',
+        'leaf-fall': 'leaf-fall 2s ease-in both',
+        draw: 'draw 1.2s ease-out both',
       },
     },
   },

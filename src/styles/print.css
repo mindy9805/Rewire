@@ -1,0 +1,6 @@
+/* 列印樣式。 */
+/* 列印：隱藏導覽，只留內容 */
+@media print {
+  header, nav, aside, .no-print { display: none !important; }
+  body { background: white; }
+}

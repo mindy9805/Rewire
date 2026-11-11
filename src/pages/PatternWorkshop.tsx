@@ -17,6 +17,7 @@ import PracticeAffirmation from '../components/pattern/PracticeAffirmation';
 import { nowIso, uid } from '../lib/id';
 import { formatDate, isoToDateKey, toDateKey } from '../lib/date';
 import type { PatternHabitId, Workshop } from '../types';
+import Phrased from '../components/ui/Phrased';
 
 const newWorkshop = (habitId: PatternHabitId): Workshop => {
   const t = nowIso();
@@ -111,7 +112,7 @@ export default function PatternWorkshop() {
       <button className="btn-ghost btn-sm" onClick={() => setW(null)}><ArrowLeft className="h-4 w-4" aria-hidden />回到工作坊列表</button>
       <header>
         <p className="font-display text-sm italic text-accent">Workshop · {h.concept}</p>
-        <h1 className="text-2xl font-bold">{h.title}</h1>
+        <h1 className="text-2xl font-bold"><Phrased text={h.title} /></h1>
       </header>
       <ol className="grid grid-cols-7 gap-1" aria-label="工作坊步驟">
         {workshopSteps.map((s) => (

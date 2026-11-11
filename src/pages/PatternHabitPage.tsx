@@ -23,6 +23,7 @@ import { nowIso, uid } from '../lib/id';
 import { formatDate, toDateKey } from '../lib/date';
 import type { PatternHabitId } from '../types';
 import { scrollBehavior } from '../lib/motion';
+import Phrased from '../components/ui/Phrased';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -76,7 +77,7 @@ export default function PatternHabitPage() {
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-soft text-accent"><HabitIcon h={h} className="h-7 w-7" /></span>
         <div>
           <p className="font-display text-sm italic text-accent">Habit 0{h.no} · {h.concept}</p>
-          <h1 className="text-3xl font-bold leading-tight">{h.title}</h1>
+          <h1 className="text-3xl font-bold leading-tight"><Phrased text={h.title} /></h1>
         </div>
       </header>
       <div className="mt-4 flex flex-wrap gap-2">

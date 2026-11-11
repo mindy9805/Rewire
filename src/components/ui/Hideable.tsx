@@ -19,7 +19,7 @@ export default function Hideable({ id, title, children }: { id: string; title: s
   }
   return (
     <div className="relative">
-      <button className="absolute right-0 top-0 z-10 rounded-full p-1.5 text-muted hover:bg-soft" onClick={() => set(true)} aria-label={`隱藏「${title}」`} title="隱藏這個區塊">
+      <button className="absolute -right-1 -top-1 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full text-muted hover:bg-soft" onClick={() => set(true)} aria-label={`隱藏「${title}」`} title="隱藏這個區塊">
         <EyeOff className="h-4 w-4" aria-hidden />
       </button>
       {children}

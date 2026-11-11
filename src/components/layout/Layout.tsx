@@ -2,8 +2,9 @@
  * 全站版型
  * - 桌機（lg 以上）：左側固定章節導覽＋中央閱讀區；xl 以上再顯示右側可收合的筆記／進度面板。
  * - 手機：單欄閱讀，章節導覽改為抽屜選單，底部固定主要功能導覽。
+ * - 全站彩蛋：不在輸入框時用鍵盤打出 rewire，會出現提示與飄葉動畫。
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopBar from './TopBar';
 import Sidebar from './Sidebar';
@@ -13,6 +14,10 @@ import MobileDrawer from './MobileDrawer';
 import SearchDialog from './SearchDialog';
 import StorageNotice from './StorageNotice';
 import GrowthWatcher from '../play/GrowthWatcher';
+import LeafBurst from '../play/LeafBurst';
+import { useToast } from '../ui/Toast';
+import { celebrate } from '../../lib/celebrate';
+import { KEYWORD_EGG } from '../../content/play';
 import { useStore } from '../../store/AppStore';
 
 export default function Layout() {
@@ -20,6 +25,8 @@ export default function Layout() {
   const [drawer, setDrawer] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { pathname, hash } = useLocation();
+  const toast = useToast();
+  const typed = useRef('');
 
   // 換頁時捲回頂端；若網址帶有 #sec-xxx 錨點則捲到該段落
   useEffect(() => {
@@ -40,11 +47,20 @@ export default function Layout() {
       if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
         e.preventDefault();
         setSearchOpen(true);
+        return;
+      }
+      // 彩蛋：記住最近輸入的英文字母，拼出 rewire 時給一個小驚喜（輸入框內打字不算）
+      if (typing || e.metaKey || e.ctrlKey || e.altKey || e.key.length !== 1) return;
+      typed.current = (typed.current + e.key.toLowerCase()).slice(-KEYWORD_EGG.word.length);
+      if (typed.current === KEYWORD_EGG.word) {
+        typed.current = '';
+        toast(KEYWORD_EGG.message);
+        celebrate();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [toast]);
 
   const rightOpen = data.settings.rightPanelOpen;
 
@@ -54,6 +70,7 @@ export default function Layout() {
         跳到主要內容
       </a>
       <GrowthWatcher />
+      <LeafBurst />
       <TopBar onMenu={() => setDrawer(true)} onSearch={() => setSearchOpen(true)} />
       <div className="flex">
         <Sidebar />

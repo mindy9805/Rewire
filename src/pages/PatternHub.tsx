@@ -7,6 +7,7 @@ import { ClipboardList, Hammer, CalendarCheck, ArrowRight } from 'lucide-react';
 import { DISCIPLINE_DEFINITION, PATTERN_CORE, PATTERN_MODULE, PATTERN_SUBTITLE, PATTERN_TITLE, POSITIVE_FUNCTIONS, patternHabits } from '../content/breakPattern';
 import { FocusPicker, HabitIcon, PatternClosing } from '../components/pattern/shared';
 import { useStore } from '../store/AppStore';
+import Phrased from '../components/ui/Phrased';
 
 export default function PatternHub() {
   const { data } = useStore();
@@ -19,7 +20,7 @@ export default function PatternHub() {
     <div className="space-y-12 motion-safe:animate-fade-up">
       <header className="rounded-3xl bg-gradient-to-br from-soft via-bg to-apricot/30 p-6 sm:p-10">
         <p className="font-display text-sm italic text-accent">{PATTERN_MODULE}</p>
-        <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{PATTERN_TITLE}</h1>
+        <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl"><Phrased text={PATTERN_TITLE} /></h1>
         <p className="mt-3 text-lg text-muted">{PATTERN_SUBTITLE}</p>
         <div className="mt-6 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">
           {PATTERN_CORE.map((l) => <p key={l}>{l}</p>)}
