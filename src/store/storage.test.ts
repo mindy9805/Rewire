@@ -112,6 +112,16 @@ describe('朗讀聲音設定', () => {
   });
 });
 
+describe('評估暫存', () => {
+  it('舊資料沒有暫存時為 null；過濾無效作答與步驟', () => {
+    expect(normalize({}).patternAssessmentDraft).toBeNull();
+    const d = normalize({ patternAssessmentDraft: { answers: { a1: 3, a2: 9, a3: 'x' }, priority: ['approval', 'nope'], step: 12, updatedAt: '2026-11-11T00:00:00Z' } }).patternAssessmentDraft!;
+    expect(d.answers).toEqual({ a1: 3 });
+    expect(d.priority).toEqual(['approval']);
+    expect(d.step).toBe(0);
+  });
+});
+
 describe('validateBackup', () => {
   it('接受本網站匯出的備份', () => {
     const data = createEmptyData();

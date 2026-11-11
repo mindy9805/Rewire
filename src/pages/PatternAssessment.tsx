@@ -2,9 +2,10 @@
  * 七大習慣自我覺察評估（21 題，五點量表）
  * 結果：七個面向的自我回報頻率、優先改善的習慣（1–3 項）、相關章節與建議工具、歷次變化。
  * 作答方式：一次一個習慣（3 題）共 7 步，最後一步選優先項目；可以先跳過、之後再回來補答。
+ * 暫存：作答過程自動存在 patternAssessmentDraft，離開後回來會詢問「繼續上次的評估／重新開始」；送出後清除。
  * ⚠️ 僅供自我反思，不是醫學或心理診斷；分數不轉換為自律程度、人格優劣或成功機率。
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ASSESSMENT_DISCLAIMER, assessmentQuestions, assessmentScale, patternHabits, patternMap, suggestedTools } from '../content/breakPattern';
@@ -73,6 +74,33 @@ export default function PatternAssessment() {
   /** 目前在第幾步：0–6 為七個習慣，7 為選擇優先項目並送出 */
   const [step, setStep] = useState(0);
   const LAST = patternHabits.length;
+  const draft = data.patternAssessmentDraft;
+  /** 回到頁面時，若有未完成的暫存，先詢問要不要繼續（開始作答新的題目即視為重新開始） */
+  const [offerResume, setOfferResume] = useState(() => !!draft && Object.keys(draft.answers).length > 0);
+  const touched = useRef(false);
+
+  // 作答時自動暫存（稍等 0.4 秒再寫入，避免每點一下就存一次）
+  useEffect(() => {
+    if (!touched.current) return;
+    const t = window.setTimeout(() => {
+      const empty = !Object.keys(answers).length && !priority.length;
+      update((p) => ({ ...p, patternAssessmentDraft: empty ? null : { answers, priority, step, updatedAt: nowIso() } }));
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [answers, priority, step, update]);
+  const resume = () => {
+    if (!draft) return;
+    setAnswers(draft.answers);
+    setPriority(draft.priority);
+    setStep(draft.step);
+    setOfferResume(false);
+  };
+  const startOver = () => {
+    update((p) => ({ ...p, patternAssessmentDraft: null }));
+    setOfferResume(false);
+  };
+  /** 使用者開始作答：標記為「有變動」，之後的作答會自動暫存 */
+  const touch = () => { touched.current = true; };
   const missingSteps = patternHabits.map((h, i) => ({ h, i, n: assessmentQuestions.filter((q) => q.habitId === h.id && !answers[q.id]).length })).filter((x) => x.n > 0);
   const answered = Object.keys(answers).length;
   const history = [...data.patternAssessments].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -83,7 +111,8 @@ export default function PatternAssessment() {
     if (answered < 21) return;
     const rec: PA = { id: uid(), date: toDateKey(), answers, priorityIds: priority, createdAt: nowIso() };
     upsert('patternAssessments', rec);
-    if (priority.length) update((p) => ({ ...p, patternFocus: priority }));
+    update((p) => ({ ...p, patternAssessmentDraft: null, ...(priority.length ? { patternFocus: priority } : {}) }));
+    touched.current = false;
     toast('已儲存評估結果');
     setAnswers({});
     setPriority([]);
@@ -98,7 +127,18 @@ export default function PatternAssessment() {
       <SectionTitle level={1} title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm leading-relaxed">{ASSESSMENT_DISCLAIMER}</p>
 
-      <form onSubmit={submit} className="space-y-4">
+      {offerResume && draft && (
+        <div role="status" className="rounded-2xl border border-accent/40 bg-soft/60 p-4">
+          <p className="font-medium">你上次答到第 {draft.step + 1} 步，已作答 {Object.keys(draft.answers).length}/21 題。</p>
+          <p className="mt-1 text-sm text-muted">要從上次停下的地方繼續嗎？</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="btn-primary btn-sm" onClick={resume}>繼續上次的評估</button>
+            <button type="button" className="btn-ghost btn-sm" onClick={startOver}>重新開始</button>
+          </div>
+        </div>
+      )}
+      {/* 詢問要不要繼續時先不顯示題目，讓畫面只有一個主要選擇 */}
+      {!offerResume && <form onSubmit={submit} className="space-y-4">
         {/* 步驟進度 */}
         <div>
           <p className="flex justify-between text-xs text-muted"><span>第 {step + 1}／{LAST + 1} 步</span><span aria-live="polite">已作答 {answered}/21</span></p>
@@ -117,7 +157,7 @@ export default function PatternAssessment() {
                   <div className="mt-2 grid grid-cols-5 gap-1.5">
                     {assessmentScale.map((sc) => (
                       <label key={sc.v} className={`flex cursor-pointer flex-col items-center rounded-xl border px-1 py-2 text-center text-xs transition focus-within:ring-2 focus-within:ring-accent ${answers[q.id] === sc.v ? 'border-accent bg-accent text-onaccent' : 'border-line bg-bg hover:border-accent/50'}`}>
-                        <input type="radio" name={q.id} value={sc.v} className="sr-only" checked={answers[q.id] === sc.v} onChange={() => setAnswers((a) => ({ ...a, [q.id]: sc.v }))} />
+                        <input type="radio" name={q.id} value={sc.v} className="sr-only" checked={answers[q.id] === sc.v} onChange={() => { touch(); setAnswers((a) => ({ ...a, [q.id]: sc.v })); }} />
                         <span className="font-display text-base">{sc.v}</span>{sc.label}
                       </label>
                     ))}
@@ -132,7 +172,7 @@ export default function PatternAssessment() {
             <div className="mt-2 flex flex-wrap gap-2">
               {patternHabits.map((h) => {
                 const on = priority.includes(h.id);
-                return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id]))} className="btn-toggle">{h.short}</button>;
+                return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => { touch(); setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id])); }} className="btn-toggle">{h.short}</button>;
               })}
             </div>
             <p className="mt-2 text-xs text-muted">優先順序由你決定，不一定是頻率最高的項目。選擇後會同步為「你最想調整的習慣」。</p>
@@ -145,13 +185,13 @@ export default function PatternAssessment() {
           </fieldset>
         )}
         <div className="sticky bottom-20 z-10 flex items-center gap-2 rounded-2xl border border-line bg-bg p-3 lg:bottom-4">
-          <button type="button" className="btn-ghost btn-sm" disabled={step === 0} onClick={() => setStep((x) => x - 1)}>← 上一步</button>
+          <button type="button" className="btn-ghost btn-sm" disabled={step === 0} onClick={() => { touch(); setStep((x) => x - 1); }}>← 上一步</button>
           {/* 兩個按鈕給不同 key：避免 React 重複使用同一個元素，讓「下一步」的點擊在變成送出按鈕後誤觸送出 */}
           {step < LAST
-            ? <button key="next" type="button" className="btn-primary ml-auto" onClick={() => setStep((x) => x + 1)}>{patternHabits[step] && assessmentQuestions.filter((q) => q.habitId === patternHabits[step].id).every((q) => answers[q.id]) ? '下一步' : '先跳過，下一步'}</button>
+            ? <button key="next" type="button" className="btn-primary ml-auto" onClick={() => { touch(); setStep((x) => x + 1); }}>{patternHabits[step] && assessmentQuestions.filter((q) => q.habitId === patternHabits[step].id).every((q) => answers[q.id]) ? '下一步' : '先跳過，下一步'}</button>
             : <button key="submit" className="btn-primary ml-auto" type="submit" disabled={answered < 21}>查看結果並儲存</button>}
         </div>
-      </form>
+      </form>}
 
       {history.length > 0 && (
         <section id="result" aria-labelledby="result-h" className="scroll-mt-24">
