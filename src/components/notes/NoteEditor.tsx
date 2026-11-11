@@ -2,7 +2,9 @@
 import { useState } from 'react';
 import { TagInput, TextArea } from '../ui/basics';
 
-export default function NoteEditor({ initial = '', initialTags = [], label = '我的筆記', submitText = '儲存筆記', onSubmit, onCancel }: {
+export default function NoteEditor({ secondary = false, initial = '', initialTags = [], label = '我的筆記', submitText = '儲存筆記', onSubmit, onCancel }: {
+  /** 放在長頁面中段時用次要樣式，避免一個畫面出現多個主要按鈕 */
+  secondary?: boolean;
   initial?: string;
   initialTags?: string[];
   label?: string;
@@ -25,7 +27,7 @@ export default function NoteEditor({ initial = '', initialTags = [], label = '�
       <TextArea label={label} value={content} onChange={(e) => setContent(e.target.value)} />
       <TagInput value={tags} onChange={setTags} />
       <div className="flex gap-2">
-        <button type="submit" className="btn-primary btn-sm" disabled={!content.trim()}>{submitText}</button>
+        <button type="submit" className={`${secondary ? 'btn-secondary' : 'btn-primary'} btn-sm`} disabled={!content.trim()}>{submitText}</button>
         {onCancel && <button type="button" className="btn-ghost btn-sm" onClick={onCancel}>取消</button>}
       </div>
     </form>

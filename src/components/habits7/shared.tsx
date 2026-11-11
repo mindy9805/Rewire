@@ -18,9 +18,9 @@ export function H7Icon({ h, className = 'h-5 w-5' }: { h: H7Habit; className?: s
 }
 
 const SOURCE_TONE: Record<SourceType, string> = {
-  covey: 'bg-forest text-[#FAF8F4]',
+  covey: 'bg-deep text-ondeep',
   psych: 'bg-sage/40 text-ink',
-  neuro: 'bg-[#9FB3C8]/50 text-ink',
+  neuro: 'bg-[#9FB3C8]/50 text-ink dark:bg-[#9FB3C8]/30', // 深色模式降低底色透明度，維持文字對比 ≥ 4.5
   tool: 'bg-apricot/60 text-ink',
 };
 export function SourceBadge({ type }: { type: SourceType }) {

@@ -95,7 +95,7 @@ export default function PatternAssessment() {
   return (
     <div className="space-y-10 motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/pattern" className="hover:text-accent">打破慣性</Link> / 自我覺察評估</nav>
-      <SectionTitle title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
+      <SectionTitle level={1} title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm leading-relaxed">{ASSESSMENT_DISCLAIMER}</p>
 
       <form onSubmit={submit} className="space-y-4">

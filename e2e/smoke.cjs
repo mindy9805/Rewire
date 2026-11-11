@@ -43,6 +43,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('Daily Rewire 七句原文與順序完全一致', async () => {
     await page.goto(BASE + '#/daily');
+    // 頁面按需載入：先等七張語句卡片出現
+    await page.locator('#daily-title').locator('..').locator('article h3').nth(6).waitFor();
     const texts = await page.locator('#daily-title').locator('..').locator('article h3').allTextContents();
     if (JSON.stringify(texts) !== JSON.stringify(AFF)) throw new Error(JSON.stringify(texts));
   });
@@ -693,11 +695,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   await step('心智花園：種下、收回、景觀；收藏冊顯示徽章日期', async () => {
     await page.goto(BASE + '#/play/garden');
     await page.getByText(/成長點：/).waitFor();
-    await page.getByRole('gridcell', { name: /第 1 格：空地/ }).click();
-    await page.getByRole('gridcell', { name: /第 2 格：空地/ }).click();
+    await page.getByRole('button', { name: /第 1 格：空地/ }).click();
+    await page.getByRole('button', { name: /第 2 格：空地/ }).click();
     let g = (await store(page)).garden;
     if (g.plants.length !== 2) throw new Error('種下');
-    await page.getByRole('gridcell', { name: /第 1 格：.*（點擊收回）/ }).click();
+    await page.getByRole('button', { name: /第 1 格：.*（點擊收回）/ }).click();
     g = (await store(page)).garden;
     if (g.plants.length !== 1) throw new Error('收回');
     await page.getByRole('button', { name: '夏日午後' }).click();
@@ -916,7 +918,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('第二階段：我的紀錄時間軸（篩選、查看連結）', async () => {
     await page.goto(BASE + '#/records');
-    await page.getByRole('heading', { name: '我的紀錄', level: 2 }).waitFor();
+    await page.getByRole('heading', { name: '我的紀錄', level: 1 }).waitFor();
     const group = page.getByRole('group', { name: '依類型篩選' });
     await group.getByRole('button', { name: /^反思日誌/ }).click();
     const links = page.getByRole('link', { name: /^查看「反思日誌/ });
@@ -1006,8 +1008,21 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.waitForURL(/learn\/ch6/);
     // 資料與隱私頁：只有一個主要按鈕
     await p2.goto(BASE + '#/data');
+    await p2.getByRole('heading', { name: '資料與隱私', level: 1 }).waitFor();
     if ((await p2.locator('main .btn-primary').count()) !== 1) throw new Error('資料頁應只有一個主要按鈕');
     await c2.close();
+  });
+  await step('檢核修正：7 Habits 總覽第一屏主要按鈕、朗讀聲音設定、水彩小芽', async () => {
+    await page.goto(BASE + '#/habits7');
+    const cta = page.getByRole('link', { name: /^(從習慣一開始|繼續|下一個|回顧 21 天)/ }).first();
+    const box = await cta.boundingBox();
+    if (!box || box.y + box.height > 900) throw new Error('7 Habits 主要按鈕不在第一屏');
+    await page.goto(BASE + '#/data');
+    await page.getByRole('heading', { name: '資料與隱私', level: 1 }).waitFor();
+    // 有語音的瀏覽器顯示聲音選單；沒有中文聲音時顯示安裝說明或不支援提示
+    await page.getByText(/朗讀聲音|沒有中文聲音|不支援語音朗讀/).first().waitFor();
+    await page.goto(BASE + '#/');
+    if (!(await page.getByTestId('buddy').first().locator('svg filter[id$="-wash"]').count())) throw new Error('小芽不是水彩版');
   });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();

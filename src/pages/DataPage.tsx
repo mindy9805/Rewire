@@ -10,6 +10,7 @@ import { Card, SectionTitle } from '../components/ui/basics';
 import { createBackup, validateBackup, COLLECTION_KEYS } from '../store/storage';
 import { downloadText } from '../lib/clipboard';
 import { allToMarkdown, stamp } from '../lib/exporters';
+import VoicePicker from '../components/ui/VoicePicker';
 import type { FontScale, MotionMode, Settings, ThemeMode } from '../types';
 
 /** 外觀設定的選項（與頂部列按鈕使用同一組設定值） */
@@ -86,7 +87,7 @@ export default function DataPage() {
 
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
-      <SectionTitle title="資料與隱私" desc="Rewire 沒有帳號、沒有後端伺服器。你的所有紀錄都只保存在這台裝置的瀏覽器（LocalStorage）。" />
+      <SectionTitle level={1} title="資料與隱私" desc="Rewire 沒有帳號、沒有後端伺服器。你的所有紀錄都只保存在這台裝置的瀏覽器（LocalStorage）。" />
       <Card>
         <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><ShieldCheck className="h-5 w-5 text-accent" aria-hidden />本地儲存說明</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed">
@@ -98,11 +99,12 @@ export default function DataPage() {
         <p className="mt-3 text-sm text-muted">目前共有 {count} 筆紀錄。</p>
       </Card>
       <Card>
-        <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><Palette className="h-5 w-5 text-accent" aria-hidden />外觀與動畫</h2>
+        <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><Palette className="h-5 w-5 text-accent" aria-hidden />外觀、朗讀與動畫</h2>
         <p className="mt-1 text-sm text-muted">設定只保存在這台裝置，清除紀錄時也會保留。</p>
         <div className="mt-4 space-y-4">
           <OptionGroup label="主題" options={themeOptions} value={data.settings.theme} onChange={(theme) => setSettings({ theme })} />
           <OptionGroup label="字體大小" options={fontOptions} value={data.settings.fontScale} onChange={(fontScale) => setSettings({ fontScale })} />
+          <VoicePicker />
           <div>
             <OptionGroup label="動畫" options={motionOptions} value={data.settings.motion} onChange={(motion) => setSettings({ motion })} />
             <p className="mt-2 text-xs leading-relaxed text-muted">

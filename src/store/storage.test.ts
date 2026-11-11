@@ -104,6 +104,14 @@ describe('章節閱讀模式', () => {
   });
 });
 
+describe('朗讀聲音設定', () => {
+  it('舊資料沒有 voiceURI 時為自動挑選；只接受字串', () => {
+    expect(normalize({ settings: {} }).settings.voiceURI).toBe('');
+    expect(normalize({ settings: { voiceURI: 'com.apple.voice.Meijia' } }).settings.voiceURI).toBe('com.apple.voice.Meijia');
+    expect(normalize({ settings: { voiceURI: 42 } }).settings.voiceURI).toBe('');
+  });
+});
+
 describe('validateBackup', () => {
   it('接受本網站匯出的備份', () => {
     const data = createEmptyData();

@@ -17,7 +17,7 @@ export default function Learn() {
   const nextLabel = !next ? null : visited[0] ? `繼續第 ${next.number} 章` : cs.completed ? `下一章：第 ${next.number} 章` : '從第 1 章開始';
   return (
     <div className="motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Learn" title="深度導讀" desc="每章包含學習目標、核心概念、深入解釋、生活案例、示意圖、應用方式、反思問題、互動測驗與研究來源。可依序閱讀，也可以從感興趣的章節開始。" />
+      <SectionTitle level={1} eyebrow="Learn" title="深度導讀" desc="每章包含學習目標、核心概念、深入解釋、生活案例、示意圖、應用方式、反思問題、互動測驗與研究來源。可依序閱讀，也可以從感興趣的章節開始。" />
       <div className="mb-6 flex flex-wrap items-end gap-4">
         {next && nextLabel && <Link to={`/learn/${next.id}`} className="btn-primary">{nextLabel}<ArrowRight className="h-4 w-4" aria-hidden /></Link>}
         <div className="min-w-[12rem] max-w-md flex-1"><ProgressBar label="章節完成" value={cs.completed} max={cs.total} /></div>
@@ -29,7 +29,7 @@ export default function Learn() {
           return (
             <li key={c.id}>
               <Link to={`/learn/${c.id}`} className="card-hover flex gap-4 rounded-2xl border border-line bg-surface p-5">
-                <span className="font-display text-3xl italic text-sage">{String(c.number).padStart(2, '0')}</span>
+                <span className="font-display text-3xl italic text-sageink">{String(c.number).padStart(2, '0')}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-display text-xs text-muted">{c.enTitle}</span>
                   <span className="block font-serif text-lg font-bold">{c.title}</span>

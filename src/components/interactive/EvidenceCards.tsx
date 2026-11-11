@@ -16,7 +16,7 @@ export default function EvidenceCards({ ids }: { ids?: string[] }) {
         const isOpen = open === r.id;
         return (
           <article key={r.id} className="overflow-hidden rounded-2xl border border-line bg-surface">
-            <h4 className="m-0">
+            <h3 className="m-0">
               <button className="flex w-full items-center gap-3 p-4 text-left" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : r.id)}>
                 <span className="flex-1">
                   <span className="chip mb-1">{e.topic}</span>
@@ -24,8 +24,8 @@ export default function EvidenceCards({ ids }: { ids?: string[] }) {
                 </span>
                 <ChevronDown className={`h-5 w-5 shrink-0 transition ${isOpen ? 'rotate-180' : ''}`} aria-hidden />
               </button>
-            </h4>
-            {isOpen && (
+            </h3>
+            {isOpen && (<>
               <dl className="grid gap-3 border-t border-line p-4 text-sm leading-relaxed sm:grid-cols-2">
                 <div className="sm:col-span-2"><dt className="font-medium text-accent">作者與年份</dt><dd>{r.authors}（{r.year}）. <i>{r.title}</i>. {r.source}</dd></div>
                 <div><dt className="font-medium text-accent">研究設計</dt><dd>{e.design}</dd></div>
@@ -33,15 +33,15 @@ export default function EvidenceCards({ ids }: { ids?: string[] }) {
                 <div><dt className="font-medium text-accent">樣本與限制</dt><dd>{e.sampleLimits}</dd></div>
                 <div><dt className="font-medium text-accent">可以合理推論</dt><dd>{e.reasonable}</dd></div>
                 <div className="sm:col-span-2 rounded-xl bg-apricot/30 p-3"><dt className="font-medium">⚠︎ 可能過度簡化的說法</dt><dd>{e.oversimplified}</dd></div>
+              </dl>
                 {r.url && (
-                  <div className="sm:col-span-2">
+                  <div className="border-t border-line px-4 pb-4 pt-3 text-sm">
                     <a href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent underline">
                       原始研究連結（DOI: {r.doi}）<ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </a>
                   </div>
                 )}
-              </dl>
-            )}
+            </>)}
           </article>
         );
       })}

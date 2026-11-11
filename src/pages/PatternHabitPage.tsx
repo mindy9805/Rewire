@@ -77,7 +77,7 @@ export default function PatternHabitPage() {
         </div>
       </header>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button className="btn-primary btn-sm" onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: scrollBehavior() })}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
+        <button className="btn-secondary btn-sm" onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: scrollBehavior() })}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
         <button className="btn-secondary btn-sm" aria-pressed={focused} onClick={toggleFocus}>{focused ? '✓ 我正在調整這個習慣' : '我想調整這個習慣'}</button>
         <Link to={`/challenge?type=pattern&habit=${h.id}`} className="btn-ghost btn-sm">用 14 天挑戰練習</Link>
       </div>
@@ -109,7 +109,7 @@ export default function PatternHabitPage() {
         <div className="mt-2 flex flex-wrap gap-1.5">{h.chapterIds.map((id) => <Link key={id} to={`/learn/${id}`} className="chip hover:bg-sage/40"><BookOpen className="mr-1 h-3 w-3" aria-hidden />第 {chapterMap[id].number} 章 {chapterMap[id].title}</Link>)}</div>
       </Sec>
       <Sec id="alternatives" no={7} title="可執行的替代行動">
-        <ol className="space-y-2">{h.alternatives.map((a, i) => <li key={a} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sage">{i + 1}</span>{a}</li>)}</ol>
+        <ol className="space-y-2">{h.alternatives.map((a, i) => <li key={a} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sageink">{i + 1}</span>{a}</li>)}</ol>
       </Sec>
       <Sec id="reflections" no={8} title="自我反思問題">
         <ul className="space-y-1.5 font-serif leading-relaxed">{h.reflections.map((r) => <li key={r}>・{r}</li>)}</ul>

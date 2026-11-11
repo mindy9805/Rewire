@@ -99,10 +99,10 @@ export default function Habits7Page() {
         <dl className="grid gap-3 sm:grid-cols-2">{h.concepts.map((c) => <div key={c.term} className="rounded-2xl border border-line bg-surface p-4"><SourceBadge type={c.source} /><dt className="mt-2 font-serif font-bold">{c.term}</dt><dd className="mt-1 text-sm leading-relaxed">{c.text}</dd></div>)}</dl>
       </Sec>
       <Sec id="strategies" no={6} title="實際行動策略">
-        <ol className="space-y-2">{h.strategies.map((s, i) => <li key={s} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sage">{i + 1}</span>{s}</li>)}</ol>
+        <ol className="space-y-2">{h.strategies.map((s, i) => <li key={s} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sageink">{i + 1}</span>{s}</li>)}</ol>
       </Sec>
       <section id="tool" aria-labelledby="tool-h" className="mt-10 scroll-mt-24">
-        <h2 id="tool-h" className="mb-1 flex items-baseline gap-2 text-xl font-bold"><span className="font-display text-base italic text-sage">07</span>互動工具：{h.toolTitle}</h2>
+        <h2 id="tool-h" className="mb-1 flex items-baseline gap-2 text-xl font-bold"><span className="font-display text-base italic text-sageink">07</span>互動工具：{h.toolTitle}</h2>
         <p className="mb-3 text-sm text-muted"><SourceBadge type="tool" /> {h.toolDesc}</p>
         <div className="rounded-3xl border border-line bg-bg p-3 sm:p-5"><H7Tool id={h.id} /></div>
       </section>
@@ -124,7 +124,7 @@ export default function Habits7Page() {
               </div>
             </fieldset>
           ))}
-          <button className="btn-primary btn-sm" type="submit" disabled={Object.keys(answers).length < 3}>儲存自我評估</button>
+          <button className="btn-secondary btn-sm" type="submit" disabled={Object.keys(answers).length < 3}>儲存自我評估</button>
         </form>
         {checks.length > 0 && (
           <ul className="mt-3 space-y-1.5">

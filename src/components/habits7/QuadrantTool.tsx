@@ -30,12 +30,12 @@ function Big3() {
   const q2 = data.quadrantTasks.filter((t) => t.quadrant === 2 && !t.done && !week.items.some((i) => i.text === t.title));
   return (
     <section aria-labelledby="big3-h" className="rounded-2xl bg-gradient-to-br from-soft to-apricot/25 p-4 sm:p-5">
-      <h4 id="big3-h" className="flex items-center gap-2 font-serif text-lg font-bold"><Star className="h-5 w-5 text-accent" aria-hidden />本週三件要事（{formatDate(wk)} 起）</h4>
+      <h3 id="big3-h" className="flex items-center gap-2 font-serif text-lg font-bold"><Star className="h-5 w-5 text-accent" aria-hidden />本週三件要事（{formatDate(wk)} 起）</h3>
       <p className="text-sm text-muted">選出本週最重要的三件事，並寫下具體執行時間。</p>
       <ol className="mt-3 space-y-2">
         {week.items.map((i, idx) => (
           <li key={i.id} className="flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm">
-            <span className="font-display text-lg text-sage">{idx + 1}</span>
+            <span className="font-display text-lg text-sageink">{idx + 1}</span>
             <input type="checkbox" className="h-4 w-4 accent-[rgb(var(--accent))]" checked={i.done} aria-label={`完成：${i.text}`} onChange={() => save(week.items.map((x) => (x.id === i.id ? { ...x, done: !x.done } : x)), i.done ? undefined : '完成一件要事 ✓')} />
             <span className={`flex-1 ${i.done ? 'text-muted line-through' : ''}`}>{i.text}{i.when && <span className="ml-2 text-xs text-muted">⏰ {i.when}</span>}</span>
             <button className="icon-btn h-8 w-8" aria-label={`移除要事：${i.text}`} onClick={() => save(week.items.filter((x) => x.id !== i.id), '已移除')}><Trash2 className="h-4 w-4" aria-hidden /></button>

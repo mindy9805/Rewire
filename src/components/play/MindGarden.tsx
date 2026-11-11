@@ -70,11 +70,11 @@ export default function MindGarden() {
 
       <div className="overflow-hidden rounded-3xl border border-line" style={{ background: `linear-gradient(${theme.sky} 0 30%, ${theme.ground} 30%)` }}>
         {theme.id === 'night' && <div className="flex justify-around pt-3 text-xs text-[#F7E3A1]" aria-hidden>{'✦ · ✧ · ✦ · ✧ · ✦'}</div>}
-        <div className="grid grid-cols-6 gap-1 p-3 pt-14 sm:gap-2 sm:p-5 sm:pt-20" role="grid" aria-label="花園格子：點空格種下選擇的植物，點植物收回">
+        <div className="grid grid-cols-6 gap-1 p-3 pt-14 sm:gap-2 sm:p-5 sm:pt-20" role="group" aria-label="花園格子：點空格種下選擇的植物，點植物收回">
           {Array.from({ length: GARDEN_CELLS }).map((_, i) => {
             const p = byCell.get(i);
             return (
-              <button key={i} role="gridcell" onClick={() => tap(i)} aria-label={p ? `第 ${i + 1} 格：${plantMap[p.kind]?.name}（點擊收回）` : `第 ${i + 1} 格：空地（點擊種下${plantMap[selected]?.name}）`}
+              <button key={i} onClick={() => tap(i)} aria-label={p ? `第 ${i + 1} 格：${plantMap[p.kind]?.name}（點擊收回）` : `第 ${i + 1} 格：空地（點擊種下${plantMap[selected]?.name}）`}
                 className="flex aspect-square items-end justify-center rounded-xl border border-dashed border-black/10 transition hover:bg-white/30 focus-visible:bg-white/40">
                 {p && <PlantSvg key={p.id} kind={p.kind} size={52} grow />}
               </button>

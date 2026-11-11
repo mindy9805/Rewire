@@ -43,7 +43,7 @@ export default function BrainLab() {
     return (
       <div className="motion-safe:animate-fade-up">
         <Link to="/lab" className="btn-ghost btn-sm mb-4"><ArrowLeft className="h-4 w-4" aria-hidden />回到實驗室</Link>
-        <SectionTitle title={INTERACTIVE_META[lab].title} desc={<>{INTERACTIVE_META[lab].desc}{ch && <> 延伸閱讀：<Link className="text-accent underline" to={`/learn/${ch.id}`}>第 {ch.number} 章 {ch.title}</Link></>}</>} />
+        <SectionTitle level={1} title={INTERACTIVE_META[lab].title} desc={<>{INTERACTIVE_META[lab].desc}{ch && <> 延伸閱讀：<Link className="text-accent underline" to={`/learn/${ch.id}`}>第 {ch.number} 章 {ch.title}</Link></>}</>} />
         <InteractiveBlock kind={lab} />
       </div>
     );
@@ -51,7 +51,7 @@ export default function BrainLab() {
 
   return (
     <div className="motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Brain Lab" title="知識實驗室" desc="把章節裡的概念變成可以動手操作的實驗與練習。所有紀錄只儲存在你的瀏覽器中。" />
+      <SectionTitle level={1} eyebrow="Brain Lab" title="知識實驗室" desc="把章節裡的概念變成可以動手操作的實驗與練習。所有紀錄只儲存在你的瀏覽器中。" />
       <div role="group" aria-label="依目的篩選工具" className="mb-8 flex flex-wrap gap-2">
         <button type="button" aria-pressed={!goal} className="btn-toggle" onClick={() => setParams({}, { replace: true })}>全部</button>
         {GOALS.map((g) => <button key={g.id} type="button" aria-pressed={goal === g.id} className="btn-toggle" onClick={() => setParams({ goal: g.id }, { replace: true })}>{g.label}</button>)}

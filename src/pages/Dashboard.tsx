@@ -49,7 +49,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
-      <SectionTitle title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
+      <SectionTitle level={1} title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
 
       {/* 新使用者：整頁只顯示一個空狀態與一個開始按鈕，不顯示一整排 0 */}
       {!hasAny ? (

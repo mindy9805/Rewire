@@ -170,7 +170,7 @@ export default function Overview() {
           <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {chapters.map((c) => (
               <Link key={c.id} to={`/learn/${c.id}`} className="card-hover relative rounded-2xl border border-line bg-surface p-4">
-                <span className="font-display text-2xl italic text-sage">{String(c.number).padStart(2, '0')}</span>
+                <span className="font-display text-2xl italic text-sageink">{String(c.number).padStart(2, '0')}</span>
                 {data.chapters[c.id]?.completed && <CheckCircle2 className="absolute right-4 top-4 h-5 w-5 text-accent" aria-label="已完成" />}
                 <p className="mt-1 font-serif font-bold">{c.title}</p>
               </Link>

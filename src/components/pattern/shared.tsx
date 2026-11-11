@@ -67,7 +67,7 @@ export function FocusPicker({ headingLevel = 2 }: { headingLevel?: 2 | 3 }) {
 /** 結尾六句話：簡約、有力量的排版 */
 export function PatternClosing() {
   return (
-    <section aria-label="給自己的話" className="relative overflow-hidden rounded-3xl bg-forest px-6 py-10 text-[#FAF8F4] sm:px-12">
+    <section aria-label="給自己的話" className="relative overflow-hidden rounded-3xl bg-deep px-6 py-10 text-[#FAF8F4] sm:px-12">
       <svg aria-hidden className="absolute -right-10 -top-10 h-48 w-48 text-[#A8BBA3]/25" viewBox="0 0 100 100"><path d="M10 90 C 30 40, 60 70, 90 10" stroke="currentColor" strokeWidth="3" fill="none" /><circle cx="90" cy="10" r="5" fill="currentColor" /></svg>
       <p className="font-serif text-2xl font-bold leading-snug sm:text-3xl">{PATTERN_CLOSING[0]}</p>
       <ul className="mt-6 space-y-2 font-serif text-lg leading-relaxed text-[#E9EEE7] sm:text-xl">

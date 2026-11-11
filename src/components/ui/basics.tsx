@@ -10,13 +10,15 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
   return <div className={`rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-6 ${className}`}>{children}</div>;
 }
 
-export function SectionTitle({ eyebrow, title, desc, id }: { eyebrow?: string; title: string; desc?: ReactNode; id?: string }) {
+/** 區塊標題；當作頁面最上方的標題時請傳 level={1}，讓每頁都有一個一級標題（螢幕閱讀器靠它找主要內容） */
+export function SectionTitle({ eyebrow, title, desc, id, level = 2 }: { eyebrow?: string; title: string; desc?: ReactNode; id?: string; level?: 1 | 2 }) {
+  const H = level === 1 ? 'h1' : 'h2';
   return (
     <div className="mb-5">
       {eyebrow && <p className="font-display text-xs uppercase tracking-[0.2em] text-accent">{eyebrow}</p>}
-      <h2 id={id} className="mt-1 font-serif text-xl font-bold leading-snug text-ink sm:text-2xl">
+      <H id={id} className="mt-1 font-serif text-xl font-bold leading-snug text-ink sm:text-2xl">
         <Phrased text={title} />
-      </h2>
+      </H>
       {desc && <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted sm:text-base">{desc}</p>}
     </div>
   );

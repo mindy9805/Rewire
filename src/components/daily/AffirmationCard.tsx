@@ -38,7 +38,7 @@ export default function AffirmationCard({ a, defaultOpen = false, compact = fals
       </svg>
       <div className="p-5">
         <div className="flex items-start gap-3">
-          <span className="font-display text-2xl italic text-sage">{String(a.id).padStart(2, '0')}</span>
+          <span className="font-display text-2xl italic text-sageink">{String(a.id).padStart(2, '0')}</span>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium tracking-wider text-accent">{a.theme}</p>
             <h3 className={`mt-1 font-serif font-bold leading-snug text-ink ${compact ? 'text-lg' : 'text-xl'}`}>{a.text}</h3>
