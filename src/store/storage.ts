@@ -128,6 +128,7 @@ export function createEmptyData(): AppData {
     counterChoices: [],
     patternFocus: [],
     patternAssessments: [],
+    patternAssessmentDraft: null,
     patternEntries: [],
     microCommitments: [],
     commitmentLogs: [],
@@ -235,6 +236,14 @@ export function normalize(input: unknown): AppData {
     base.dailyFavorites = [...new Set(input.dailyFavorites.filter((n) => Number.isInteger(n) && n >= 1 && n <= 7))] as number[];
   }
   // Break the Pattern：焦點習慣與 14 天打破慣性挑戰
+  // 評估暫存：只保留 1–5 的作答、有效的優先項目與 0–7 的步驟
+  if (isObj(input.patternAssessmentDraft)) {
+    const d = input.patternAssessmentDraft;
+    const answers = isObj(d.answers) ? Object.fromEntries(Object.entries(d.answers).filter(([, v]) => typeof v === 'number' && v >= 1 && v <= 5)) as Record<string, number> : {};
+    const priority = Array.isArray(d.priority) ? [...new Set(d.priority.filter((x): x is PatternHabitId => PATTERN_IDS.includes(x as PatternHabitId)))].slice(0, 3) : [];
+    const step = typeof d.step === 'number' && d.step >= 0 && d.step <= 7 ? Math.floor(d.step) : 0;
+    if (Object.keys(answers).length || priority.length) base.patternAssessmentDraft = { answers, priority, step, updatedAt: typeof d.updatedAt === 'string' ? d.updatedAt : '' };
+  }
   if (Array.isArray(input.patternFocus)) {
     base.patternFocus = [...new Set(input.patternFocus.filter((x): x is PatternHabitId => PATTERN_IDS.includes(x as PatternHabitId)))].slice(0, 3);
   }

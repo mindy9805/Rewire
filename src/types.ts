@@ -140,6 +140,14 @@ export interface Settings {
 
 export type HomeSectionId = 'buddy' | 'garden' | 'today' | 'collection' | 'explore' | 'daily' | 'pattern' | 'habits7' | 'chapters';
 
+export interface PatternAssessmentDraft {
+  answers: Record<string, number>;
+  priority: PatternHabitId[];
+  /** 目前在第幾步（0–7） */
+  step: number;
+  updatedAt: string;
+}
+
 export interface ChapterProgress {
   completed: boolean;
   completedAt?: string;
@@ -669,6 +677,8 @@ export interface AppData {
   /** 使用者目前最想調整的習慣（1–3 項） */
   patternFocus: PatternHabitId[];
   patternAssessments: PatternAssessment[];
+  /** 21 題評估做到一半的暫存（離開頁面後可以繼續）；送出或選擇重新開始後清除 */
+  patternAssessmentDraft: PatternAssessmentDraft | null;
   patternEntries: PatternEntry[];
   microCommitments: MicroCommitment[];
   commitmentLogs: CommitmentLog[];

@@ -999,6 +999,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByRole('button', { name: '標記本章為已完成' }).click();
     const card = p2.getByTestId('completion-card');
     await card.getByText('第 5 章完成了').waitFor();
+    // 第 10 項：同時解鎖徽章與植物，只跳一則合併提示
+    await p2.getByText(/^🌱 解鎖了/).first().waitFor({ timeout: 3000 });
+    await p2.waitForTimeout(800);
+    const n = await p2.getByText(/^🌱 解鎖了/).count();
+    if (n !== 1) throw new Error('解鎖提示應合併為一則，實際 ' + n);
     if ((await card.locator('.btn-primary').count()) !== 1) throw new Error('完成卡應只有一個主要按鈕');
     await card.getByRole('button', { name: '存到筆記' }).click();
     await card.getByText('已存到筆記').waitFor();
@@ -1023,6 +1028,43 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.getByText(/朗讀聲音|沒有中文聲音|不支援語音朗讀/).first().waitFor();
     await page.goto(BASE + '#/');
     if (!(await page.getByTestId('buddy').first().locator('svg filter[id$="-wash"]').count())) throw new Error('小芽不是水彩版');
+  });
+  await step('第 11 項：評估做到一半離開，回來可以繼續或重新開始；送出後清除暫存', async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    const draft = () => p2.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1') || '{}').patternAssessmentDraft);
+    await p2.goto(BASE + '#/pattern/assessment');
+    for (let step = 0; step < 2; step++) {
+      await p2.getByText(`第 ${step + 1}／8 步`).waitFor();
+      const qs = await p2.locator('form section fieldset').all();
+      for (let i = 0; i < 3; i++) await qs[i].locator('label').nth(2).click();
+      await p2.getByRole('button', { name: '下一步', exact: true }).click();
+    }
+    await p2.waitForFunction(() => Object.keys(JSON.parse(localStorage.getItem('rewire:v1') || '{}').patternAssessmentDraft?.answers ?? {}).length === 6, null, { timeout: 3000 });
+    // 離開再回來
+    await p2.goto(BASE + '#/');
+    await p2.goto(BASE + '#/pattern/assessment');
+    await p2.getByText('你上次答到第 3 步，已作答 6/21 題。').waitFor();
+    if (await p2.locator('form').count()) throw new Error('詢問時不應同時顯示題目');
+    await p2.getByRole('button', { name: '繼續上次的評估' }).click();
+    await p2.getByText('第 3／8 步').waitFor();
+    await p2.getByText('已作答 6/21').waitFor();
+    // 重新整理後選「重新開始」：暫存清除
+    await p2.reload();
+    await p2.getByRole('button', { name: '重新開始' }).click();
+    await p2.getByText('已作答 0/21').waitFor();
+    if ((await draft()) !== null) throw new Error('重新開始應清除暫存');
+    // 完整作答並送出：暫存清除
+    for (let step = 0; step < 7; step++) {
+      const qs = await p2.locator('form section fieldset').all();
+      for (let i = 0; i < 3; i++) await qs[i].locator('label').nth(1).click();
+      await p2.getByRole('button', { name: '下一步', exact: true }).click();
+    }
+    await p2.getByRole('button', { name: '查看結果並儲存' }).click();
+    await p2.getByRole('heading', { name: '評估結果' }).waitFor();
+    await p2.waitForTimeout(600);
+    if ((await draft()) !== null) throw new Error('送出後應清除暫存');
+    await c2.close();
   });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
