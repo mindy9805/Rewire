@@ -68,6 +68,9 @@ function NeuroChallenge() {
   return (
     <div>
       <ProgressBar label="挑戰完成進度" value={done} max={14} />
+      {done < 14 && day !== firstUndone && (
+        <button className="btn-primary btn-sm mt-4" onClick={() => goDay(firstUndone)}>前往下一個：第 {firstUndone} 天</button>
+      )}
 
       <nav aria-label="選擇天數" className="mt-5">
         <ol className="grid grid-cols-7 gap-2">
@@ -75,8 +78,8 @@ function NeuroChallenge() {
             const c = data.challenge[String(d.day)]?.completed;
             return (
               <li key={d.day}>
-                <button onClick={() => goDay(d.day)} aria-current={d.day === day ? 'step' : undefined} aria-label={`Day ${d.day}：${d.theme}${c ? '（已完成）' : ''}`}
-                  className={`flex aspect-square w-full flex-col items-center justify-center rounded-xl border text-sm transition ${d.day === day ? 'border-accent bg-accent text-onaccent' : c ? 'border-sage bg-soft text-accent' : 'border-line bg-surface hover:border-accent/50'}`}>
+                <button onClick={() => goDay(d.day)} aria-current={d.day === day ? 'step' : undefined} aria-label={`Day ${d.day}：${d.theme}${c ? '（已完成）' : d.day === firstUndone ? '（下一個）' : ''}`}
+                  className={`flex aspect-square w-full flex-col items-center justify-center rounded-xl border text-sm transition ${d.day === day ? 'border-accent bg-accent text-onaccent' : c ? 'border-sage bg-soft text-accent' : 'border-line bg-surface hover:border-accent/50'} ${d.day === firstUndone && d.day !== day ? 'ring-2 ring-apricot ring-offset-2 ring-offset-bg' : ''}`}>
                   <span className="font-display">{d.day}</span>
                   {c && <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />}
                 </button>

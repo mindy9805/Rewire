@@ -123,6 +123,8 @@ export interface Settings {
   fontScale: FontScale;
   /** 動畫：'system' 跟隨系統設定；'reduce' 本站內關閉動畫與轉場 */
   motion: MotionMode;
+  /** 章節閱讀模式：'full' 完整版；'brief' 精簡版（只看目標、概念、互動、摘要與測驗） */
+  readingMode: 'full' | 'brief';
   rightPanelOpen: boolean;
   /** 是否已關閉首次本地儲存提示 */
   storageNoticeDismissed: boolean;

@@ -19,8 +19,8 @@ export type ActivityTheme = 'neuro' | 'daily' | 'pattern' | 'habits7' | 'play' |
 export type ActivityKind = 'read' | 'quiz' | 'practice' | 'reflect' | 'quest' | 'game' | 'challenge';
 
 export const THEME_LABEL: Record<ActivityTheme, string> = {
-  neuro: '神經可塑性',
-  daily: 'Daily Rewire',
+  neuro: '深度導讀',
+  daily: '每日心智練習',
   pattern: '打破慣性',
   habits7: '7 Habits',
   play: '輕鬆探索',

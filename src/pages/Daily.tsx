@@ -3,9 +3,10 @@
  * - 七句卡片、開始練習、複製全部
  * - 今日紀錄（可編輯）、科學說明
  * - 我的收藏、最常選擇的句子、不同日期的練習紀錄（可編輯、刪除）
+ * 分成兩個分頁，減少單頁長度：「練習」（今天要做的事）／「我的紀錄」（回顧）。網址 ?tab=records 可直接開啟紀錄分頁。
  */
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Pencil, Trash2, Heart, Download } from 'lucide-react';
 import DailyRewireSection from '../components/daily/DailyRewireSection';
 import DailyLogForm from '../components/daily/DailyLogForm';
@@ -32,10 +33,22 @@ export default function Daily() {
   const today = toDateKey();
   const logs = [...data.dailyLogs].sort((a, b) => b.date.localeCompare(a.date));
   const favs = affirmations.filter((a) => data.dailyFavorites.includes(a.id));
+  const [params, setParams] = useSearchParams();
+  const tab = params.get('tab') === 'records' ? 'records' : 'practice';
 
   return (
     <div className="space-y-12 motion-safe:animate-fade-up">
       <DailyRewireSection />
+
+      {/* 分頁：練習／我的紀錄 */}
+      <div role="tablist" aria-label="每日心智練習" className="-mb-6 inline-flex rounded-full border border-line bg-surface p-1">
+        {([['practice', '練習'], ['records', `我的紀錄${logs.length ? `（${logs.length}）` : ''}`]] as const).map(([t, label]) => (
+          <button key={t} role="tab" aria-selected={tab === t} aria-controls={`daily-${t}`} className={`rounded-full px-4 py-2 text-sm ${tab === t ? 'bg-accent text-onaccent' : 'text-ink'}`}
+            onClick={() => setParams(t === 'records' ? { tab: 'records' } : {}, { replace: true })}>{label}</button>
+        ))}
+      </div>
+
+      {tab === 'practice' && <div id="daily-practice" role="tabpanel" className="space-y-12">
 
       <section aria-labelledby="pick-h" className="rounded-3xl border border-line bg-surface p-5 sm:p-7">
         <h2 id="pick-h" className="font-serif text-xl font-bold">今天想練習哪一句？</h2>
@@ -64,6 +77,22 @@ export default function Daily() {
         </div>
       </section>
 
+      {/* 科學說明：預設收合，想了解時再展開 */}
+      <details className="rounded-3xl bg-soft/50 p-5 sm:p-7">
+        <summary className="cursor-pointer font-serif text-lg font-bold">簡短科學說明：為什麼是「練習」而不是「咒語」？</summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {dailyScienceNote.map((n) => (
+            <div key={n.title} className="rounded-2xl bg-surface p-4 text-sm leading-relaxed">
+              <p className="font-medium text-accent">{n.title}</p>
+              <p className="mt-1">{n.text}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-xs leading-relaxed text-muted">這七句話是自我覺察與自我對話的練習工具。目前沒有直接證據顯示「每天唸七句話」本身就能改造大腦；研究支持的是持續的注意、認知重構與實際行動對學習與行為改變的幫助。</p>
+      </details>
+      </div>}
+
+      {tab === 'records' && <div id="daily-records" role="tabpanel" className="space-y-12">
       <section aria-labelledby="stats-h">
         <h2 id="stats-h" className="font-serif text-xl font-bold">我的練習軌跡</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -132,18 +161,7 @@ export default function Daily() {
         )}
       </section>
 
-      <section aria-labelledby="science-h" className="rounded-3xl bg-soft/50 p-5 sm:p-7">
-        <h2 id="science-h" className="font-serif text-xl font-bold">簡短科學說明：為什麼是「練習」而不是「咒語」？</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {dailyScienceNote.map((n) => (
-            <div key={n.title} className="rounded-2xl bg-surface p-4 text-sm leading-relaxed">
-              <p className="font-medium text-accent">{n.title}</p>
-              <p className="mt-1">{n.text}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-xs leading-relaxed text-muted">這七句話是自我覺察與自我對話的練習工具。目前沒有直接證據顯示「每天唸七句話」本身就能改造大腦；研究支持的是持續的注意、認知重構與實際行動對學習與行為改變的幫助。</p>
-      </section>
+      </div>}
     </div>
   );
 }

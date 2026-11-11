@@ -94,6 +94,7 @@ export const defaultSettings: Settings = {
   theme: 'system',
   fontScale: 'md',
   motion: 'system',
+  readingMode: 'full',
   rightPanelOpen: true,
   storageNoticeDismissed: false,
   buddyVisible: true,
@@ -181,6 +182,7 @@ export function normalize(input: unknown): AppData {
       : defaultSettings.fontScale,
     // 舊資料沒有此欄位時，預設跟隨系統設定
     motion: s.motion === 'reduce' ? 'reduce' : 'system',
+    readingMode: s.readingMode === 'brief' ? 'brief' : 'full',
     rightPanelOpen: typeof s.rightPanelOpen === 'boolean' ? s.rightPanelOpen : true,
     storageNoticeDismissed: s.storageNoticeDismissed === true,
     buddyVisible: s.buddyVisible !== false,

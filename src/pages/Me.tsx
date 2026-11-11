@@ -3,7 +3,7 @@
  * 數字只來自真實紀錄；沒有紀錄時顯示說明文字，不顯示 0 分之類的指標。
  */
 import { Link } from 'react-router-dom';
-import { NotebookPen, LayoutDashboard, Flower2, Award, Mail, Database, ArrowRight } from 'lucide-react';
+import { NotebookPen, LayoutDashboard, Flower2, Award, Mail, Database, ArrowRight, History } from 'lucide-react';
 import { useStore } from '../store/AppStore';
 import { SectionTitle } from '../components/ui/basics';
 import { collectActivity } from '../lib/activity';
@@ -13,6 +13,7 @@ export default function Me() {
   const total = collectActivity(data).length;
   const badges = Object.keys(data.unlocks).filter((k) => k.startsWith('badge:')).length;
   const items = [
+    { to: '/records', icon: History, title: '我的紀錄', desc: total ? `所有 ${total} 筆紀錄，依日期整理在一起。` : '所有練習與書寫，之後都會依日期整理在這裡。' },
     { to: '/journal', icon: NotebookPen, title: '反思日誌', desc: data.journal.length || data.notes.length ? `${data.journal.length} 篇日誌・${data.notes.length} 則章節筆記` : '寫下今天的一個小觀察，或整理章節筆記。' },
     { to: '/dashboard', icon: LayoutDashboard, title: '學習儀表板', desc: total ? `共 ${total} 筆練習與紀錄，看看自己的變化。` : '開始練習後，這裡會整理你的真實紀錄。' },
     { to: '/play/garden', icon: Flower2, title: '心智花園', desc: `${data.garden.plants.length} 株植物與裝飾` },

@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ListTree } from 'lucide-react';
 import { scrollBehavior } from '../../lib/motion';
+import { expandAllSections, openSection } from './CollapsibleSection';
 
 type Item = { el: HTMLElement; title: string };
 /** 頂部列高度＋進度列高度，跳轉時讓段落標題不被遮住 */
@@ -57,8 +58,11 @@ export default function SectionProgress({ pageKey }: { pageKey: string }) {
   }, [open]);
 
   if (items.length < 3) return null;
+  const hasCollapsed = items.some((it) => it.el.dataset.collapsible === 'closed');
   const go = (i: number) => {
     setOpen(false);
+    // 可展開段落：先展開再捲動
+    if (items[i].el.id) openSection(items[i].el.id);
     const top = items[i].el.getBoundingClientRect().top + window.scrollY - OFFSET + 8;
     window.scrollTo({ top, behavior: scrollBehavior() });
   };
@@ -85,6 +89,11 @@ export default function SectionProgress({ pageKey }: { pageKey: string }) {
               </button>
             </li>
           ))}
+          {hasCollapsed && (
+            <li className="mt-1 border-t border-line pt-1">
+              <button type="button" className="w-full rounded-xl px-2 py-2 text-left text-sm text-accent hover:bg-soft" onClick={() => { expandAllSections(); setOpen(false); }}>展開全部段落</button>
+            </li>
+          )}
         </ol>
       )}
     </div>
