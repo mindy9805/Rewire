@@ -92,7 +92,7 @@ export default function Buddy({ mood, message, size = 88 }: { mood: BuddyMood; m
       <div className={`relative max-w-xs rounded-2xl border px-4 py-2.5 text-sm leading-relaxed shadow-card sm:mb-4 sm:rounded-bl-sm ${override?.secret ? 'border-apricot bg-apricot/20' : 'border-line bg-surface'}`} role="status" aria-live="polite">
         {/* 手機版：對話框在角色下方，用小三角形指向上方 */}
         <span aria-hidden className={`absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t sm:hidden ${override?.secret ? 'border-apricot bg-[#F6EEE6] dark:bg-surface' : 'border-line bg-surface'}`} />
-        <span className="sr-only">{BUDDY_NAME}說：</span><span className="text-phrase">{line}</span>
+        <span className="sr-only">{BUDDY_NAME}說：</span>{line}
       </div>
     </div>
   );

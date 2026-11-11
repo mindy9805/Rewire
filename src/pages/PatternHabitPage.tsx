@@ -24,6 +24,7 @@ import { formatDate, toDateKey } from '../lib/date';
 import type { PatternHabitId } from '../types';
 import { scrollBehavior } from '../lib/motion';
 import Phrased from '../components/ui/Phrased';
+import SectionProgress from '../components/ui/SectionProgress';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -85,6 +86,7 @@ export default function PatternHabitPage() {
         <button className="btn-secondary btn-sm" aria-pressed={focused} onClick={toggleFocus}>{focused ? '✓ 我正在調整這個習慣' : '我想調整這個習慣'}</button>
         <Link to={`/challenge?type=pattern&habit=${h.id}`} className="btn-ghost btn-sm">用 14 天挑戰練習</Link>
       </div>
+      <SectionProgress pageKey={h.id} />
 
       <Sec id="definition" no={1} title="行為定義">
         <p className="leading-relaxed">{h.definition}</p>

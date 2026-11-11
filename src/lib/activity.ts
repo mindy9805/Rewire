@@ -24,7 +24,7 @@ export const THEME_LABEL: Record<ActivityTheme, string> = {
   pattern: '打破慣性',
   habits7: '7 Habits',
   play: '輕鬆探索',
-  challenge: '挑戰與探索計畫',
+  challenge: '我的計畫',
   journal: '反思日誌',
 };
 export const KIND_LABEL: Record<ActivityKind, string> = {

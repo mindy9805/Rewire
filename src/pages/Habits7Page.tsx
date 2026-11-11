@@ -24,6 +24,7 @@ import { formatDate, toDateKey } from '../lib/date';
 import type { H7Id } from '../types';
 import { scrollBehavior } from '../lib/motion';
 import Phrased from '../components/ui/Phrased';
+import SectionProgress from '../components/ui/SectionProgress';
 
 function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
   return (
@@ -76,6 +77,7 @@ export default function Habits7Page() {
         {status === '未開始' && <button className="btn-primary btn-sm" onClick={() => setStatus('learning')}>開始學習</button>}
         <button className="btn-secondary btn-sm" onClick={scrollToTool}><FlaskConical className="h-4 w-4" aria-hidden />互動工具：{h.toolTitle}</button>
       </div>
+      <SectionProgress pageKey={h.id} />
 
       <Sec id="definition" no={1} title="習慣定義與核心觀念">
         <p className="rounded-2xl bg-soft/60 p-4 font-serif text-lg leading-relaxed">{h.core}</p>

@@ -1,10 +1,11 @@
 /**
  * 首頁（輕遊戲化版本）
  * 1. 主要入口「今天，你想怎麼探索自己？」三個大按鈕（30 秒內可以開始）
+ *    緊接著是「繼續上次」：有進行中的計畫、讀到一半的章節時才出現（真實紀錄）。
  * 2. 成長夥伴＋心智花園預覽
  * 3. 今日推薦（依日期固定的冒險、小卡與心智語句）
  * 4. 最近收藏
- * 5. 自由探索入口（四大學習系統＋挑戰＋儀表板）
+ * 5. 自由探索入口（四大學習系統＋挑戰＋儀表板）：已移到「學習」頁，首頁預設收起
  * 6. 既有完整內容區塊（Daily Rewire 七句卡片、打破慣性焦點卡片、7 Habits 學習地圖、九個章節）預設收起，可在「自訂首頁」開啟
  * 使用者可自訂每個區塊是否顯示；不要求每天完成任何事。
  */
@@ -29,6 +30,7 @@ import { FocusPicker, PatternClosing } from '../components/pattern/shared';
 import { StageMap } from '../components/habits7/shared';
 import { activitySummary, collectActivity, dailyPick, growthPoints } from '../lib/activity';
 import { formatDate, toDateKey } from '../lib/date';
+import { continueItem } from '../lib/plans';
 import type { HomeSectionId } from '../types';
 
 const SECTION_LABEL: Record<HomeSectionId, string> = {
@@ -55,6 +57,7 @@ export default function Overview() {
   const buddyMood = todayCount ? 'celebrating' : away ? 'welcome' : 'curious';
   const buddyMsg = todayCount ? `今天已經累積 ${todayCount} 個小小的經驗了。${buddyLines.celebrating[0]}` : away ? buddyWelcomeBack[0] : undefined;
   const ready = readyCapsules(data.capsules);
+  const resume = continueItem(data);
   const recent = Object.entries(data.unlocks).filter(([k]) => k.startsWith('badge:') || (k.startsWith('plant:') && k !== 'plant:sprout')).sort((a, b) => b[1].date.localeCompare(a[1].date)).slice(0, 3);
   const quest = dailyPick(quests, 1);
   const card = dailyPick(moodCards.filter((c) => c.type !== 'affirmation'), 2);
@@ -72,6 +75,17 @@ export default function Overview() {
 
   return (
     <div className="space-y-10 motion-safe:animate-fade-up">
+      {/* 繼續上次：放在最上方，回來的使用者一打開就能接著做；只顯示最近的一項，沒有進度時不出現 */}
+      {resume && (
+        <Link to={resume.to} className="card-hover -mb-5 flex items-center gap-3 rounded-2xl border border-accent/40 bg-surface px-4 py-3" aria-label={`繼續上次：${resume.title}`}>
+          <span className="min-w-0 flex-1">
+            <span className="block text-xs text-accent">繼續上次・{resume.label}</span>
+            <span className="block truncate font-serif font-bold">{resume.title}</span>
+            <span className="block truncate text-xs text-muted">{resume.detail}</span>
+          </span>
+          <span className="btn-primary btn-sm shrink-0">繼續<ArrowRight className="h-3.5 w-3.5" aria-hidden /></span>
+        </Link>
+      )}
       <HomeHero />
 
       {ready.length > 0 && (
@@ -134,7 +148,7 @@ export default function Overview() {
       {show.explore && (
         <section aria-labelledby="explore-h">
           <h2 id="explore-h" className="text-xl font-bold">自由探索</h2>
-          <p className="text-sm text-muted">四個核心學習系統，加上挑戰與成長儀表板。想深入學習時，從這裡出發。</p>
+          <p className="text-sm text-muted">四個核心學習系統，加上我的計畫與學習儀表板。也可以從底部的「學習」進入。</p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {SYSTEMS.map((s) => (
               <li key={s.id}>
@@ -148,7 +162,7 @@ export default function Overview() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-muted">四個系統各有不同性質：神經可塑性提供科學研究視角，Daily Rewire 是覺察練習，打破慣性是行為實踐框架，7 Habits 是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
+          <p className="mt-3 text-xs text-muted">四個系統各有不同性質：深度導讀整理科學研究，每日心智練習是覺察練習，打破慣性是行為實踐框架，7 Habits 是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
         </section>
       )}
 
@@ -199,7 +213,7 @@ export default function Overview() {
             <input type="checkbox" className="h-4 w-4 accent-[rgb(var(--accent))]" checked={data.settings.buddyVisible} onChange={(e) => { update((p) => ({ ...p, settings: { ...p.settings, buddyVisible: e.target.checked } })); toast(e.target.checked ? '小芽回來了' : '已隱藏成長夥伴', 'info'); }} />在所有頁面顯示成長夥伴「小芽」
           </label>
         </div>
-        <p className="mt-2 text-xs text-muted">若想減少動畫，可在裝置的系統設定開啟「減少動態效果」，本站會自動停用動畫。</p>
+        <p className="mt-2 text-xs text-muted">想減少動畫，可以按頂部列的動畫按鈕，或到「資料與隱私 → 外觀與動畫」關閉；裝置開啟「減少動態效果」時也會自動停用。</p>
       </details>
 
       <p className="rounded-2xl bg-soft/60 p-4 text-xs leading-relaxed text-muted">

@@ -49,7 +49,7 @@ export default function Habits7Plan() {
 
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
-      <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/habits7" className="hover:text-accent">7 Habits</Link> / 21 天探索計畫</nav>
+      <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/plans" className="hover:text-accent">我的計畫</Link> / <Link to="/habits7" className="hover:text-accent">7 Habits</Link> / 21 天探索計畫</nav>
       <SectionTitle eyebrow="21-Day Exploration" title="21 天七習慣探索計畫" desc="每個習慣三天：第一天理解概念、第二天完成行動實驗、第三天反思並調整策略。不需要連續完成，中斷後隨時可以繼續。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm">{PLAN_NOTE}</p>
       <ProgressBar label="探索計畫進度" value={pp.done} max={21} />

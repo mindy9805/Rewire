@@ -1,21 +1,30 @@
-/** 側邊欄與手機抽屜共用的導覽清單：主要頁面＋九個章節（含完成狀態） */
-import { NavLink } from 'react-router-dom';
+/**
+ * 側邊欄與手機抽屜共用的導覽清單：今天／學習／我的三組，以及九個章節（含完成狀態）。
+ * 章節清單只在「深度導讀」相關頁面顯示，其他頁面保持精簡；手機抽屜（showChapters）一律顯示。
+ */
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { CheckCircle2, Circle } from 'lucide-react';
-import { mainNav, NAV_GROUPS } from './nav';
+import { GROUP_HUB, mainNav, NAV_GROUPS } from './nav';
 import { chapters } from '../../content/chapters';
 import { useStore } from '../../store/AppStore';
 
 const linkCls = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${isActive ? 'bg-soft font-medium text-accent' : 'text-ink hover:bg-soft/60'}`;
 
-export default function NavLists() {
+export default function NavLists({ showChapters = false }: { showChapters?: boolean }) {
   const { data } = useStore();
+  const { pathname } = useLocation();
+  const chaptersVisible = showChapters || pathname === '/learn' || pathname.startsWith('/learn/');
   return (
     <>
       <nav aria-label="主要頁面" className="space-y-4">
         {NAV_GROUPS.map((g) => (
           <div key={g}>
-            <p className="px-3 pb-1 text-[11px] font-medium tracking-wider text-muted">{g}</p>
+            {GROUP_HUB[g] ? (
+              <Link to={GROUP_HUB[g]!} className="block rounded-lg px-3 pb-1 text-[11px] font-medium tracking-wider text-muted hover:text-accent">{g}<span className="sr-only">（總覽）</span></Link>
+            ) : (
+              <p className="px-3 pb-1 text-[11px] font-medium tracking-wider text-muted">{g}</p>
+            )}
             <ul className="space-y-0.5">
               {mainNav.filter((n) => n.group === g).map(({ to, label, icon: Icon }) => (
                 <li key={to}>
@@ -29,7 +38,7 @@ export default function NavLists() {
           </div>
         ))}
       </nav>
-      <nav aria-label="章節導覽" className="mt-6">
+      {chaptersVisible && <nav aria-label="章節導覽" className="mt-6">
         <p className="px-3 font-display text-xs uppercase tracking-[0.2em] text-muted">Chapters</p>
         <ul className="mt-2 space-y-0.5">
           {chapters.map((c) => {
@@ -47,7 +56,7 @@ export default function NavLists() {
             );
           })}
         </ul>
-      </nav>
+      </nav>}
     </>
   );
 }

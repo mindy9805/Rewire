@@ -1,4 +1,4 @@
-/** 互動式知識實驗室：集中所有模擬器與七大工具，可用 /lab/:toolId 深層連結 */
+/** 知識實驗室：集中所有模擬器與七大工具，可用 /lab/:toolId 深層連結 */
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { SectionTitle } from '../components/ui/basics';
@@ -28,7 +28,7 @@ export default function BrainLab() {
 
   return (
     <div className="motion-safe:animate-fade-up">
-      <SectionTitle eyebrow="Brain Lab" title="互動式知識實驗室" desc="把章節裡的概念變成可以動手操作的實驗與練習。所有紀錄只儲存在你的瀏覽器中。" />
+      <SectionTitle eyebrow="Brain Lab" title="知識實驗室" desc="把章節裡的概念變成可以動手操作的實驗與練習。所有紀錄只儲存在你的瀏覽器中。" />
       <h2 className="mb-3 text-xl font-bold">概念模擬與練習</h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {LABS.map((l) => {

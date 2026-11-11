@@ -1,6 +1,7 @@
 /**
  * Break the Pattern 模組首頁：核心理念、自律定義、休息與便利的正面功能、七個習慣、
  * 評估／工作坊／挑戰入口、結尾六句話。
+ * 第一屏就有主要按鈕「3 分鐘找出你的慣性」（自我評估），不用先讀完說明才找得到入口。
  */
 import { Link } from 'react-router-dom';
 import { ClipboardList, Hammer, CalendarCheck, ArrowRight } from 'lucide-react';
@@ -22,6 +23,10 @@ export default function PatternHub() {
         <p className="font-display text-sm italic text-accent">{PATTERN_MODULE}</p>
         <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl"><Phrased text={PATTERN_TITLE} /></h1>
         <p className="mt-3 text-lg text-muted">{PATTERN_SUBTITLE}</p>
+        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link to="/pattern/assessment" className="btn-primary"><ClipboardList className="h-4 w-4" aria-hidden />3 分鐘找出你的慣性</Link>
+          <span className="text-xs text-muted">21 題・約 3 分鐘・沒有好壞之分，只是幫助你看見目前的模式。</span>
+        </div>
         <div className="mt-6 space-y-2 border-l-2 border-accent pl-4 leading-relaxed">
           {PATTERN_CORE.map((l) => <p key={l}>{l}</p>)}
         </div>
