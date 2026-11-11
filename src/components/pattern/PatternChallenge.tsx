@@ -91,7 +91,7 @@ export default function PatternChallenge() {
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-3 text-sm">
             <span className="text-muted">難度：</span>
             {(['gentle', 'standard'] as const).map((l) => (
-              <button key={l} aria-pressed={pc.level === l} className={pc.level === l ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'} onClick={() => { setPC((p) => ({ ...p, level: l })); toast(l === 'gentle' ? '已切換為輕量版' : '已切換為標準版'); }}>
+              <button key={l} aria-pressed={pc.level === l} className="btn-toggle" onClick={() => { setPC((p) => ({ ...p, level: l })); toast(l === 'gentle' ? '已切換為輕量版' : '已切換為標準版'); }}>
                 {l === 'gentle' ? '輕量版' : '標準版'}
               </button>
             ))}
@@ -157,7 +157,7 @@ export default function PatternChallenge() {
             <fieldset className="mt-5">
               <legend className="field-label">習慣追蹤：今天舊模式出現的情況</legend>
               <div className="flex flex-wrap gap-2">
-                {OLD.map((o) => <button key={o.v} type="button" aria-pressed={form.oldPattern === o.v} onClick={() => setForm((f) => ({ ...f, oldPattern: f.oldPattern === o.v ? '' : o.v }))} className={form.oldPattern === o.v ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{o.label}</button>)}
+                {OLD.map((o) => <button key={o.v} type="button" aria-pressed={form.oldPattern === o.v} onClick={() => setForm((f) => ({ ...f, oldPattern: f.oldPattern === o.v ? '' : o.v }))} className="btn-toggle">{o.label}</button>)}
               </div>
               <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-[rgb(var(--accent))]" checked={form.usedAlternative} onChange={(e) => setForm((f) => ({ ...f, usedAlternative: e.target.checked }))} />今天有嘗試替代行動</label>
               <p className="mt-1 text-xs text-muted">舊模式出現很正常，記錄它本身就是覺察。</p>

@@ -51,7 +51,7 @@ export default function PatternWorkshop() {
     return (
       <div className="space-y-8 motion-safe:animate-fade-up">
         <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/pattern" className="hover:text-accent">打破慣性</Link> / 習慣改變工作坊</nav>
-        <SectionTitle eyebrow="Habit Change Workshop" title="習慣改變工作坊" desc="結合七個習慣與本站的神經可塑性工具，用七個步驟設計一個屬於你的改變計畫。每一步都會自動儲存。" />
+        <SectionTitle title="習慣改變工作坊" desc="結合七個習慣與本站的神經可塑性工具，用七個步驟設計一個屬於你的改變計畫。每一步都會自動儲存。" />
         <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {workshopSteps.map((s) => <li key={s.no} className="rounded-2xl bg-soft/60 p-3 text-sm"><span className="font-display text-lg text-accent">{s.no}</span> <strong>{s.title}</strong><span className="block text-xs text-muted">{s.desc}</span></li>)}
         </ol>
@@ -201,7 +201,7 @@ export default function PatternWorkshop() {
               <div className="flex flex-wrap gap-2">
                 {workshopAdjustments.map((a) => {
                   const on = w.adjustments.includes(a);
-                  return <button key={a} type="button" aria-pressed={on} onClick={() => set('adjustments', on ? w.adjustments.filter((x) => x !== a) : [...w.adjustments, a])} className={on ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{a}</button>;
+                  return <button key={a} type="button" aria-pressed={on} onClick={() => set('adjustments', on ? w.adjustments.filter((x) => x !== a) : [...w.adjustments, a])} className="btn-toggle">{a}</button>;
                 })}
               </div>
             </fieldset>

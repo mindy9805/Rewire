@@ -21,7 +21,7 @@ export default function PlayDashboard() {
     <section aria-labelledby="play-dash" className="space-y-3">
       <h2 id="play-dash" className="font-serif text-xl font-bold">自願參與與輕鬆探索</h2>
       {s.total === 0 ? (
-        <EmptyState title="還沒有任何紀錄" desc="隨時都可以從一個 30 秒的小冒險開始。" action={<Link to="/play/quest" className="btn-primary btn-sm">今日輕冒險</Link>} />
+        <EmptyState title="還沒有任何紀錄" desc="隨時都可以從一個 30 秒的小冒險開始。" action={<Link to="/play/quest" className="btn-secondary btn-sm">今日輕冒險</Link>} />
       ) : (
         <Card>
           <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">

@@ -977,6 +977,38 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.getByRole('tab', { name: '練習' }).click();
     await page.getByRole('heading', { name: '今天想練習哪一句？' }).waitFor();
   });
+  await step('第三階段：知識實驗室依目的篩選', async () => {
+    await page.goto(BASE + '#/lab');
+    const g = page.getByRole('group', { name: '依目的篩選工具' });
+    await g.getByRole('button', { name: '想調整情緒' }).click();
+    await page.waitForURL(/goal=emotion/);
+    await page.getByRole('button', { name: /生理性嘆息/ }).waitFor();
+    if (await page.getByRole('heading', { name: '打破慣性：七個習慣工具' }).count()) throw new Error('情緒篩選不應顯示打破慣性工具');
+    if (await page.getByRole('link', { name: /習慣養成模擬器/ }).count()) throw new Error('不應顯示大腦類工具');
+    await g.getByRole('button', { name: '想改變習慣' }).click();
+    await page.getByRole('heading', { name: '打破慣性：七個習慣工具' }).waitFor();
+    await g.getByRole('button', { name: '全部' }).click();
+    if ((await g.getByRole('button', { name: '全部' }).getAttribute('aria-pressed')) !== 'true') throw new Error('全部未選取');
+  });
+  await step('第三階段：完成卡（帶走一句話、一個下一步、存到筆記）', async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    await p2.goto(BASE + '#/learn/ch5');
+    await p2.getByRole('button', { name: '標記本章為已完成' }).click();
+    const card = p2.getByTestId('completion-card');
+    await card.getByText('第 5 章完成了').waitFor();
+    if ((await card.locator('.btn-primary').count()) !== 1) throw new Error('完成卡應只有一個主要按鈕');
+    await card.getByRole('button', { name: '存到筆記' }).click();
+    await card.getByText('已存到筆記').waitFor();
+    const notes = await p2.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1')).notes);
+    if (!notes.some((n) => n.kind === 'highlight' && n.tags.includes('完成卡'))) throw new Error('未存成筆記');
+    await card.getByRole('link', { name: '下一章：第 6 章' }).click();
+    await p2.waitForURL(/learn\/ch6/);
+    // 資料與隱私頁：只有一個主要按鈕
+    await p2.goto(BASE + '#/data');
+    if ((await p2.locator('main .btn-primary').count()) !== 1) throw new Error('資料頁應只有一個主要按鈕');
+    await c2.close();
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();

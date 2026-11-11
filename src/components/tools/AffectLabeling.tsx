@@ -48,7 +48,7 @@ export default function AffectLabeling() {
           <legend className="field-label">2. 哪一個詞更貼近你的感受？</legend>
           <div className="flex flex-wrap gap-2">
             {group.words.map((w) => (
-              <button key={w} type="button" aria-pressed={word === w} onClick={() => setWord(w)} className={word === w ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{w}</button>
+              <button key={w} type="button" aria-pressed={word === w} onClick={() => setWord(w)} className="btn-toggle">{w}</button>
             ))}
           </div>
         </fieldset>

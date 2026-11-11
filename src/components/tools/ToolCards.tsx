@@ -21,11 +21,12 @@ export const TOOLS: { id: string; no: number; title: string; en: string; desc: s
   { id: 'sleep', no: 7, title: '睡眠與記憶鞏固', en: 'Sleep & Consolidation', desc: '簡易睡眠紀錄與趨勢圖（非醫療工具）。', icon: Moon, El: SleepTool },
 ];
 
-export default function ToolCards({ initial }: { initial?: string }) {
+/** only：只顯示這些工具（知識實驗室依目的篩選時使用）；未提供時顯示全部 */
+export default function ToolCards({ initial, only }: { initial?: string; only?: string[] }) {
   const [open, setOpen] = useState<string | null>(initial ?? null);
   return (
     <div className="space-y-3">
-      {TOOLS.map(({ id, no, title, en, desc, icon: Icon, El }) => {
+      {TOOLS.filter((t) => !only || only.includes(t.id)).map(({ id, no, title, en, desc, icon: Icon, El }) => {
         const isOpen = open === id;
         return (
           <section key={id} id={`tool-${id}`} className={`overflow-hidden rounded-2xl border bg-surface shadow-card transition ${isOpen ? 'border-accent/50' : 'border-line'}`}>

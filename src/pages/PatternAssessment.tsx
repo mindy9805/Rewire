@@ -95,7 +95,7 @@ export default function PatternAssessment() {
   return (
     <div className="space-y-10 motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/pattern" className="hover:text-accent">打破慣性</Link> / 自我覺察評估</nav>
-      <SectionTitle eyebrow="Self-Awareness Check" title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
+      <SectionTitle title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm leading-relaxed">{ASSESSMENT_DISCLAIMER}</p>
 
       <form onSubmit={submit} className="space-y-4">
@@ -132,7 +132,7 @@ export default function PatternAssessment() {
             <div className="mt-2 flex flex-wrap gap-2">
               {patternHabits.map((h) => {
                 const on = priority.includes(h.id);
-                return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id]))} className={on ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{h.short}</button>;
+                return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id]))} className="btn-toggle">{h.short}</button>;
               })}
             </div>
             <p className="mt-2 text-xs text-muted">優先順序由你決定，不一定是頻率最高的項目。選擇後會同步為「你最想調整的習慣」。</p>

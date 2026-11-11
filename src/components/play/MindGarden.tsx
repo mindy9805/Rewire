@@ -102,7 +102,7 @@ export default function MindGarden() {
         <div className="flex flex-wrap gap-2">
           {gardenThemes.map((t) => {
             const ok = !!(data.unlocks[`theme:${t.id}`] || t.points === 0);
-            return <button key={t.id} type="button" disabled={!ok} aria-pressed={data.garden.theme === t.id} onClick={() => update((d) => ({ ...d, garden: { ...d.garden, theme: t.id } }))} className={data.garden.theme === t.id ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{ok ? t.name : `🔒 ${t.name}（${t.points} 點）`}</button>;
+            return <button key={t.id} type="button" disabled={!ok} aria-pressed={data.garden.theme === t.id} onClick={() => update((d) => ({ ...d, garden: { ...d.garden, theme: t.id } }))} className="btn-toggle">{ok ? t.name : `🔒 ${t.name}（${t.points} 點）`}</button>;
           })}
         </div>
       </fieldset>

@@ -49,7 +49,7 @@ export default function PatternDashboard() {
         <Link to="/pattern" className="ml-auto text-sm text-accent underline">前往模組</Link>
       </div>
       {!hasAny ? (
-        <EmptyState title="還沒有打破慣性的紀錄" desc="選擇想調整的習慣、完成自我評估或使用任一工具後，這裡會顯示你的真實進展。" action={<Link to="/pattern" className="btn-primary btn-sm">開始探索</Link>} />
+        <EmptyState title="還沒有打破慣性的紀錄" desc="選擇想調整的習慣、完成自我評估或使用任一工具後，這裡會顯示你的真實進展。" action={<Link to="/pattern" className="btn-secondary btn-sm">開始探索</Link>} />
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-3">

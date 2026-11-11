@@ -36,7 +36,7 @@ export default function H7Dashboard() {
         <Link to="/habits7" className="ml-auto text-sm text-accent underline">前往模組</Link>
       </div>
       {!any ? (
-        <EmptyState title="還沒有 7 Habits 紀錄" desc="開始任一個習慣章節或使用互動工具後，這裡會顯示你的真實進度。" action={<Link to="/habits7" className="btn-primary btn-sm">開始探索</Link>} />
+        <EmptyState title="還沒有 7 Habits 紀錄" desc="開始任一個習慣章節或使用互動工具後，這裡會顯示你的真實進度。" action={<Link to="/habits7" className="btn-secondary btn-sm">開始探索</Link>} />
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-3">

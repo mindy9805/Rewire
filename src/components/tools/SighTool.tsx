@@ -85,7 +85,7 @@ export default function SighTool() {
           <legend className="field-label">練習時間</legend>
           <div className="flex gap-2">
             {[1, 3, 5].map((m) => (
-              <button key={m} type="button" disabled={running} aria-pressed={minutes === m} onClick={() => setMinutes(m)} className={minutes === m ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>
+              <button key={m} type="button" disabled={running} aria-pressed={minutes === m} onClick={() => setMinutes(m)} className="btn-toggle">
                 {m} 分鐘
               </button>
             ))}
