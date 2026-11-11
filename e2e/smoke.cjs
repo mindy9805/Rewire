@@ -14,7 +14,7 @@ const store = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('rew
 async function tapUntilSecret(page, buddy) {
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
-  const secret = /被你發現了|戳了七下|悄悄告訴你/;
+  const secret = /被你發現了|戳了我七下|悄悄告訴你/;
   const seen = [];
   for (let i = 0; i < 14; i++) {
     // force：不等跳躍動畫停止（動畫約 1.8 秒，等待會超過「連續點擊」的判定間隔）
@@ -92,6 +92,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.waitForURL(/#\/daily$/);
   });
   await step('Daily 頁：紀錄回顧、編輯、最常選擇語句', async () => {
+    await page.getByRole('tab', { name: /我的紀錄/ }).click();
+    await page.waitForURL(/tab=records/);
     await page.getByText('「我的想法不等於事實」（1 次）').waitFor();
     await page.getByRole('button', { name: /^編輯 .* 的紀錄$/ }).first().click();
     const edit = page.locator('li').filter({ has: page.getByRole('button', { name: /^刪除 .* 的紀錄$/ }) }).first();
@@ -250,7 +252,9 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
         await page.getByRole('heading', { name: h }).first().waitFor({ timeout: 3000 });
       }
       await page.locator('#tool').waitFor();
-      await page.locator('a[href^="https://doi.org/"]').first().waitFor();
+      // 研究證據段落預設收合：展開後才看得到 DOI 連結
+      await page.getByRole('button', { name: /研究證據與適用限制/ }).click();
+      await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
     }
   });
   await step('Habit 01 認可依賴覺察器：儲存後顯示心智語句並可設為今日練習句', async () => {
@@ -346,10 +350,15 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('21 題自我評估：作答、優先項目、結果與建議工具', async () => {
     await page.goto(BASE + '#/pattern/assessment');
-    if ((await page.locator('form fieldset input[type=radio]').count()) !== 105) throw new Error('題數');
-    const qs = await page.locator('form section fieldset').all();
-    if (qs.length !== 21) throw new Error('fieldset ' + qs.length);
-    for (let i = 0; i < 21; i++) await qs[i].locator('label').nth(i % 5).click();
+    // 一次一個習慣（3 題），共 7 步；最後一步選優先項目
+    for (let step = 0; step < 7; step++) {
+      await page.getByText(`第 ${step + 1}／8 步`).waitFor();
+      const qs = await page.locator('form section fieldset').all();
+      if (qs.length !== 3) throw new Error(`第 ${step + 1} 步題數 ${qs.length}`);
+      for (let i = 0; i < 3; i++) await qs[i].locator('label').nth((step * 3 + i) % 5).click();
+      await page.getByRole('button', { name: '下一步', exact: true }).click();
+    }
+    await page.getByText('已作答 21/21').waitFor();
     await page.getByRole('button', { name: '過度依賴便利' }).click();
     await page.getByRole('button', { name: '查看結果並儲存' }).click();
     await page.getByRole('heading', { name: '評估結果' }).waitFor();
@@ -905,12 +914,75 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     // 章節清單只在深度導讀相關頁面出現
     if (await page.getByRole('navigation', { name: '章節導覽' }).count()) throw new Error('學習總覽不應顯示章節清單');
   });
+  await step('第二階段：我的紀錄時間軸（篩選、查看連結）', async () => {
+    await page.goto(BASE + '#/records');
+    await page.getByRole('heading', { name: '我的紀錄', level: 2 }).waitFor();
+    const group = page.getByRole('group', { name: '依類型篩選' });
+    await group.getByRole('button', { name: /^反思日誌/ }).click();
+    const links = page.getByRole('link', { name: /^查看「反思日誌/ });
+    if (!(await links.count())) throw new Error('沒有日誌紀錄');
+    await links.first().click();
+    await page.waitForURL(/#\/journal$/);
+  });
+  await step('第二階段：研究來源篩選與搜尋、預設只顯示 10 筆', async () => {
+    await page.goto(BASE + '#/references');
+    await page.getByText(/符合 \d+ 筆，先顯示前 10 筆/).waitFor();
+    await page.getByRole('group', { name: '依模組篩選' }).getByRole('button', { name: /^7 Habits/ }).click();
+    await page.getByLabel('搜尋文獻').fill('Covey');
+    await page.getByText('符合 1 筆').waitFor();
+    await page.getByLabel('搜尋文獻').fill('不存在的關鍵字xyz');
+    await page.getByText('找不到符合的文獻').waitFor();
+  });
+  await step('第二階段：章節精簡版／完整版切換並記住設定', async () => {
+    await page.goto(BASE + '#/learn/ch3');
+    const modes = page.getByRole('group', { name: '閱讀模式' });
+    await modes.getByRole('button', { name: /精簡版/ }).click();
+    if (await page.getByRole('heading', { name: '生活案例' }).count()) throw new Error('精簡版不應顯示生活案例');
+    await page.locator('#interactive').waitFor();
+    await page.locator('#quiz').waitFor();
+    if ((await store(page)).settings.readingMode !== 'brief') throw new Error('未保存');
+    await page.goto(BASE + '#/learn/ch4');
+    await page.getByText('目前是精簡版').waitFor();
+    await page.getByRole('button', { name: '切換到完整版' }).click();
+    await page.getByRole('heading', { name: '生活案例' }).waitFor();
+  });
+  await step('第二階段：學習頁段落可展開，段落列可展開全部', async () => {
+    await page.goto(BASE + '#/habits7/end');
+    const myths = page.getByRole('button', { name: /常見認知誤區/ });
+    if ((await myths.getAttribute('aria-expanded')) !== 'false') throw new Error('應預設收合');
+    if ((await page.getByRole('button', { name: /自我評估/ }).first().getAttribute('aria-expanded')) !== 'true') throw new Error('有練習的段落應預設展開');
+    const bar = page.getByTestId('section-progress');
+    await bar.getByRole('button', { name: /段落/ }).click();
+    await bar.getByRole('button', { name: '展開全部段落' }).click();
+    await page.waitForFunction(() => document.querySelector('#myths')?.getAttribute('data-collapsible') === 'open');
+  });
+  await step('第二階段：評估可先跳過，最後一步列出未答的部分', async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    await p2.goto(BASE + '#/pattern/assessment');
+    for (let i = 0; i < 7; i++) await p2.getByRole('button', { name: /下一步/ }).click();
+    await p2.getByText('還有 21 題沒有作答').waitFor();
+    if (!(await p2.getByRole('button', { name: '查看結果並儲存' }).isDisabled())) throw new Error('未答完不應可送出');
+    await p2.getByRole('button', { name: /回到「過度依賴便利」/ }).click();
+    await p2.getByText('第 2／8 步').waitFor();
+    if ((await p2.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1') || '{}').patternAssessments?.length ?? 0)) !== 0) throw new Error('不應自動儲存');
+    await c2.close();
+  });
+  await step('第二階段：深度導讀主要按鈕、每日練習分頁', async () => {
+    await page.goto(BASE + '#/learn');
+    await page.getByRole('link', { name: /^(繼續第 \d+ 章|下一章：第 \d+ 章|從第 1 章開始)$/ }).waitFor();
+    await page.goto(BASE + '#/daily?tab=records');
+    await page.getByRole('tab', { name: /我的紀錄/, selected: true }).waitFor();
+    await page.getByRole('heading', { name: '練習紀錄回顧' }).waitFor();
+    await page.getByRole('tab', { name: '練習' }).click();
+    await page.getByRole('heading', { name: '今天想練習哪一句？' }).waitFor();
+  });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();
     await p2.goto(BASE + '#/dashboard');
-    await p2.getByText('還沒有練習紀錄').first().waitFor();
-    await p2.getByText('0/9').first().waitFor();
+    await p2.getByText('這裡還是空的').waitFor();
+    if (await p2.locator('main').getByText('0/9').count()) throw new Error('新使用者不應看到一整排 0');
     await c2.close();
   });
 
@@ -919,7 +991,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   const m = await mctx.newPage();
   m.on('pageerror', (e) => errors.push('mobile: ' + e.message));
   await step('手機版：所有頁面無橫向捲動', async () => {
-    const routes = ['', 'daily', 'learn', 'learn/ch1', 'learn/ch2', 'learn/ch6', 'learn/ch7', 'learn/ch9', 'lab', 'lab/habit-curve', 'challenge', 'journal', 'journal?tab=notes', 'dashboard', 'references', 'data', 'daily/read', 'pattern', 'pattern/approval', 'pattern/impress', 'pattern/promises', 'pattern/shortterm', 'pattern/assessment', 'pattern/workshop', 'challenge?type=pattern', 'habits7', 'habits7/proactive', 'habits7/end', 'habits7/first', 'habits7/winwin', 'habits7/understand', 'habits7/synergize', 'habits7/renew', 'habits7/plan', 'play', 'play/quest', 'play/surprise', 'play/wheel', 'play/stories', 'play/garden', 'play/collection', 'play/capsule', 'plans', 'learning', 'me'];
+    const routes = ['', 'daily', 'learn', 'learn/ch1', 'learn/ch2', 'learn/ch6', 'learn/ch7', 'learn/ch9', 'lab', 'lab/habit-curve', 'challenge', 'journal', 'journal?tab=notes', 'dashboard', 'references', 'data', 'daily/read', 'pattern', 'pattern/approval', 'pattern/impress', 'pattern/promises', 'pattern/shortterm', 'pattern/assessment', 'pattern/workshop', 'challenge?type=pattern', 'habits7', 'habits7/proactive', 'habits7/end', 'habits7/first', 'habits7/winwin', 'habits7/understand', 'habits7/synergize', 'habits7/renew', 'habits7/plan', 'play', 'play/quest', 'play/surprise', 'play/wheel', 'play/stories', 'play/garden', 'play/collection', 'play/capsule', 'plans', 'learning', 'me', 'records'];
     const bad = [];
     for (const r of routes) {
       await m.goto(BASE + '#/' + r);

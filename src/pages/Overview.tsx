@@ -3,7 +3,7 @@
  * 1. 主要入口「今天，你想怎麼探索自己？」三個大按鈕（30 秒內可以開始）
  *    緊接著是「繼續上次」：有進行中的計畫、讀到一半的章節時才出現（真實紀錄）。
  * 2. 成長夥伴＋心智花園預覽
- * 3. 今日推薦（依日期固定的冒險、小卡與心智語句）
+ * 3. 今日小練習（依日期固定的心智語句與小行動；做過測驗時加上間隔回想）
  * 4. 最近收藏
  * 5. 自由探索入口（四大學習系統＋挑戰＋儀表板）：已移到「學習」頁，首頁預設收起
  * 6. 既有完整內容區塊（Daily Rewire 七句卡片、打破慣性焦點卡片、7 Habits 學習地圖、九個章節）預設收起，可在「自訂首頁」開啟
@@ -12,23 +12,22 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Settings2 } from 'lucide-react';
 import { chapters } from '../content/chapters';
-import { affirmations } from '../content/dailyRewire';
-import { badges, buddyLines, buddyWelcomeBack, DEPTH_LABEL, moodCards, quests } from '../content/play';
+import { badges, buddyLines, buddyWelcomeBack } from '../content/play';
 import { SYSTEMS } from '../content/systems';
 import { PATTERN_MODULE, PATTERN_TITLE } from '../content/breakPattern';
 import { H7_MODULE, H7_TITLE } from '../content/habits7';
 import { useStore } from '../store/AppStore';
 import { useToast } from '../components/ui/Toast';
 import HomeHero from '../components/home/HomeHero';
+import TodayCard from '../components/home/TodayCard';
 import Buddy from '../components/play/Buddy';
 import { GardenView } from '../components/play/MindGarden';
-import { CardView } from '../components/play/MoodBox';
 import { readyCapsules } from '../components/play/TimeCapsules';
 import { unlockName } from '../components/play/GrowthWatcher';
 import DailyRewireSection from '../components/daily/DailyRewireSection';
 import { FocusPicker, PatternClosing } from '../components/pattern/shared';
 import { StageMap } from '../components/habits7/shared';
-import { activitySummary, collectActivity, dailyPick, growthPoints } from '../lib/activity';
+import { activitySummary, collectActivity, growthPoints } from '../lib/activity';
 import { formatDate, toDateKey } from '../lib/date';
 import { continueItem } from '../lib/plans';
 import type { HomeSectionId } from '../types';
@@ -36,7 +35,7 @@ import type { HomeSectionId } from '../types';
 const SECTION_LABEL: Record<HomeSectionId, string> = {
   buddy: '成長夥伴',
   garden: '心智花園預覽',
-  today: '今日推薦',
+  today: '今日小練習',
   collection: '最近收藏',
   explore: '自由探索入口',
   daily: 'Daily Rewire 七句卡片',
@@ -59,9 +58,6 @@ export default function Overview() {
   const ready = readyCapsules(data.capsules);
   const resume = continueItem(data);
   const recent = Object.entries(data.unlocks).filter(([k]) => k.startsWith('badge:') || (k.startsWith('plant:') && k !== 'plant:sprout')).sort((a, b) => b[1].date.localeCompare(a[1].date)).slice(0, 3);
-  const quest = dailyPick(quests, 1);
-  const card = dailyPick(moodCards.filter((c) => c.type !== 'affirmation'), 2);
-  const aff = dailyPick(affirmations, 3);
   const summary = activitySummary(events);
   const sysCount: Record<string, number> = {
     neuro: summary.byTheme.neuro ?? 0,
@@ -106,25 +102,8 @@ export default function Overview() {
         </section>
       )}
 
-      {show.today && (
-        <section aria-labelledby="today-h">
-          <h2 id="today-h" className="text-xl font-bold">今日推薦</h2>
-          <p className="text-sm text-muted">每天會換一組；喜歡就試試，不喜歡就跳過。</p>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
-            <Link to="/play/quest" className="card-hover rounded-2xl border border-line bg-surface p-4">
-              <p className="text-xs text-accent">今日輕冒險・{DEPTH_LABEL.short}</p>
-              <p className="mt-1 font-serif text-lg font-bold">{quest.title}</p>
-              <p className="mt-1 text-sm">{quest.depths.short}</p>
-            </Link>
-            <CardView card={card} />
-            <Link to="/daily/read" className="card-hover rounded-2xl bg-gradient-to-br from-soft to-apricot/30 p-4">
-              <p className="text-xs text-accent">今天的心智語句</p>
-              <p className="mt-1 font-serif text-xl font-bold">「{aff.text}」</p>
-              <p className="mt-1 text-sm text-muted">{aff.reflection}</p>
-            </Link>
-          </div>
-        </section>
-      )}
+      {/* 今日小練習：原本三張推薦合併成一張（心智語句＋小行動，做過測驗時加上間隔回想） */}
+      {show.today && <TodayCard />}
 
       {show.collection && (
         <section aria-labelledby="col-h">

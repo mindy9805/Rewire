@@ -1,6 +1,7 @@
 /**
  * 七大習慣自我覺察評估（21 題，五點量表）
  * 結果：七個面向的自我回報頻率、優先改善的習慣（1–3 項）、相關章節與建議工具、歷次變化。
+ * 作答方式：一次一個習慣（3 題）共 7 步，最後一步選優先項目；可以先跳過、之後再回來補答。
  * ⚠️ 僅供自我反思，不是醫學或心理診斷；分數不轉換為自律程度、人格優劣或成功機率。
  */
 import { useState } from 'react';
@@ -69,6 +70,10 @@ export default function PatternAssessment() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [priority, setPriority] = useState<PatternHabitId[]>([]);
   const [viewId, setViewId] = useState<string | null>(null);
+  /** 目前在第幾步：0–6 為七個習慣，7 為選擇優先項目並送出 */
+  const [step, setStep] = useState(0);
+  const LAST = patternHabits.length;
+  const missingSteps = patternHabits.map((h, i) => ({ h, i, n: assessmentQuestions.filter((q) => q.habitId === h.id && !answers[q.id]).length })).filter((x) => x.n > 0);
   const answered = Object.keys(answers).length;
   const history = [...data.patternAssessments].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const viewing = history.find((h) => h.id === viewId) ?? (viewId === null ? history[0] : undefined);
@@ -82,6 +87,7 @@ export default function PatternAssessment() {
     toast('已儲存評估結果');
     setAnswers({});
     setPriority([]);
+    setStep(0);
     setViewId(rec.id);
     requestAnimationFrame(() => document.getElementById('result')?.scrollIntoView({ behavior: scrollBehavior() }));
   };
@@ -92,38 +98,58 @@ export default function PatternAssessment() {
       <SectionTitle eyebrow="Self-Awareness Check" title="七大習慣自我覺察評估" desc="21 題，請依最近兩週的情況作答。沒有好壞之分，只是幫助你看見目前的模式。" />
       <p className="rounded-2xl bg-apricot/25 px-4 py-3 text-sm leading-relaxed">{ASSESSMENT_DISCLAIMER}</p>
 
-      <form onSubmit={submit} className="space-y-6">
-        {patternHabits.map((h) => (
-          <section key={h.id} aria-labelledby={`as-${h.id}`} className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
-            <h2 id={`as-${h.id}`} className="font-serif text-lg font-bold">{h.no}. {h.short}</h2>
-            {assessmentQuestions.filter((q) => q.habitId === h.id).map((q) => (
-              <fieldset key={q.id} className="mt-4">
-                <legend className="text-sm">{q.text}</legend>
-                <div className="mt-2 grid grid-cols-5 gap-1.5">
-                  {assessmentScale.map((s) => (
-                    <label key={s.v} className={`flex cursor-pointer flex-col items-center rounded-xl border px-1 py-2 text-center text-xs transition focus-within:ring-2 focus-within:ring-accent ${answers[q.id] === s.v ? 'border-accent bg-accent text-onaccent' : 'border-line bg-bg hover:border-accent/50'}`}>
-                      <input type="radio" name={q.id} value={s.v} className="sr-only" checked={answers[q.id] === s.v} onChange={() => setAnswers((a) => ({ ...a, [q.id]: s.v }))} />
-                      <span className="font-display text-base">{s.v}</span>{s.label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
-          </section>
-        ))}
-        <fieldset className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
-          <legend className="px-1 font-serif text-lg font-bold">你優先希望改善哪些習慣？（選 1–3 項，可不選）</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {patternHabits.map((h) => {
-              const on = priority.includes(h.id);
-              return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id]))} className={on ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{h.short}</button>;
-            })}
+      <form onSubmit={submit} className="space-y-4">
+        {/* 步驟進度 */}
+        <div>
+          <p className="flex justify-between text-xs text-muted"><span>第 {step + 1}／{LAST + 1} 步</span><span aria-live="polite">已作答 {answered}/21</span></p>
+          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-soft" role="progressbar" aria-label="作答進度" aria-valuemin={0} aria-valuemax={21} aria-valuenow={answered}>
+            <div className="h-full rounded-full bg-accent transition-all duration-300" style={{ width: `${Math.round((answered / 21) * 100)}%` }} />
           </div>
-          <p className="mt-2 text-xs text-muted">優先順序由你決定，不一定是頻率最高的項目。選擇後會同步為「你最想調整的習慣」。</p>
-        </fieldset>
-        <div className="sticky bottom-20 z-10 flex items-center gap-3 rounded-2xl border border-line bg-bg/95 p-3 backdrop-blur lg:bottom-4">
-          <span className="text-sm text-muted" aria-live="polite">已作答 {answered}/21</span>
-          <button className="btn-primary ml-auto" type="submit" disabled={answered < 21}>查看結果並儲存</button>
+        </div>
+        {step < LAST ? (() => {
+          const h = patternHabits[step];
+          return (
+            <section key={h.id} aria-labelledby={`as-${h.id}`} className="rounded-2xl border border-line bg-surface p-4 motion-safe:animate-fade-up sm:p-5">
+              <h2 id={`as-${h.id}`} className="font-serif text-lg font-bold">{h.no}. {h.short}</h2>
+              {assessmentQuestions.filter((q) => q.habitId === h.id).map((q) => (
+                <fieldset key={q.id} className="mt-4">
+                  <legend className="text-sm">{q.text}</legend>
+                  <div className="mt-2 grid grid-cols-5 gap-1.5">
+                    {assessmentScale.map((sc) => (
+                      <label key={sc.v} className={`flex cursor-pointer flex-col items-center rounded-xl border px-1 py-2 text-center text-xs transition focus-within:ring-2 focus-within:ring-accent ${answers[q.id] === sc.v ? 'border-accent bg-accent text-onaccent' : 'border-line bg-bg hover:border-accent/50'}`}>
+                        <input type="radio" name={q.id} value={sc.v} className="sr-only" checked={answers[q.id] === sc.v} onChange={() => setAnswers((a) => ({ ...a, [q.id]: sc.v }))} />
+                        <span className="font-display text-base">{sc.v}</span>{sc.label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ))}
+            </section>
+          );
+        })() : (
+          <fieldset className="rounded-2xl border border-line bg-surface p-4 motion-safe:animate-fade-up sm:p-5">
+            <legend className="px-1 font-serif text-lg font-bold">你優先希望改善哪些習慣？（選 1–3 項，可不選）</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {patternHabits.map((h) => {
+                const on = priority.includes(h.id);
+                return <button key={h.id} type="button" aria-pressed={on} disabled={!on && priority.length >= 3} onClick={() => setPriority((p) => (on ? p.filter((x) => x !== h.id) : [...p, h.id]))} className={on ? 'btn-primary btn-sm' : 'btn-secondary btn-sm'}>{h.short}</button>;
+              })}
+            </div>
+            <p className="mt-2 text-xs text-muted">優先順序由你決定，不一定是頻率最高的項目。選擇後會同步為「你最想調整的習慣」。</p>
+            {missingSteps.length > 0 && (
+              <div className="mt-4 rounded-xl bg-apricot/25 p-3 text-sm">
+                還有 {21 - answered} 題沒有作答，全部作答後才能看結果：
+                <span className="mt-2 flex flex-wrap gap-2">{missingSteps.map((m) => <button key={m.h.id} type="button" className="btn-ghost btn-sm" onClick={() => setStep(m.i)}>回到「{m.h.short}」（{m.n} 題）</button>)}</span>
+              </div>
+            )}
+          </fieldset>
+        )}
+        <div className="sticky bottom-20 z-10 flex items-center gap-2 rounded-2xl border border-line bg-bg p-3 lg:bottom-4">
+          <button type="button" className="btn-ghost btn-sm" disabled={step === 0} onClick={() => setStep((x) => x - 1)}>← 上一步</button>
+          {/* 兩個按鈕給不同 key：避免 React 重複使用同一個元素，讓「下一步」的點擊在變成送出按鈕後誤觸送出 */}
+          {step < LAST
+            ? <button key="next" type="button" className="btn-primary ml-auto" onClick={() => setStep((x) => x + 1)}>{patternHabits[step] && assessmentQuestions.filter((q) => q.habitId === patternHabits[step].id).every((q) => answers[q.id]) ? '下一步' : '先跳過，下一步'}</button>
+            : <button key="submit" className="btn-primary ml-auto" type="submit" disabled={answered < 21}>查看結果並儲存</button>}
         </div>
       </form>
 

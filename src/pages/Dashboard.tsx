@@ -16,6 +16,7 @@ import { affirmationMap } from '../content/dailyRewire';
 import { chapterLabel } from '../content/chapters';
 import { shortDate, formatDate, formatDateTime } from '../lib/date';
 import { planText } from '../components/interactive/IfThenPlanner';
+import { collectActivity } from '../lib/activity';
 
 const tooltipStyle = { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 12, fontSize: 12 };
 const axis = { fontSize: 11, fill: 'rgb(var(--muted))' };
@@ -34,6 +35,7 @@ function Stat({ icon: Icon, label, value, sub }: { icon: typeof BookOpen; label:
 export default function Dashboard() {
   const { data } = useStore();
   const cs = chapterStats(data);
+  const hasAny = collectActivity(data).length > 0;
   const ch = challengeStats(data);
   const ds = dailyStats(data);
   const freq = practiceFrequency(data);
@@ -48,6 +50,11 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 motion-safe:animate-fade-up">
       <SectionTitle eyebrow="Dashboard" title="學習儀表板" desc="所有數字都來自你在這台裝置上留下的真實紀錄，只用來回顧，不是評分。任何區塊都可以按右上角的眼睛圖示隱藏。" />
+
+      {/* 新使用者：整頁只顯示一個空狀態與一個開始按鈕，不顯示一整排 0 */}
+      {!hasAny ? (
+        <EmptyState title="這裡還是空的" desc="完成任何一個練習、測驗或寫下一則反思之後，這裡就會開始整理你的真實紀錄。" action={<Link to="/" className="btn-primary btn-sm">回到「今天」挑一個小練習</Link>} />
+      ) : (<>
 
       <Hideable id="play" title="自願參與與輕鬆探索">
         <PlayDashboard />
@@ -208,6 +215,7 @@ export default function Dashboard() {
         </ul>
       </Card>
       </Hideable>
+      </>)}
     </div>
   );
 }

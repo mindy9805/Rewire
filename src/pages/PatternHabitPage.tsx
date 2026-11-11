@@ -25,17 +25,11 @@ import type { PatternHabitId } from '../types';
 import { scrollBehavior } from '../lib/motion';
 import Phrased from '../components/ui/Phrased';
 import SectionProgress from '../components/ui/SectionProgress';
+import CollapsibleSection from '../components/ui/CollapsibleSection';
 
-function Sec({ id, no, title, children }: { id: string; no: number; title: string; children: ReactNode }) {
-  return (
-    <section id={id} aria-labelledby={`${id}-h`} className="mt-10 scroll-mt-24">
-      <h2 id={`${id}-h`} className="mb-3 flex items-baseline gap-2 text-xl font-bold">
-        <span className="font-display text-base italic text-sage">{String(no).padStart(2, '0')}</span>{title}
-      </h2>
-      {children}
-    </section>
-  );
-}
+/** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
+const OPEN_BY_DEFAULT = new Set(['definition', 'alternatives', 'reflections', 'experiment']);
+const Sec = (props: { id: string; no: number; title: string; children: ReactNode }) => <CollapsibleSection {...props} defaultOpen={OPEN_BY_DEFAULT.has(props.id)} />;
 
 export default function PatternHabitPage() {
   const { habitId } = useParams();
@@ -72,7 +66,8 @@ export default function PatternHabitPage() {
   };
 
   return (
-    <article className="motion-safe:animate-fade-up">
+    // key＝習慣 id：換到另一個習慣時重新建立頁面，段落展開狀態不會沿用上一個習慣
+    <article key={h.id} className="motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/pattern" className="hover:text-accent">打破慣性</Link> / Habit 0{h.no}</nav>
       <header className="mt-3 flex items-start gap-4">
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-soft text-accent"><HabitIcon h={h} className="h-7 w-7" /></span>

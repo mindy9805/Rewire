@@ -57,6 +57,9 @@ export default function ChapterPage() {
   const progress = data.chapters[chapter.id];
   const notes = data.notes.filter((n) => n.chapterId === chapter.id);
   const relatedHabits = patternHabits.filter((h) => h.chapterIds.includes(chapter.id));
+  // 閱讀模式：完整版／精簡版（只看學習目標、核心概念、互動練習、測驗與摘要），設定會記住
+  const full = data.settings.readingMode !== 'brief';
+  const setMode = (m: 'full' | 'brief') => update((p) => ({ ...p, settings: { ...p.settings, readingMode: m } }));
   const highlightOf = (source: string) => notes.find((n) => n.kind === 'highlight' && n.source === source);
 
   const toggleHighlight = (source: string, content: string) => {
@@ -97,9 +100,15 @@ export default function ChapterPage() {
           <a href="#quiz" className="text-accent underline">跳到測驗</a>
           {progress?.completed && <span className="flex items-center gap-1 text-accent"><CheckCircle2 className="h-4 w-4" aria-hidden />已完成</span>}
         </div>
+        <div role="group" aria-label="閱讀模式" aria-describedby="mode-hint" className="mt-4 inline-flex rounded-full border border-line bg-surface p-1 text-sm">
+          {([['full', `完整版・約 ${chapter.minutes} 分鐘`], ['brief', '精簡版']] as const).map(([m, label]) => (
+            <button key={m} type="button" aria-pressed={(m === 'full') === full} onClick={() => setMode(m)} className={`rounded-full px-3 py-1.5 ${(m === 'full') === full ? 'bg-accent text-onaccent' : 'text-ink'}`}>{label}</button>
+          ))}
+        </div>
+        <p id="mode-hint" className="mt-1.5 text-xs text-muted">{full ? '想先抓重點？精簡版只看學習目標、核心概念、互動練習、摘要與測驗。' : '精簡版：只看學習目標、核心概念、互動練習、摘要與測驗。'}</p>
       </header>
       {/* 黏在頂部的段落進度列：本章共有十多段，隨時知道讀到哪、可直接跳段 */}
-      <SectionProgress pageKey={chapter.id} />
+      <SectionProgress pageKey={`${chapter.id}-${full ? 'full' : 'brief'}`} />
 
       <Block id="objectives" icon={Target} title="學習目標">
         <ul className="grid gap-2 sm:grid-cols-2">
@@ -125,6 +134,7 @@ export default function ChapterPage() {
         </dl>
       </Block>
 
+      {full && (<>
       <section aria-label="深入解釋" className="mt-12">
         <h2 className="mb-2 text-xl font-bold sm:text-2xl">深入解釋</h2>
         <p className="mb-6 text-sm text-muted">點擊段落右側的書籤，即可把重點收藏到筆記。</p>
@@ -178,6 +188,8 @@ export default function ChapterPage() {
         </ol>
       </Block>
 
+      </>)}
+
       <Block id="interactive" icon={FlaskConical} title={`互動練習：${INTERACTIVE_META[chapter.interactive].title}`}>
         <p className="-mt-2 mb-4 text-sm text-muted">{INTERACTIVE_META[chapter.interactive].desc}</p>
         <div className="rounded-3xl border border-line bg-bg p-3 sm:p-5">
@@ -185,6 +197,7 @@ export default function ChapterPage() {
         </div>
       </Block>
 
+      {full && (
       <Block id="reflection" icon={MessageCircleQuestion} title="反思問題">
         <div className="rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-5">
           <p className="font-serif text-lg leading-relaxed">{chapter.reflection}</p>
@@ -193,6 +206,8 @@ export default function ChapterPage() {
           <button className="btn-primary mt-3" onClick={saveReflection} disabled={!reflection.trim()}>儲存反思</button>
         </div>
       </Block>
+
+      )}
 
       <Block id="quiz" icon={ListChecks} title={`互動測驗（${chapter.quiz.length} 題）`}>
         <Quiz chapterId={chapter.id} questions={chapter.quiz} />
@@ -208,6 +223,11 @@ export default function ChapterPage() {
         </button>
       </Block>
 
+      {!full && (
+        <p className="mt-10 rounded-2xl bg-soft/60 p-4 text-sm">目前是精簡版。想看深入解釋、生活案例、反思問題、本章筆記與研究來源，<button type="button" className="text-accent underline" onClick={() => setMode('full')}>切換到完整版</button>。</p>
+      )}
+
+      {full && (<>
       <Block id="daily" icon={Sparkles} title="對應的每日心智語句">
         <p className="-mt-2 mb-4 text-sm text-muted">把本章的知識帶進每天的自我對話。</p>
         <div className="grid gap-4 md:grid-cols-2">
@@ -251,6 +271,7 @@ export default function ChapterPage() {
       <Block id="references" icon={Library} title="研究來源">
         <ReferenceList refs={getReferences(chapter.referenceIds)} />
       </Block>
+      </>)}
 
       <nav aria-label="章節切換" className="mt-14 grid gap-3 border-t border-line pt-6 sm:grid-cols-2">
         {prev ? (

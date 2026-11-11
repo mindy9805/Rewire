@@ -96,6 +96,14 @@ describe('動畫設定', () => {
   });
 });
 
+describe('章節閱讀模式', () => {
+  it('舊資料沒有 readingMode 時為完整版；只接受 full／brief', () => {
+    expect(normalize({ settings: {} }).settings.readingMode).toBe('full');
+    expect(normalize({ settings: { readingMode: 'brief' } }).settings.readingMode).toBe('brief');
+    expect(normalize({ settings: { readingMode: 'short' } }).settings.readingMode).toBe('full');
+  });
+});
+
 describe('validateBackup', () => {
   it('接受本網站匯出的備份', () => {
     const data = createEmptyData();

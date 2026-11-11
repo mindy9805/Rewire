@@ -31,6 +31,7 @@ import NotFound from './pages/NotFound';
 import Plans from './pages/Plans';
 import Learning from './pages/Learning';
 import Me from './pages/Me';
+import Records from './pages/Records';
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ export default function App() {
                 <Route path="plans" element={<Plans />} />
                 <Route path="learning" element={<Learning />} />
                 <Route path="me" element={<Me />} />
+                <Route path="records" element={<Records />} />
                 <Route path="daily" element={<Daily />} />
                 {/* Break the Pattern｜打破慣性（舊網址 /habits 自動轉址） */}
                 <Route path="pattern" element={<PatternHub />} />
