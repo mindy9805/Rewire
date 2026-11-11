@@ -1,0 +1,88 @@
+/* 全站樣式：Tailwind 基礎 + 品牌色變數 + 共用元件 class */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 品牌色（以 RGB 數值定義，搭配 Tailwind 透明度語法） ===== */
+:root {
+  --bg: 250 248 244; /* 奶油白 #FAF8F4 */
+  --surface: 255 255 255;
+  --soft: 233 238 231; /* 淺灰綠 #E9EEE7 */
+  --ink: 48 54 48; /* 深灰黑 #303630 */
+  --muted: 92 102 94; /* 次要文字（對比度 > 4.5:1） */
+  --line: 221 227 218;
+  --sage: 168 187 163; /* 鼠尾草綠 #A8BBA3 */
+  --forest: 54 89 75; /* 深森林綠 #36594B */
+  --apricot: 232 204 178; /* 淺杏色 #E8CCB2 */
+  --accent: 54 89 75; /* 互動強調色＝深森林綠 */
+  --onaccent: 250 248 244;
+  color-scheme: light;
+}
+
+/* 深色模式：降低亮度、保留品牌色調 */
+.dark {
+  --bg: 27 32 29;
+  --surface: 36 42 38;
+  --soft: 46 54 49;
+  --ink: 233 238 231;
+  --muted: 178 189 180;
+  --line: 62 72 66;
+  --sage: 140 164 135;
+  --forest: 168 187 163;
+  --apricot: 120 96 76;
+  --accent: 168 199 160;
+  --onaccent: 27 32 29;
+  color-scheme: dark;
+}
+
+/* ===== 字體大小切換（作用在根元素，所有 rem 單位同步縮放） ===== */
+html[data-font='sm'] { font-size: 15px; }
+html[data-font='md'] { font-size: 16px; }
+html[data-font='lg'] { font-size: 18px; }
+html[data-font='xl'] { font-size: 20px; }
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 { @apply font-serif; letter-spacing: 0.01em; }
+  /* 清楚的鍵盤焦點狀態 */
+  :focus-visible { outline: 3px solid rgb(var(--accent)); outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: rgb(var(--apricot) / 0.7); }
+  /* 長字串（網址、英文）自動斷行，避免手機橫向捲動 */
+  p, li, dd, td { overflow-wrap: anywhere; }
+}
+
+@layer components {
+  .btn { @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-accent text-onaccent hover:opacity-90; }
+  .btn-secondary { @apply btn border border-accent/40 bg-surface text-accent hover:bg-soft; }
+  .btn-ghost { @apply btn text-ink hover:bg-soft; }
+  .btn-danger { @apply btn bg-[#9B3D35] text-white hover:opacity-90; }
+  .btn-sm { @apply min-h-[2.25rem] px-3.5 py-1.5 text-xs; }
+  .icon-btn { @apply inline-flex h-10 w-10 items-center justify-center rounded-full text-ink transition hover:bg-soft; }
+  .field-label { @apply mb-1.5 block text-sm font-medium text-ink; }
+  .field { @apply w-full rounded-xl border border-line bg-bg px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40; }
+  .chip { @apply inline-flex items-center rounded-full bg-soft px-2.5 py-0.5 text-xs text-ink; }
+  .prose-rw p { @apply mb-4 leading-[1.9] text-ink; }
+  .card-hover { @apply transition hover:-translate-y-0.5 hover:shadow-lg; }
+}
+
+/* ===== 減少動畫偏好：關閉所有轉場與動畫 ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 列印：隱藏導覽，只留內容 */
+@media print {
+  header, nav, aside, .no-print { display: none !important; }
+  body { background: white; }
+}

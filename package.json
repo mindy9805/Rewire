@@ -1,0 +1,42 @@
+{
+  "name": "rewire",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Rewire｜重塑大腦的可能：神經可塑性互動式學習網站",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "e2e": "node e2e/smoke.cjs",
+    "icons": "node scripts/make-icons.cjs"
+  },
+  "dependencies": {
+    "lucide-react": "^1.70.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6",
+    "recharts": "^2.15.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.14.0",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^3.4.19",
+    "typescript": "~5.6.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}
