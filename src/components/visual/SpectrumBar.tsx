@@ -6,7 +6,7 @@ import { Check, TriangleAlert } from 'lucide-react';
 
 export default function SpectrumBar({ left, right, note, leftLabel = '健康', rightLabel = '需要留意' }: { left: string[]; right: string[]; note?: string; leftLabel?: string; rightLabel?: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4">
+    <div data-visual="spectrum" className="rounded-2xl border border-line bg-surface p-4">
       <div className="flex justify-between text-xs text-muted"><span>{leftLabel}</span><span>{rightLabel}</span></div>
       <div className="mt-1.5 h-3 rounded-full bg-gradient-to-r from-[#9DB596] via-[#E8CCB2] to-[#D9A28F]" role="img" aria-label={`從「${leftLabel}」到「${rightLabel}」的光譜：多數行為落在中間，重點是程度`} />
       <div className="mt-3 grid gap-2.5 sm:grid-cols-2">

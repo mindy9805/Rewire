@@ -11,7 +11,7 @@ const POS: [number, number][] = [[180, 40], [270, 150], [180, 262], [90, 150]];
 export default function LoopDiagram({ nodes, title, note = '示意圖，非實際數據' }: { nodes: [LoopNode, LoopNode, LoopNode, LoopNode]; title: string; note?: string }) {
   const aria = `${title}（${note}）：${nodes.map((n, i) => `${i + 1}. ${n.label}：${n.text}`).join(' → ')} → 再回到 ${nodes[0].label}`;
   return (
-    <figure className="rounded-2xl border border-line bg-surface p-3 sm:p-4">
+    <figure data-visual="loop" className="rounded-2xl border border-line bg-surface p-3 sm:p-4">
       <svg viewBox="0 0 360 300" role="img" aria-label={aria} className="mx-auto block h-auto w-full max-w-[440px]">
         <defs>
           <marker id="loop-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" style={{ fill: 'rgb(var(--accent))' }} /></marker>

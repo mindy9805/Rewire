@@ -31,7 +31,7 @@ import SectionProgress from '../components/ui/SectionProgress';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
 import { EvidenceBadge, IconCardGrid, KeyPointCard, LoopDiagram, MoreDetails, SpectrumBar, StepCards, WatercolorSpot } from '../components/visual';
 import { PATTERN_ICONS, iconAt } from '../components/pattern/visualIcons';
-import { Brain, MessageCircleQuestion, Timer } from 'lucide-react';
+import { Brain, Lightbulb, MessageCircleQuestion, Timer } from 'lucide-react';
 
 /** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
 const OPEN_BY_DEFAULT = new Set(['definition', 'alternatives', 'reflections', 'experiment']);
@@ -111,12 +111,17 @@ export default function PatternHabitPage() {
       </Sec>
       <Sec allOpen={!!v} id="mechanisms" no={3} title="可能的心理機制">
         {v ? (<>
-          <LoopDiagram title={`${h.short}的心理循環`} nodes={[{ label: '提示', text: v.loop[0] }, { label: '行為', text: v.loop[1] }, { label: '短期獎賞', text: v.loop[2] }, { label: '強化', text: v.loop[3] }]} />
-          <p className="mt-3 text-xs text-muted">相關的心理學概念：</p>
-          <ul className="mt-1 flex flex-wrap gap-1.5">{h.mechanisms.map((m) => <li key={m.term} className="chip">{m.term.split(/ (?=[A-Z])/)[0]}</li>)}</ul>
-          <MoreDetails label={`看 ${h.mechanisms.length} 個概念的完整說明`}>
-            <dl className="grid gap-3 sm:grid-cols-2">{h.mechanisms.map((m) => <div key={m.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold text-accent">{m.term}</dt><dd className="mt-1 text-sm leading-relaxed">{m.text}</dd></div>)}</dl>
-          </MoreDetails>
+          {v.loop ? (<>
+            <LoopDiagram title={`${h.short}的心理循環`} nodes={v.loop} />
+            <p className="mt-3 text-xs text-muted">相關的心理學概念：</p>
+            <ul className="mt-1 flex flex-wrap gap-1.5">{h.mechanisms.map((m) => <li key={m.term} className="chip">{m.term.split(/ (?=[A-Z])/)[0]}</li>)}</ul>
+            <MoreDetails label={`看 ${h.mechanisms.length} 個概念的完整說明`}>
+              <dl className="grid gap-3 sm:grid-cols-2">{h.mechanisms.map((m) => <div key={m.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold text-accent">{m.term}</dt><dd className="mt-1 text-sm leading-relaxed">{m.text}</dd></div>)}</dl>
+            </MoreDetails>
+          </>) : (
+            // 原文沒有描述「循環」時：以概念卡呈現（名稱＋原文說明），不硬畫循環圖
+            <IconCardGrid columns={2} items={h.mechanisms.map((m) => ({ icon: Lightbulb, title: m.term.split(/ (?=[A-Z])/)[0], text: m.text }))} />
+          )}
         </>) : (
         <dl className="grid gap-3 sm:grid-cols-2">{h.mechanisms.map((m) => <div key={m.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold text-accent">{m.term}</dt><dd className="mt-1 text-sm leading-relaxed">{m.text}</dd></div>)}</dl>
         )}
@@ -147,7 +152,7 @@ export default function PatternHabitPage() {
       </Sec>
       <Sec allOpen={!!v} id="reflections" no={8} title="自我反思問題">
         {v ? (
-          <ul className="grid gap-2 sm:grid-cols-3">{h.reflections.map((r) => <li key={r} className="flex gap-2 rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-3 font-serif text-sm leading-relaxed"><MessageCircleQuestion className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />{r}</li>)}</ul>
+          <ul data-visual="questions" className="grid gap-2 sm:grid-cols-3">{h.reflections.map((r) => <li key={r} className="flex gap-2 rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-3 font-serif text-sm leading-relaxed"><MessageCircleQuestion className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />{r}</li>)}</ul>
         ) : (
         <ul className="space-y-1.5 font-serif leading-relaxed">{h.reflections.map((r) => <li key={r}>・{r}</li>)}</ul>
         )}

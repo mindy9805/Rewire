@@ -8,7 +8,7 @@ export interface IconCardItem { icon: LucideIcon; title?: string; text: string }
 
 export default function IconCardGrid({ items, columns = 3 }: { items: IconCardItem[]; columns?: 2 | 3 }) {
   return (
-    <ul className={`grid gap-2.5 ${columns === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+    <ul data-visual="iconcards" className={`grid gap-2.5 ${columns === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
       {items.map(({ icon: Icon, title, text }, i) => (
         <li key={i} className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-3.5 sm:flex-col sm:items-center sm:text-center">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-soft text-accent"><Icon className="h-5 w-5" aria-hidden /></span>

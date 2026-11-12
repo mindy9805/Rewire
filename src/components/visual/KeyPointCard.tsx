@@ -8,7 +8,7 @@ import MoreDetails from './MoreDetails';
 
 export default function KeyPointCard({ text, spot, icon: Icon, children, moreLabel }: { text: string; spot?: ReactNode; icon?: LucideIcon; children?: ReactNode; moreLabel?: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+    <div data-visual="keypoint" className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
       <div className="flex items-center gap-4">
         {spot && <div className="w-24 shrink-0 sm:w-36">{spot}</div>}
         {!spot && Icon && <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-soft text-accent"><Icon className="h-5 w-5" aria-hidden /></span>}

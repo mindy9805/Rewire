@@ -6,7 +6,7 @@ import { ArrowRight, X, Check } from 'lucide-react';
 
 export default function CompareColumns({ rows, leftTitle, rightTitle }: { rows: { left: string; right: string }[]; leftTitle: string; rightTitle: string }) {
   return (
-    <ul className="space-y-2.5">
+    <ul data-visual="compare" className="space-y-2.5">
       {rows.map((r, i) => (
         <li key={i} className="grid items-stretch gap-1.5 sm:grid-cols-[1fr_auto_1fr]">
           <div className="rounded-2xl bg-apricot/25 p-3 text-sm">

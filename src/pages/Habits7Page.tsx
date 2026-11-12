@@ -29,10 +29,15 @@ import CollapsibleSection from '../components/ui/CollapsibleSection';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
 import { unlockSpeech } from '../lib/speech';
+import { CompareColumns, EvidenceBadge, IconCardGrid, KeyPointCard, MoreDetails, StepCards } from '../components/visual';
+import { situationIcon } from '../components/habits7/visualIcons';
+import { MessageCircleQuestion } from 'lucide-react';
 
 /** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
 const OPEN_BY_DEFAULT = new Set(['definition', 'strategies', 'selfcheck']);
-const Sec = (props: { id: string; no: number; title: string; children: ReactNode }) => <CollapsibleSection {...props} defaultOpen={OPEN_BY_DEFAULT.has(props.id)} />;
+const Sec = (props: { id: string; no: number; title: string; children: ReactNode }) => <CollapsibleSection {...props} defaultOpen={VISUAL || OPEN_BY_DEFAULT.has(props.id)} />;
+/** 圖解版：每段先以圖解呈現（重點卡、情境圖示卡、誤區對照、延伸推論標籤、步驟卡），完整文字收在「看完整說明」；段落預設展開 */
+const VISUAL = true;
 
 export default function Habits7Page() {
   const { habitId } = useParams();
@@ -82,25 +87,31 @@ export default function Habits7Page() {
       <SectionProgress pageKey={h.id} />
 
       <Sec id="definition" no={1} title="習慣定義與核心觀念">
-        <p className="rounded-2xl bg-soft/60 p-4 font-serif text-lg leading-relaxed">{h.core}</p>
-        <div className="prose-rw mt-4">{h.definition.map((p) => <p key={p}>{p}</p>)}</div>
-        {h.importantNote && <aside className="rounded-2xl border-l-4 border-apricot bg-apricot/20 px-4 py-3 text-sm leading-relaxed"><strong>重要觀點：</strong>{h.importantNote}</aside>}
+        <KeyPointCard text={h.core} spot={<span className="flex aspect-square w-full items-center justify-center rounded-3xl bg-gradient-to-br from-soft to-apricot/40 text-accent"><H7Icon h={h} className="h-10 w-10" /></span>} moreLabel="看完整定義">
+          {h.definition.map((p) => <p key={p}>{p}</p>)}
+        </KeyPointCard>
+        {h.importantNote && <div role="note" className="mt-3 rounded-2xl border-l-4 border-apricot bg-apricot/20 px-4 py-3 text-sm leading-relaxed"><strong>重要觀點：</strong>{h.importantNote}</div>}
       </Sec>
       <Sec id="situations" no={2} title="生活與職場情境">
-        <ul className="grid gap-3 md:grid-cols-3">{h.situations.map((s) => <li key={s.label} className="rounded-2xl border border-line bg-surface p-4 text-sm leading-relaxed"><span className="chip mb-2">{s.label}</span><p>{s.text}</p></li>)}</ul>
+        <IconCardGrid items={h.situations.map((x) => ({ icon: situationIcon(x.label), title: x.label, text: x.text }))} />
       </Sec>
       <Sec id="myths" no={3} title="常見認知誤區">
-        <ul className="space-y-2">{h.misconceptions.map((m) => <li key={m.myth} className="grid gap-2 rounded-2xl border border-line bg-surface p-4 text-sm sm:grid-cols-2"><p><span className="text-muted">誤區：</span>{m.myth}</p><p><span className="text-accent">更貼近的理解：</span>{m.better}</p></li>)}</ul>
+        <CompareColumns leftTitle="常見誤解" rightTitle="更貼近的理解" rows={h.misconceptions.map((m) => ({ left: m.myth, right: m.better }))} />
       </Sec>
       <Sec id="neuro" no={4} title="與神經可塑性的可能關聯">
-        <p className="leading-relaxed">{h.neuro.text}</p>
-        <p className="mt-2 rounded-xl bg-apricot/25 px-3 py-2 text-sm"><strong>解讀限制：</strong>{h.neuro.caution}</p>
+        <EvidenceBadge kind="inference" summary={h.neuro.text.split(/(?<=[。！？])/)[0]} meta={[['解讀限制', h.neuro.caution]]} moreLabel="看完整說明">
+          <p className="leading-relaxed">{h.neuro.text}</p>
+        </EvidenceBadge>
       </Sec>
       <Sec id="concepts" no={5} title="心理學或管理學延伸概念">
-        <dl className="grid gap-3 sm:grid-cols-2">{h.concepts.map((c) => <div key={c.term} className="rounded-2xl border border-line bg-surface p-4"><SourceBadge type={c.source} /><dt className="mt-2 font-serif font-bold">{c.term}</dt><dd className="mt-1 text-sm leading-relaxed">{c.text}</dd></div>)}</dl>
+        {/* 延伸概念：先看概念名稱與來源類型；說明收在「看完整說明」 */}
+        <ul data-visual="concepts" className="grid gap-2 sm:grid-cols-2">{h.concepts.map((c) => <li key={c.term} className="flex items-center gap-2 rounded-2xl border border-line bg-surface p-3"><SourceBadge type={c.source} /><span className="min-w-0 font-serif text-sm font-bold">{c.term.split(/ (?=[A-Z])/)[0]}</span></li>)}</ul>
+        <MoreDetails label={`看 ${h.concepts.length} 個概念的完整說明`}>
+        <dl className="grid gap-3 sm:grid-cols-2">{h.concepts.map((c) => <div key={c.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold"><SourceBadge type={c.source} /><span className="mt-2 block">{c.term}</span></dt><dd className="mt-1 text-sm leading-relaxed">{c.text}</dd></div>)}</dl>
+        </MoreDetails>
       </Sec>
       <Sec id="strategies" no={6} title="實際行動策略">
-        <ol className="space-y-2">{h.strategies.map((s, i) => <li key={s} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sageink">{i + 1}</span>{s}</li>)}</ol>
+        <StepCards steps={h.strategies.map((text) => ({ text }))} />
       </Sec>
       <section id="tool" aria-labelledby="tool-h" className="mt-10 scroll-mt-24">
         <h2 id="tool-h" className="mb-1 flex items-baseline gap-2 text-xl font-bold"><span className="font-display text-base italic text-sageink">07</span>互動工具：{h.toolTitle}</h2>
@@ -108,7 +119,7 @@ export default function Habits7Page() {
         <div className="rounded-3xl border border-line bg-bg p-3 sm:p-5"><H7Tool id={h.id} /></div>
       </section>
       <Sec id="reflect" no={8} title="反思問題">
-        <ul className="space-y-1.5 font-serif leading-relaxed">{h.reflections.map((r) => <li key={r}>・{r}</li>)}</ul>
+        <ul data-visual="questions" className="grid gap-2 sm:grid-cols-3">{h.reflections.map((r) => <li key={r} className="flex gap-2 rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-3 font-serif text-sm leading-relaxed"><MessageCircleQuestion className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />{r}</li>)}</ul>
       </Sec>
       <Sec id="selfcheck" no={9} title="自我評估">
         <p className="mb-3 text-sm text-muted">僅供自我觀察，沒有好壞之分，可以定期重做，看看自己的變化。</p>
@@ -146,7 +157,9 @@ export default function Habits7Page() {
       <section aria-labelledby="finish-h" className="mt-14 rounded-3xl border border-accent/40 bg-surface p-5 sm:p-7">
         <h2 id="finish-h" className="flex items-center gap-2 text-2xl font-bold"><CheckCircle2 className="h-6 w-6 text-accent" aria-hidden />完成本章</h2>
         <h3 className="mt-5 font-serif text-lg font-bold">1. 知識測驗</h3>
-        <div className="mt-3"><Quiz chapterId={`h7-${h.id}`} questions={h.quiz} saved={data.h7Quizzes[h.id]} onSave={(r) => update((p) => ({ ...p, h7Quizzes: { ...p.h7Quizzes, [h.id]: r } }))} /></div>
+        <MoreDetails label={`開始測驗（${h.quiz.length} 題）`} defaultOpen={!!data.h7Quizzes[h.id]}>
+          <Quiz chapterId={`h7-${h.id}`} questions={h.quiz} saved={data.h7Quizzes[h.id]} onSave={(r) => update((p) => ({ ...p, h7Quizzes: { ...p.h7Quizzes, [h.id]: r } }))} />
+        </MoreDetails>
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           <div className="rounded-2xl bg-soft/60 p-4 text-sm"><p className="font-medium text-accent">2. 真實生活應用情境</p><p className="mt-1">{h.apply}</p></div>
           <div className="rounded-2xl bg-soft/60 p-4 text-sm"><p className="font-medium text-accent">3. 現在就能完成的行動</p><p className="mt-1">{h.quickAction}</p></div>
@@ -176,7 +189,9 @@ export default function Habits7Page() {
 
       <section aria-labelledby="ref-h" className="mt-10">
         <h2 id="ref-h" className="mb-3 text-xl font-bold">研究與參考來源</h2>
-        <ReferenceList refs={getReferences(h.referenceIds)} />
+        <MoreDetails label={`看 ${h.referenceIds.length} 筆研究來源`}>
+          <ReferenceList refs={getReferences(h.referenceIds)} />
+        </MoreDetails>
       </section>
 
       <nav aria-label="習慣切換" className="mt-14 grid gap-3 border-t border-line pt-6 sm:grid-cols-2">

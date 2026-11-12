@@ -117,6 +117,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('章節測驗作答、評分、重新作答', async () => {
     const quiz = page.locator('#quiz');
+    // 測驗收在「開始測驗」裡：先打開
+    if (!(await quiz.locator('details').evaluate((d) => d.open))) await quiz.locator('summary').click();
     for (const q of await quiz.locator('fieldset').all()) await q.locator('input[type=radio]').nth(1).check();
     await quiz.getByRole('button', { name: '送出答案' }).click();
     await quiz.getByText(/得分：4\/4/).waitFor();
@@ -219,7 +221,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await open('睡眠與記憶鞏固');
     await page.getByRole('button', { name: '儲存紀錄' }).click();
     if ((await store(page)).sleepLogs.length !== 1) throw new Error('睡眠');
-    await page.getByText('不是醫療診斷工具').first().waitFor();
+    // 章節正文也有這句話（收在「看完整說明」裡），這裡確認的是睡眠工具中「看得到」的提醒
+    await page.getByText('不是醫療診斷工具').locator('visible=true').first().waitFor();
   });
   await step('第 8 章 If-Then：建立、複製、編輯', async () => {
     await page.goto(BASE + '#/learn/ch8');
@@ -587,6 +590,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   await step('7 Habits 章節完成：測驗、自我評估、反思、狀態', async () => {
     await page.goto(BASE + '#/habits7/first');
     const fin = page.locator('section[aria-labelledby="finish-h"]');
+    if (!(await fin.locator('details').first().evaluate((d) => d.open))) await fin.locator('summary').first().click();
     for (const f of await fin.locator('fieldset').all()) await f.locator('input[type=radio]').nth(1).check();
     await fin.getByRole('button', { name: '送出答案' }).click();
     await fin.getByText(/得分：/).waitFor();
@@ -953,9 +957,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('第二階段：學習頁段落可展開，段落列可展開全部', async () => {
     await page.goto(BASE + '#/habits7/end');
+    // 圖解版：段落預設展開；點標題可收合，段落列可「展開全部段落」
     const myths = page.getByRole('button', { name: /常見認知誤區/ });
-    if ((await myths.getAttribute('aria-expanded')) !== 'false') throw new Error('應預設收合');
-    if ((await page.getByRole('button', { name: /自我評估/ }).first().getAttribute('aria-expanded')) !== 'true') throw new Error('有練習的段落應預設展開');
+    if ((await myths.getAttribute('aria-expanded')) !== 'true') throw new Error('圖解版應預設展開');
+    await myths.click();
+    if ((await myths.getAttribute('aria-expanded')) !== 'false') throw new Error('點標題應可收合');
     const bar = page.getByTestId('section-progress');
     await bar.getByRole('button', { name: /段落/ }).click();
     await bar.getByRole('button', { name: '展開全部段落' }).click();
@@ -1127,10 +1133,38 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.locator('#mechanisms').getByText(/為避免衝突或被拒絕而優先滿足他人/).waitFor();
     await page.locator('#evidence summary').click();
     await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
-    // 尚未套用圖解的習慣維持原本版面（等樣板確認後再套用）
+    // 其他習慣：有循環描述的畫循環圖；沒有循環描述的（缺少獨處）改用概念卡，不硬畫循環
     await page.goto(BASE + '#/pattern/convenience');
-    await page.locator('#definition').waitFor();
-    if (await page.locator('#mechanisms svg[role=img]').count()) throw new Error('其他習慣不應提前套用');
+    await page.getByRole('img', { name: /的心理循環/ }).waitFor();
+    await page.goto(BASE + '#/pattern/solitude');
+    await page.locator('#mechanisms').getByText('注意力調節').waitFor();
+    if (await page.getByRole('img', { name: /的心理循環/ }).count()) throw new Error('缺少獨處不應畫循環圖');
+  });
+  await step('（二）第 4 步：7 Habits、章節、每日練習、計畫頁的圖解', async () => {
+    // 7 Habits：誤區對照、延伸推論標籤、情境圖示卡
+    await page.goto(BASE + '#/habits7/proactive');
+    await page.locator('#myths').getByText('常見誤解').first().waitFor();
+    await page.locator('#myths').getByText('更貼近的理解').first().waitFor();
+    await page.locator('#neuro').getByText('延伸推論').first().waitFor();
+    await page.locator('#situations').getByText('求職').waitFor();
+    // 章節：小節重點卡＋「看完整說明」後原文完整
+    await page.goto(BASE + '#/learn/ch1');
+    const sec = page.locator('#sec-definition');
+    await sec.getByText('神經可塑性指的是大腦會隨著經驗而改變。').waitFor();
+    if (await sec.getByText(/推翻了過去「成年後大腦就定型」的看法/).isVisible()) throw new Error('其餘段落應收在看完整說明');
+    await sec.locator('summary').click();
+    await sec.getByText(/推翻了過去「成年後大腦就定型」的看法/).waitFor();
+    // 第 6 章：研究數據範圍圖（只用研究報告的數字）
+    await page.goto(BASE + '#/learn/ch6');
+    await page.getByRole('img', { name: /範圍約 18–254 天，中位數約 66 天（出處：Lally 等人（2010））/ }).waitFor();
+    // 每日心智練習：七句各有一張插畫
+    await page.goto(BASE + '#/daily');
+    await page.locator('article').nth(6).waitFor();
+    const spots = await page.locator('article [role=img][aria-label^="插畫："]').count();
+    if (spots < 7) throw new Error('每日七句插畫 ' + spots);
+    // 14 天練習：時間軸
+    await page.goto(BASE + '#/challenge');
+    await page.getByRole('list', { name: '14 天練習進度' }).waitFor();
   });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();

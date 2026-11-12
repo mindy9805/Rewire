@@ -6,7 +6,7 @@ import { ArrowDown, ArrowRight } from 'lucide-react';
 
 export default function ChainDiagram({ steps, title }: { steps: { label: string; text: string }[]; title: string }) {
   return (
-    <ol className="flex flex-col items-stretch gap-1 sm:flex-row sm:items-center" aria-label={title}>
+    <ol data-visual="chain" className="flex flex-col items-stretch gap-1 sm:flex-row sm:items-center" aria-label={title}>
       {steps.map((s, i) => (
         <li key={i} className="flex flex-col items-center gap-1 sm:flex-1 sm:flex-row">
           <div className="w-full rounded-2xl border border-line bg-surface p-3 text-center">

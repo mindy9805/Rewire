@@ -8,7 +8,7 @@ export interface TimelineItem { label: string; state: 'done' | 'today' | 'later'
 
 export default function Timeline({ items, onSelect, current, ariaLabel }: { items: TimelineItem[]; onSelect?: (i: number) => void; current?: number; ariaLabel: string }) {
   return (
-    <ol className="grid grid-cols-7 gap-y-3" aria-label={ariaLabel}>
+    <ol data-visual="timeline" className="grid grid-cols-7 gap-y-3" aria-label={ariaLabel}>
       {items.map((it, i) => {
         const cls = it.state === 'done' ? 'bg-accent text-onaccent border-accent' : it.state === 'today' ? 'border-amber bg-surface text-amber ring-2 ring-amber/40' : 'border-line bg-surface text-muted';
         const label = `${it.title ?? it.label}${it.state === 'done' ? '（已完成）' : it.state === 'today' ? '（下一個）' : ''}`;

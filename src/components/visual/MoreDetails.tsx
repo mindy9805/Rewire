@@ -5,9 +5,9 @@
 import type { ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export default function MoreDetails({ label = '看完整說明', children, className = '' }: { label?: string; children: ReactNode; className?: string }) {
+export default function MoreDetails({ label = '看完整說明', children, className = '', defaultOpen = false }: { label?: string; children: ReactNode; className?: string; defaultOpen?: boolean }) {
   return (
-    <details className={`group mt-2 ${className}`}>
+    <details className={`group mt-2 ${className}`} open={defaultOpen || undefined}>
       <summary className="inline-flex min-h-[2.75rem] cursor-pointer list-none items-center gap-1 text-sm text-accent hover:underline [&::-webkit-details-marker]:hidden">
         <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden />{label}
       </summary>

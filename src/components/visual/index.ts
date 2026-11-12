@@ -12,4 +12,5 @@ export { default as CompareColumns } from './CompareColumns';
 export { default as StepCards } from './StepCards';
 export { default as EvidenceBadge, EvidenceTag, type EvidenceKind } from './EvidenceBadge';
 export { default as Timeline, type TimelineItem } from './Timeline';
-export { default as WatercolorSpot, hasSpot } from './WatercolorSpot';
+export { default as WatercolorSpot, hasSpot, SPOT_KINDS } from './WatercolorSpot';
+export { default as RangeChart } from './RangeChart';

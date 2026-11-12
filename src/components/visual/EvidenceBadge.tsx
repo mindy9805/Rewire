@@ -22,7 +22,7 @@ export function EvidenceTag({ kind, label }: { kind: EvidenceKind; label?: strin
 
 export default function EvidenceBadge({ kind, label, summary, meta = [], children, moreLabel = '看完整說明與研究來源' }: { kind: EvidenceKind; label?: string; summary?: string; meta?: [string, string][]; children?: ReactNode; moreLabel?: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4">
+    <div data-visual="evidence" className="rounded-2xl border border-line bg-surface p-4">
       <EvidenceTag kind={kind} label={label} />
       {summary && <p className="mt-2 text-sm leading-relaxed">{summary}</p>}
       {meta.length > 0 && (

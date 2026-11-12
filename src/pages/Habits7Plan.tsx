@@ -17,6 +17,7 @@ import { nowIso } from '../lib/id';
 import { formatDate, isoToDateKey } from '../lib/date';
 import { planProgress } from '../lib/habits7';
 import type { H7PlanDay } from '../types';
+import { Timeline } from '../components/visual';
 
 const emptyDay: H7PlanDay = { completed: false, reflection: '', actionPlan: '' };
 
@@ -56,19 +57,9 @@ export default function Habits7Plan() {
       {data.h7Plan.startedAt && <p className="text-xs text-muted">開始於 {formatDate(isoToDateKey(data.h7Plan.startedAt))}</p>}
 
       <nav aria-label="選擇天數">
-        <ol className="grid grid-cols-7 gap-1.5">
-          {planDays.map((p) => {
-            const c = data.h7Plan.days[String(p.day)]?.completed;
-            return (
-              <li key={p.day}>
-                <button onClick={() => setParams({ day: String(p.day) })} aria-current={p.day === day ? 'step' : undefined} aria-label={`第 ${p.day} 天：${p.title}${c ? '（已完成）' : ''}`}
-                  className={`flex aspect-square w-full flex-col items-center justify-center rounded-xl border text-xs ${p.day === day ? 'border-accent bg-accent text-onaccent' : c ? 'border-sage bg-soft text-accent' : 'border-line bg-surface hover:border-accent/50'}`}>
-                  <span className="font-display text-sm">{p.day}</span>{c && <CheckCircle2 className="h-3 w-3" aria-hidden />}
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+        {/* 時間軸：每一列一週；已完成（勾勾）、下一個（琥珀色）、之後 */}
+        <Timeline ariaLabel="21 天探索計畫進度" current={day - 1} onSelect={(i) => setParams({ day: String(i + 1) })}
+          items={planDays.map((p) => ({ label: String(p.day), title: `第 ${p.day} 天：${p.title}`, state: data.h7Plan.days[String(p.day)]?.completed ? 'done' : p.day === pp.nextDay ? 'today' : 'later' }))} />
         <p className="mt-1 text-xs text-muted">每一列代表一週；每三格對應一個習慣。</p>
       </nav>
 

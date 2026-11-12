@@ -6,7 +6,7 @@
 import { Briefcase, HandHelping, Smartphone, PenLine, MessageSquareQuote, ListChecks, MessageCircle, Sun, Moon } from 'lucide-react';
 import { patternMap } from '../../content/breakPattern';
 import { h7Map } from '../../content/habits7';
-import { ChainDiagram, CompareColumns, EvidenceBadge, IconCardGrid, KeyPointCard, LoopDiagram, SpectrumBar, StepCards, Timeline, WatercolorSpot } from '../../components/visual';
+import { ChainDiagram, CompareColumns, EvidenceBadge, IconCardGrid, KeyPointCard, LoopDiagram, SpectrumBar, StepCards, Timeline, WatercolorSpot, SPOT_KINDS } from '../../components/visual';
 import { useStore } from '../../store/AppStore';
 
 const Block = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -24,6 +24,7 @@ export default function VisualPreview() {
         <h1 className="text-2xl font-bold">視覺元件預覽（開發用）</h1>
         <button type="button" className="btn-secondary btn-sm" onClick={() => update((d) => ({ ...d, settings: { ...d.settings, theme: dark ? 'light' : 'dark' } }))}>{dark ? <Sun className="h-4 w-4" aria-hidden /> : <Moon className="h-4 w-4" aria-hidden />}切換{dark ? '淺色' : '深色'}</button>
       </div>
+      <Block title="WatercolorSpot 全部主題"><ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">{SPOT_KINDS().map((k) => <li key={k} className="rounded-xl border border-line bg-surface p-2 text-center text-xs"><WatercolorSpot kind={k} />{k}</li>)}</ul></Block>
       <Block title="KeyPointCard＋WatercolorSpot"><KeyPointCard text={h.definition} spot={<WatercolorSpot kind="approval" />}><p>{h.behaviors.join('、')}</p></KeyPointCard></Block>
       <Block title="IconCardGrid"><IconCardGrid items={h.situations.map((text, i) => ({ icon: [Briefcase, HandHelping, Smartphone][i], text }))} /></Block>
       <Block title="LoopDiagram"><LoopDiagram title="心理機制循環" nodes={[{ label: '提示', text: '主管皺眉、別人請求' }, { label: '行為', text: '附和、答應' }, { label: '短期獎賞', text: '避免衝突、被喜歡' }, { label: '強化', text: '下次更快附和' }]} /></Block>
