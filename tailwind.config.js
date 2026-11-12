@@ -21,6 +21,8 @@ export default {
         sageink: v('sageink'), // 鼠尾草綠的文字版（對比足夠）
         deep: v('deep'), // 深色區塊底色（深色模式也維持深綠）
         ondeep: v('ondeep'),
+        amber: v('amber'), // 圖解用琥珀色（深淺模式各一組）
+        rose: v('rose'), // 圖解用玫瑰色
       },
       fontFamily: {
         sans: ['"Noto Sans TC"', 'system-ui', '-apple-system', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],

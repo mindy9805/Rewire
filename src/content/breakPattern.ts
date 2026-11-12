@@ -74,6 +74,16 @@ export interface PatternHabit {
   toolTitle: string;
   /** 14 天打破慣性挑戰：每日行動（標準版） */
   challengeActions: string[];
+  /**
+   * 圖解用的短標籤（由本習慣既有文字提煉，不新增事實）。有這個欄位的習慣頁會以圖解呈現。
+   * loop：心理機制循環圖的四個節點（提示、行為、短期獎賞、強化），每個 ≤ 10 字
+   * evidenceKind／evidenceLabel：研究證據的類型標籤
+   */
+  visual?: {
+    loop: [string, string, string, string];
+    evidenceKind: 'research' | 'preliminary' | 'inference';
+    evidenceLabel: string;
+  };
 }
 
 export const patternHabits: PatternHabit[] = [
@@ -81,6 +91,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'approval',
     no: 1,
+    // 圖解標籤：提示／行為取自「常見情境」1、2；短期獎賞取自機制「討好型行為」（避免衝突、短期降低焦慮）；
+    // 強化取自「與神經可塑性的關聯」（重複會強化路徑）；證據類型取自「適用限制」（相關性設計）
+    visual: {
+      loop: ['主管皺眉、別人請求', '附和、答應', '避免衝突、焦慮降低', '下次更快附和'],
+      evidenceKind: 'preliminary',
+      evidenceLabel: '相關性研究為主',
+    },
     short: '過度尋求認可',
     title: '過度尋求他人認可',
     concept: 'External Validation',

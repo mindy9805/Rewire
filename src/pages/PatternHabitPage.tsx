@@ -1,6 +1,9 @@
 /**
  * 單一習慣學習頁：10 個段落（定義、情境、機制、影響、界線、神經可塑性、替代行動、反思、行動實驗、研究證據）
  * ＋互動工具＋對應心智語句＋相關章節。
+ *
+ * 圖解版：習慣資料有 visual 欄位時，每段先以圖解呈現（重點卡、圖示卡、循環圖、光譜、步驟卡、證據標籤），
+ * 完整文字收在「看完整說明」裡，內容一字不刪；所有段落預設展開（圖解本身就是精簡版）。
  */
 import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
@@ -26,10 +29,13 @@ import { scrollBehavior } from '../lib/motion';
 import Phrased from '../components/ui/Phrased';
 import SectionProgress from '../components/ui/SectionProgress';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
+import { EvidenceBadge, IconCardGrid, KeyPointCard, LoopDiagram, MoreDetails, SpectrumBar, StepCards, WatercolorSpot } from '../components/visual';
+import { PATTERN_ICONS, iconAt } from '../components/pattern/visualIcons';
+import { Brain, MessageCircleQuestion, Timer } from 'lucide-react';
 
 /** 段落：預設展開有動手練習的段落，其他段落可點標題展開（見 CollapsibleSection） */
 const OPEN_BY_DEFAULT = new Set(['definition', 'alternatives', 'reflections', 'experiment']);
-const Sec = (props: { id: string; no: number; title: string; children: ReactNode }) => <CollapsibleSection {...props} defaultOpen={OPEN_BY_DEFAULT.has(props.id)} />;
+const Sec = (props: { id: string; no: number; title: string; children: ReactNode; allOpen?: boolean }) => <CollapsibleSection {...props} defaultOpen={props.allOpen || OPEN_BY_DEFAULT.has(props.id)} />;
 
 export default function PatternHabitPage() {
   const { habitId } = useParams();
@@ -46,6 +52,11 @@ export default function PatternHabitPage() {
   const next = patternHabits[idx + 1];
   const experiments = data.counterChoices.filter((c) => c.habitId === h.id);
   const focused = data.patternFocus.includes(h.id);
+  // 圖解版（有 visual 欄位的習慣）
+  const v = h.visual;
+  const icons = PATTERN_ICONS[h.id];
+  /** 第一句話（以句號、驚嘆號、問號為界），用在證據摘要等需要精簡的地方 */
+  const firstSentence = (t: string) => t.split(/(?<=[。！？])/)[0];
 
   const saveExperiment = () => {
     upsert('counterChoices', { id: uid(), date: toDateKey(), habitId: h.id, choice: `【${h.experiment.title}】${result.trim()}`, createdAt: nowIso() });
@@ -83,43 +94,75 @@ export default function PatternHabitPage() {
       </div>
       <SectionProgress pageKey={h.id} />
 
-      <Sec id="definition" no={1} title="行為定義">
+      <Sec allOpen={!!v} id="definition" no={1} title="行為定義">
+        {v ? (
+          <KeyPointCard text={h.definition} spot={<WatercolorSpot kind={h.id} />} moreLabel="看常見表現">
+            <ul className="grid gap-1.5 sm:grid-cols-2">{h.behaviors.map((b) => <li key={b} className="rounded-xl bg-soft/60 px-3 py-2">・{b}</li>)}</ul>
+          </KeyPointCard>
+        ) : (<>
         <p className="leading-relaxed">{h.definition}</p>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">{h.behaviors.map((b) => <li key={b} className="rounded-xl bg-soft/60 px-3 py-2 text-sm">・{b}</li>)}</ul>
+        </>)}
       </Sec>
-      <Sec id="situations" no={2} title="常見生活情境">
+      <Sec allOpen={!!v} id="situations" no={2} title="常見生活情境">
+        {v ? <IconCardGrid items={h.situations.map((text, i) => ({ icon: iconAt(icons?.situations, i), text }))} /> : (
         <ul className="space-y-2">{h.situations.map((s) => <li key={s} className="rounded-2xl border border-line bg-surface p-4 text-sm leading-relaxed">{s}</li>)}</ul>
+        )}
       </Sec>
-      <Sec id="mechanisms" no={3} title="可能的心理機制">
+      <Sec allOpen={!!v} id="mechanisms" no={3} title="可能的心理機制">
+        {v ? (<>
+          <LoopDiagram title={`${h.short}的心理循環`} nodes={[{ label: '提示', text: v.loop[0] }, { label: '行為', text: v.loop[1] }, { label: '短期獎賞', text: v.loop[2] }, { label: '強化', text: v.loop[3] }]} />
+          <p className="mt-3 text-xs text-muted">相關的心理學概念：</p>
+          <ul className="mt-1 flex flex-wrap gap-1.5">{h.mechanisms.map((m) => <li key={m.term} className="chip">{m.term.split(/ (?=[A-Z])/)[0]}</li>)}</ul>
+          <MoreDetails label={`看 ${h.mechanisms.length} 個概念的完整說明`}>
+            <dl className="grid gap-3 sm:grid-cols-2">{h.mechanisms.map((m) => <div key={m.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold text-accent">{m.term}</dt><dd className="mt-1 text-sm leading-relaxed">{m.text}</dd></div>)}</dl>
+          </MoreDetails>
+        </>) : (
         <dl className="grid gap-3 sm:grid-cols-2">{h.mechanisms.map((m) => <div key={m.term} className="rounded-2xl border border-line bg-surface p-4"><dt className="font-serif font-bold text-accent">{m.term}</dt><dd className="mt-1 text-sm leading-relaxed">{m.text}</dd></div>)}</dl>
+        )}
       </Sec>
-      <Sec id="impacts" no={4} title="可能產生的長期影響">
+      <Sec allOpen={!!v} id="impacts" no={4} title="可能產生的長期影響">
+        {v ? <IconCardGrid items={h.impacts.map((text, i) => ({ icon: iconAt(icons?.impacts, i), text }))} /> : (
         <ul className="space-y-1.5 text-sm leading-relaxed">{h.impacts.map((i) => <li key={i}>・{i}</li>)}</ul>
+        )}
         <p className="mt-2 text-xs text-muted">「可能」代表這些影響因人、因程度與情境而異，並非必然發生。</p>
       </Sec>
-      <Sec id="boundary" no={5} title="健康行為與過度行為的界線">
+      <Sec allOpen={!!v} id="boundary" no={5} title="健康行為與過度行為的界線">
+        {v ? <SpectrumBar left={h.boundary.healthy} right={h.boundary.excessive} note={h.boundary.note} /> : (<>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl bg-soft/70 p-4 text-sm"><p className="font-medium text-accent">健康、有功能的時候</p><ul className="mt-1 space-y-1">{h.boundary.healthy.map((x) => <li key={x}>・{x}</li>)}</ul></div>
           <div className="rounded-2xl bg-apricot/25 p-4 text-sm"><p className="font-medium">可能過度的訊號</p><ul className="mt-1 space-y-1">{h.boundary.excessive.map((x) => <li key={x}>・{x}</li>)}</ul></div>
         </div>
-        <aside className="mt-3 rounded-2xl border-l-4 border-accent bg-surface px-4 py-3 text-sm leading-relaxed"><strong>重要辨證：</strong>{h.boundary.note}</aside>
+        <div role="note" className="mt-3 rounded-2xl border-l-4 border-accent bg-surface px-4 py-3 text-sm leading-relaxed"><strong>重要辨證：</strong>{h.boundary.note}</div>
+        </>)}
       </Sec>
-      <Sec id="neuro" no={6} title="與神經可塑性的關聯">
-        <p className="leading-relaxed">{h.neuro}</p>
+      <Sec allOpen={!!v} id="neuro" no={6} title="與神經可塑性的關聯">
+        {v ? <KeyPointCard icon={Brain} text={h.neuro} /> : <p className="leading-relaxed">{h.neuro}</p>}
         <div className="mt-2 flex flex-wrap gap-1.5">{h.chapterIds.map((id) => <Link key={id} to={`/learn/${id}`} className="chip hover:bg-sage/40"><BookOpen className="mr-1 h-3 w-3" aria-hidden />第 {chapterMap[id].number} 章 {chapterMap[id].title}</Link>)}</div>
       </Sec>
-      <Sec id="alternatives" no={7} title="可執行的替代行動">
+      <Sec allOpen={!!v} id="alternatives" no={7} title="可執行的替代行動">
+        {v ? <StepCards steps={h.alternatives.map((text, i) => ({ text, icon: iconAt(icons?.alternatives, i) }))} /> : (
         <ol className="space-y-2">{h.alternatives.map((a, i) => <li key={a} className="flex gap-3 rounded-xl bg-surface p-3 text-sm shadow-card"><span className="font-display text-lg text-sageink">{i + 1}</span>{a}</li>)}</ol>
+        )}
       </Sec>
-      <Sec id="reflections" no={8} title="自我反思問題">
+      <Sec allOpen={!!v} id="reflections" no={8} title="自我反思問題">
+        {v ? (
+          <ul className="grid gap-2 sm:grid-cols-3">{h.reflections.map((r) => <li key={r} className="flex gap-2 rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-3 font-serif text-sm leading-relaxed"><MessageCircleQuestion className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />{r}</li>)}</ul>
+        ) : (
         <ul className="space-y-1.5 font-serif leading-relaxed">{h.reflections.map((r) => <li key={r}>・{r}</li>)}</ul>
+        )}
         <div className="mt-3"><TextArea label="寫下你的反思（會存入筆記，標籤：打破慣性）" rows={3} value={reflection} onChange={(e) => setReflection(e.target.value)} /></div>
         <button className="btn-secondary btn-sm mt-2" onClick={saveReflection} disabled={!reflection.trim()}>儲存反思</button>
       </Sec>
-      <Sec id="experiment" no={9} title={`行動實驗：${h.experiment.title}`}>
+      <Sec allOpen={!!v} id="experiment" no={9} title={`行動實驗：${h.experiment.title}`}>
         <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+          {v ? (<>
+            <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-soft px-3 py-1 text-xs font-bold text-accent"><Timer className="h-3.5 w-3.5" aria-hidden />建議期間：{h.experiment.duration}</p>
+            <StepCards steps={h.experiment.steps.map((text) => ({ text }))} />
+          </>) : (<>
           <p className="text-sm text-muted">建議期間：{h.experiment.duration}</p>
           <ol className="mt-2 space-y-1 text-sm">{h.experiment.steps.map((s, i) => <li key={s}>{i + 1}. {s}</li>)}</ol>
+          </>)}
           <div className="mt-3"><TextArea label="完成實驗後，記錄你的觀察與結果" rows={2} value={result} onChange={(e) => setResult(e.target.value)} /></div>
           <button className="btn-primary btn-sm mt-2" onClick={saveExperiment} disabled={!result.trim()}>記錄完成的行動實驗</button>
           {celebrate && <div className="mt-3"><PracticeAffirmation ids={h.affirmationIds} onClose={() => setCelebrate(false)} /></div>}
@@ -135,10 +178,19 @@ export default function PatternHabitPage() {
           )}
         </div>
       </Sec>
-      <Sec id="evidence" no={10} title="研究證據與適用限制">
+      <Sec allOpen={!!v} id="evidence" no={10} title="研究證據與適用限制">
+        {v ? (
+          <EvidenceBadge kind={v.evidenceKind} label={v.evidenceLabel} summary={firstSentence(h.evidence.text)}
+            meta={h.evidence.limits.split('；').map((t, i) => [i === 0 ? '適用限制' : '也要注意', t] as [string, string])}>
+            <p className="leading-relaxed">{h.evidence.text}</p>
+            <p className="rounded-xl bg-apricot/25 px-3 py-2"><strong>適用限制：</strong>{h.evidence.limits}</p>
+            <ReferenceList refs={getReferences(h.referenceIds)} />
+          </EvidenceBadge>
+        ) : (<>
         <p className="leading-relaxed">{h.evidence.text}</p>
         <p className="mt-2 rounded-xl bg-apricot/25 px-3 py-2 text-sm"><strong>適用限制：</strong>{h.evidence.limits}</p>
         <div className="mt-4"><ReferenceList refs={getReferences(h.referenceIds)} /></div>
+        </>)}
       </Sec>
 
       <section id="tool" aria-labelledby="tool-h" className="mt-12 scroll-mt-24">

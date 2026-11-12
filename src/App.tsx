@@ -77,6 +77,9 @@ function usePrefetchPages() {
   }, []);
 }
 
+/** 視覺元件預覽頁：只在開發模式註冊（正式建置時 import.meta.env.DEV 為 false，整段會被移除） */
+const VisualPreview = import.meta.env.DEV ? lazy(() => import('./pages/dev/VisualPreview')) : null;
+
 /** 頁面載入中的提示（通常只會閃過一下） */
 export function PageLoading() {
   return <p className="py-16 text-center text-sm text-muted" role="status">載入中…</p>;
@@ -122,6 +125,7 @@ export default function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="references" element={<References />} />
                 <Route path="data" element={<DataPage />} />
+                {VisualPreview && <Route path="dev/visual" element={<VisualPreview />} />}
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

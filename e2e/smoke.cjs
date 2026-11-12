@@ -254,8 +254,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
         await page.getByRole('heading', { name: h }).first().waitFor({ timeout: 3000 });
       }
       await page.locator('#tool').waitFor();
-      // 研究證據段落預設收合：展開後才看得到 DOI 連結
-      await page.getByRole('button', { name: /研究證據與適用限制/ }).click();
+      // 研究證據段落：收合時先展開；圖解版的文獻清單收在「看完整說明與研究來源」裡
+      const evBtn = page.getByRole('button', { name: /研究證據與適用限制/ });
+      if ((await evBtn.getAttribute('aria-expanded')) === 'false') await evBtn.click();
+      const more = page.locator('#evidence summary', { hasText: '看完整說明與研究來源' });
+      if (await more.count()) await more.click();
       await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
     }
   });
@@ -1104,6 +1107,30 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByText('朗讀檢查（聽不到聲音時使用）').click();
     await p2.getByTestId('speech-check').getByText('否').first().waitFor();
     await c2.close();
+  });
+  await step('（二）樣板頁：過度尋求認可以圖解呈現，完整文字可展開且一字不少', async () => {
+    await page.goto(BASE + '#/pattern/approval');
+    await page.locator('#definition').waitFor();
+    // 圖解：水彩插畫、循環圖、光譜、步驟卡、證據標籤
+    await page.getByRole('img', { name: /插畫：兩個對話框/ }).waitFor();
+    await page.getByRole('img', { name: /過度尋求認可的心理循環（示意圖，非實際數據）：1\. 提示：主管皺眉、別人請求/ }).waitFor();
+    await page.getByRole('img', { name: /從「健康」到「需要留意」的光譜/ }).waitFor();
+    await page.locator('#alternatives ol li').nth(3).waitFor();
+    await page.locator('#evidence').getByText('相關性研究為主').waitFor();
+    // 圖解版：10 個段落都預設展開
+    const closed = await page.locator('section[data-collapsible="closed"]').count();
+    if (closed) throw new Error('圖解版不應有收合的段落：' + closed);
+    // 「看完整說明」：常見表現、5 個概念說明、研究原文與文獻都還在
+    await page.locator('#definition summary').click();
+    await page.locator('#definition').getByText('害怕拒絕別人的要求。').waitFor();
+    await page.locator('#mechanisms summary').click();
+    await page.locator('#mechanisms').getByText(/為避免衝突或被拒絕而優先滿足他人/).waitFor();
+    await page.locator('#evidence summary').click();
+    await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
+    // 尚未套用圖解的習慣維持原本版面（等樣板確認後再套用）
+    await page.goto(BASE + '#/pattern/convenience');
+    await page.locator('#definition').waitFor();
+    if (await page.locator('#mechanisms svg[role=img]').count()) throw new Error('其他習慣不應提前套用');
   });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
