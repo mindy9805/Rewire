@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Bell, ClipboardCopy, Stethoscope, Volume2 } from 'lucide-react';
-import { chineseVoicesNow, isInAppBrowser, isTaiwanFemale, loadChineseVoices, speak, speechSupported, SYSTEM_VOICE } from '../../lib/speech';
+import { chineseVoicesNow, isGoogleTaiwan, isInAppBrowser, isTaiwanFemale, loadChineseVoices, speak, speechSupported, SYSTEM_VOICE } from '../../lib/speech';
 import { playTestTone } from '../../lib/testTone';
 import { useSpeechState } from '../../lib/useSpeech';
 import { copyText } from '../../lib/clipboard';
@@ -39,7 +39,8 @@ export default function SpeechCheck() {
   const rows: [string, string][] = [
     ['支援朗讀', supported ? '是' : '否'],
     ['App 內建瀏覽器', inApp ? '是（建議改用 Safari／Chrome）' : '否'],
-    ['中文聲音數量', `${voices.length}（台灣女聲 ${voices.filter(isTaiwanFemale).length}）`],
+    ['中文聲音數量', `${voices.length}（台灣女聲 ${voices.filter(isTaiwanFemale).length}；不含中國大陸聲音）`],
+    ['Google 國語（臺灣）', voices.some(isGoogleTaiwan) ? '有' : '沒有'],
     ['目前使用的聲音', chosen ? `${chosen.name}（${chosen.lang}）` : system ? '相容模式：交給系統挑選（zh-TW）' : '交給系統挑選（zh-TW）'],
     ['最後一次朗讀', `${RESULT[s.lastResult]}${s.lastError ? `（${s.lastError}）` : ''}`],
     ['實際發聲時間', durationText(s.lastDurationMs, s.lastChars)],
