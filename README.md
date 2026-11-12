@@ -1,10 +1,10 @@
 # Rewire｜神經可塑性的學習與練習
 
-> 理解神經可塑性，重新練習思考、情緒與行為。
+> 理解神經可塑性，練習覺察思考、情緒與行為。
 
 以 Nicole Vignola《Rewire》為學習主軸的繁體中文互動式學習網站。結合互動電子書、知識筆記、視覺化學習、個人反思與行為練習；不需登入、沒有後端，所有個人資料只存在使用者的瀏覽器（LocalStorage）。
 
-- 正式網址（部署後）：`https://mindy9805.github.io/rewire/`
+- 正式網址：`https://mindy9805.github.io/Rewire/`
 - 技術：React 18、TypeScript、Vite 5、Tailwind CSS 3、React Router（HashRouter）、Lucide Icons、Recharts、PWA（manifest + Service Worker）
 
 ## 導覽結構與名稱對照表
@@ -163,7 +163,7 @@ npm run e2e
 1. 到 GitHub 儲存庫 **Settings → Pages**。
 2. **Build and deployment → Source** 選擇 **Deploy from a branch**。
 3. **Branch** 選 **main**，資料夾選 **/docs**，按 **Save**。
-4. 等 1～3 分鐘，網站會出現在 `https://mindy9805.github.io/rewire/`。
+4. 等 1～3 分鐘，網站會出現在 `https://mindy9805.github.io/Rewire/`。
 
 **之後修改內容時**
 1. 修改 `src/` 中的檔案（例如 `src/content/` 的文字）。
