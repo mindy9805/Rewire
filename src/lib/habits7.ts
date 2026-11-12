@@ -1,5 +1,5 @@
 /**
- * 7 Habits 計算邏輯（純函式）：全部以使用者實際資料計算
+ * 高效能生活計算邏輯（純函式）：全部以使用者實際資料計算
  */
 import type { AppData, H7Id, QuadrantTask, RenewDim } from '../types';
 import { H7_STAGES, h7Habits, planDays, renewDims } from '../content/habits7';

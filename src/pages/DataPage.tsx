@@ -2,6 +2,7 @@
  * 資料與隱私：本地儲存說明、外觀與動畫設定、完整備份（JSON）、Markdown 匯出、匯入還原（含格式驗證）、清除所有紀錄
  */
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Download, Upload, Trash2, ShieldCheck, FileText, Palette } from 'lucide-react';
 import { useStore } from '../store/AppStore';
 import { useToast } from '../components/ui/Toast';
@@ -92,7 +93,10 @@ export default function DataPage() {
         <h2 className="flex items-center gap-2 font-serif text-lg font-bold"><ShieldCheck className="h-5 w-5 text-accent" aria-hidden />本地儲存說明</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed">
           <li>個人反思、情緒紀錄、練習內容與行動計畫，<strong>不會自動傳送到任何第三方服務</strong>。</li>
-          <li>網站僅從 Google Fonts 下載字型檔，不會傳送你的任何輸入內容。</li>
+          <li>字型由本站自行提供，不會連到 Google 等第三方；你輸入的內容也不會被傳送出去。</li>
+          <li>本站放在 GitHub Pages。GitHub 依其政策可能記錄一般網站的存取資訊（例如 IP），這些資料由 GitHub 處理，本站取不到也沒有使用。</li>
+          <li><strong>朗讀的例外：</strong>朗讀使用瀏覽器或系統的語音功能。部分聲音是「線上聲音」（例如 Chrome 的「Google 國語（臺灣）」），朗讀的那段文字會送到提供聲音的公司合成語音。聲音選單中標示「連線」的就是這類；不想送出文字的話，請選沒有標示的本機聲音（例如 iPhone 的美佳）。</li>
+          <li>完整的來源、授權與免責說明請見「<Link to="/about" className="underline">關於與聲明</Link>」。</li>
           <li><strong>以下情況可能導致紀錄遺失：</strong>清除瀏覽器網站資料、更換裝置或瀏覽器、使用無痕模式、瀏覽器自動清理長期未使用的網站資料。</li>
           <li>建議每週匯出一次完整備份（JSON），存到雲端硬碟或電腦中。</li>
         </ul>

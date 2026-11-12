@@ -76,7 +76,7 @@ export default function AffirmationCard({ a, defaultOpen = false, compact = fals
                   <Link key={h.id} to={`/pattern/${h.id}`} className="chip hover:bg-sage/40">打破慣性：{h.short}</Link>
                 ))}
                 {h7Habits.filter((h) => h.id !== 'renew' && h.links.affirmationIds.includes(a.id)).map((h) => (
-                  <Link key={h.id} to={`/habits7/${h.id}`} className="chip hover:bg-sage/40">7 Habits：{h.title}</Link>
+                  <Link key={h.id} to={`/habits7/${h.id}`} className="chip hover:bg-sage/40">高效能生活：{h.title}</Link>
                 ))}
                 {a.chapterIds.map((id) => (
                   <Link key={id} to={`/learn/${id}`} className="chip hover:bg-sage/40">

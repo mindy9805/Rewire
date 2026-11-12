@@ -27,7 +27,7 @@ export default function VoicePicker() {
   const tw = voices.filter(isTaiwanVoice);
   const overseas = voices.filter((v) => !isTaiwanVoice(v));
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
-  const label = (v: SpeechSynthesisVoice) => `${v.name}（${voiceRegion(v.lang)}${isGoogleTaiwan(v) ? '・推薦' : isTaiwanFemale(v) ? '・女聲' : ''}）`;
+  const label = (v: SpeechSynthesisVoice) => `${v.name}（${voiceRegion(v.lang)}${isGoogleTaiwan(v) ? '・推薦' : isTaiwanFemale(v) ? '・女聲' : ''}${v.localService ? '' : '・連線'}）`;
   return (
     <div className="space-y-2">
       <label htmlFor="voice" className="field-label">朗讀聲音</label>

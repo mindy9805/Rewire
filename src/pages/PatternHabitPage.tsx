@@ -214,7 +214,7 @@ export default function PatternHabitPage() {
         if (!rule) return null;
         return (
           <section aria-labelledby="h7rec-h" className="mt-12 rounded-2xl bg-soft/50 p-5">
-            <h2 id="h7rec-h" className="font-serif text-lg font-bold">延伸學習：7 Habits</h2>
+            <h2 id="h7rec-h" className="font-serif text-lg font-bold">延伸學習：高效能生活</h2>
             <p className="mt-1 text-sm text-muted">{rule.reason}（依公開的推薦規則）</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {rule.habits.map((id) => <Link key={id} to={`/habits7/${id}`} className="btn-secondary btn-sm">習慣{h7Map[id].no}：{h7Map[id].title}</Link>)}

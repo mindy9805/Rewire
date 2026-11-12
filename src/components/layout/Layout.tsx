@@ -13,6 +13,7 @@ import BottomNav from './BottomNav';
 import MobileDrawer from './MobileDrawer';
 import SearchDialog from './SearchDialog';
 import StorageNotice from './StorageNotice';
+import SiteFooter from './SiteFooter';
 import GrowthWatcher from '../play/GrowthWatcher';
 import LeafBurst from '../play/LeafBurst';
 import { useToast } from '../ui/Toast';
@@ -81,6 +82,7 @@ export default function Layout() {
             <Suspense fallback={<p className="py-16 text-center text-sm text-muted" role="status">載入中…</p>}>
               <Outlet />
             </Suspense>
+            <SiteFooter />
           </div>
         </main>
         {rightOpen && <RightPanel />}

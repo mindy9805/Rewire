@@ -25,6 +25,7 @@ const loaders = {
   Dashboard: () => import('./pages/Dashboard'),
   References: () => import('./pages/References'),
   DataPage: () => import('./pages/DataPage'),
+  About: () => import('./pages/About'),
   Daily: () => import('./pages/Daily'),
   PatternHub: () => import('./pages/PatternHub'),
   PatternHabitPage: () => import('./pages/PatternHabitPage'),
@@ -48,6 +49,7 @@ const Journal = lazy(loaders.Journal);
 const Dashboard = lazy(loaders.Dashboard);
 const References = lazy(loaders.References);
 const DataPage = lazy(loaders.DataPage);
+const About = lazy(loaders.About);
 const Daily = lazy(loaders.Daily);
 const PatternHub = lazy(loaders.PatternHub);
 const PatternHabitPage = lazy(loaders.PatternHabitPage);
@@ -117,7 +119,7 @@ export default function App() {
                 {/* Playful Growth｜輕鬆探索 */}
                 <Route path="play" element={<Play />} />
                 <Route path="play/:game" element={<Play />} />
-                {/* 7 Habits｜高效能生活實踐 */}
+                {/* 高效能生活實踐 */}
                 <Route path="habits7" element={<Habits7Hub />} />
                 <Route path="habits7/plan" element={<Habits7Plan />} />
                 <Route path="habits7/:habitId" element={<Habits7Page />} />
@@ -125,6 +127,7 @@ export default function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="references" element={<References />} />
                 <Route path="data" element={<DataPage />} />
+                <Route path="about" element={<About />} />
                 {VisualPreview && <Route path="dev/visual" element={<VisualPreview />} />}
                 <Route path="*" element={<NotFound />} />
               </Route>

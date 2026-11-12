@@ -25,9 +25,9 @@ export default {
         rose: v('rose'), // 圖解用玫瑰色
       },
       fontFamily: {
-        sans: ['"Noto Sans TC"', 'system-ui', '-apple-system', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],
-        serif: ['"Noto Serif TC"', '"Songti TC"', 'serif'],
-        display: ['"Playfair Display"', '"Noto Serif TC"', 'serif'],
+        sans: ['"Noto Sans TC Variable"', '"Noto Sans TC"', 'system-ui', '-apple-system', '"PingFang TC"', '"Microsoft JhengHei"', 'sans-serif'],
+        serif: ['"Noto Serif TC Variable"', '"Noto Serif TC"', '"Songti TC"', 'serif'],
+        display: ['"Playfair Display Variable"', '"Playfair Display"', '"Noto Serif TC Variable"', 'serif'],
       },
       boxShadow: {
         card: '0 1px 2px rgb(48 54 48 / 0.04), 0 8px 24px -12px rgb(48 54 48 / 0.12)',

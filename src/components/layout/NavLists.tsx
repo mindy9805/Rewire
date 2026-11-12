@@ -1,6 +1,6 @@
 /**
  * 側邊欄與手機抽屜共用的導覽清單：今天／學習／我的三組，以及九個章節（含完成狀態）。
- * 章節清單只在「深度導讀」相關頁面顯示，其他頁面保持精簡；手機抽屜（showChapters）一律顯示。
+ * 章節清單只在「主題學習」相關頁面顯示，其他頁面保持精簡；手機抽屜（showChapters）一律顯示。
  */
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { CheckCircle2, Circle } from 'lucide-react';

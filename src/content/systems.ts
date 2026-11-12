@@ -8,7 +8,7 @@
  * - 神經可塑性：提供理解行為改變的科學視角（研究發現）。
  * - Daily Rewire：自我覺察與自我對話的練習工具。
  * - Break the Pattern：辨識可能妨礙長期目標的行為模式（實踐框架）。
- * - 7 Habits：價值導向的生活與人際實踐架構（管理哲學）。
+ * - 高效能生活：價值導向的生活與人際實踐架構（管理哲學）。
  * 各系統可以整合運用，但頁面上會清楚區分研究結論、管理哲學與本站的實踐建議。
  */
 
@@ -33,10 +33,10 @@ export interface LearningSystem {
 }
 
 export const SYSTEMS: LearningSystem[] = [
-  { id: 'neuro', en: 'Neuroscience', title: '深度導讀', desc: '九章神經可塑性：理解大腦如何學習與改變', lens: '科學視角：大腦如何學習與改變', to: '/learn', core: true },
+  { id: 'neuro', en: 'Neuroscience', title: '主題學習', desc: '九章神經可塑性：理解大腦如何學習與改變', lens: '科學視角：大腦如何學習與改變', to: '/learn', core: true },
   { id: 'daily', en: 'Daily Rewire', title: '每日心智練習', desc: '每天七句心智語句與自我對話練習', lens: '覺察練習：培養自我接納與心理彈性', to: '/daily', core: true },
   { id: 'pattern', en: 'Break the Pattern', title: '打破慣性', desc: '辨識七個在不知不覺中消耗你的習慣', lens: '實踐框架：看見妨礙長期目標的模式', to: '/pattern', core: true },
-  { id: 'habits7', en: '7 Habits', title: '7 Habits 高效能生活', desc: '建立個人成功與互賴合作能力', lens: '管理哲學：價值選擇、時間管理與合作', to: '/habits7', core: true },
+  { id: 'habits7', en: 'Effective Living', title: '高效能生活', desc: '建立個人成功與互賴合作能力', lens: '管理哲學：價值選擇、時間管理與合作', to: '/habits7', core: true },
   { id: 'challenges', en: 'My Plans', title: '我的計畫', desc: '14 天練習、14 天打破慣性挑戰、21 天探索計畫', lens: '持續練習：把學習變成每天的小行動', to: '/plans', core: false },
   { id: 'dashboard', en: 'Dashboard', title: '學習儀表板', desc: '追蹤行動、反思與成長', lens: '回顧：用自己的真實紀錄看見變化', to: '/dashboard', core: false },
 ];

@@ -6,7 +6,7 @@
  * 3. 今日小練習（依日期固定的心智語句與小行動；做過測驗時加上間隔回想）
  * 4. 最近收藏
  * 5. 自由探索入口（四大學習系統＋挑戰＋儀表板）：已移到「學習」頁，首頁預設收起
- * 6. 既有完整內容區塊（Daily Rewire 七句卡片、打破慣性焦點卡片、7 Habits 學習地圖、九個章節）預設收起，可在「自訂首頁」開啟
+ * 6. 既有完整內容區塊（Daily Rewire 七句卡片、打破慣性焦點卡片、高效能生活學習地圖、九個章節）預設收起，可在「自訂首頁」開啟
  * 使用者可自訂每個區塊是否顯示；不要求每天完成任何事。
  */
 import { Link } from 'react-router-dom';
@@ -40,7 +40,7 @@ const SECTION_LABEL: Record<HomeSectionId, string> = {
   explore: '自由探索入口',
   daily: 'Daily Rewire 七句卡片',
   pattern: '打破慣性：想調整的習慣',
-  habits7: '7 Habits 三階段學習地圖',
+  habits7: '高效能生活三階段學習地圖',
   chapters: '九個神經可塑性章節',
 };
 
@@ -141,7 +141,7 @@ export default function Overview() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-muted">四個系統各有不同性質：深度導讀整理科學研究，每日心智練習是覺察練習，打破慣性是行為實踐框架，7 Habits 是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
+          <p className="mt-3 text-xs text-muted">四個系統各有不同性質：主題學習整理科學研究，每日心智練習是覺察練習，打破慣性是行為實踐框架，高效能生活是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
         </section>
       )}
 

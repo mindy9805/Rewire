@@ -17,7 +17,7 @@ export const INTERACTIVE_META: Record<InteractiveKind, { title: string; desc: st
   'self-talk': { title: '自我對話轉換練習', desc: '五個步驟，把負面想法轉為平衡且有建設性的陳述。' },
   'habit-detective': { title: '習慣偵探 Habit Detective', desc: '用好奇心記錄習慣的提示、需求與替代行動。' },
   'habit-curve': { title: '習慣養成模擬器', desc: '調整難度與頻率，觀察假設性的自動化曲線。' },
-  tools: { title: '七個實踐工具', desc: '展開工具卡，實際練習並留下紀錄。' },
+  tools: { title: '七個日常練習', desc: '展開練習卡，實際練習並留下紀錄。' },
   'if-then': { title: 'If-Then 行動計畫產生器', desc: '把目標變成具體的情境與行動。' },
   evidence: { title: '科學證據檢視卡', desc: '用批判性問題閱讀本站引用的重要研究。' },
 };

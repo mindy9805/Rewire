@@ -52,7 +52,7 @@ export const COLLECTION_KEYS: CollectionKey[] = [
  * 資料結構修訂紀錄（version 仍為 1，代表備份格式相容）：
  * - revision 1：初版（章節、筆記、14 天挑戰、工具）
  * - revision 2：Daily Rewire、Break the Pattern
- * - revision 3：7 Habits｜高效能生活實踐
+ * - revision 3：高效能生活實踐
  * - revision 4：Playful Growth（輕冒險、盲盒、小劇場、收藏、花園、時光膠囊）與首頁自訂
  * 讀取任何舊修訂的資料都會由 normalize() 補齊新欄位，不會刪除既有紀錄。
  */
@@ -279,7 +279,7 @@ export function normalize(input: unknown): AppData {
       progress,
     };
   }
-  // ===== 7 Habits =====
+  // ===== 高效能生活 =====
   const str = (v: unknown) => (typeof v === 'string' ? v : '');
   if (isObj(input.h7Progress)) {
     for (const id of H7_IDS) {

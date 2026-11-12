@@ -58,7 +58,7 @@ export function practiceFrequency(d: AppData, n = 14, today = new Date()) {
   d.counterChoices.forEach((c) => add(c.date, '打破慣性'));
   d.commitmentLogs.filter((l) => l.status === 'done').forEach((l) => add(l.date, '打破慣性'));
   d.patternEntries.forEach((e) => add(e.createdAt, '打破慣性'));
-  // 7 Habits：四象限完成、四維習慣、休息、同理練習、21 天計畫
+  // 高效能生活：四象限完成、四維習慣、休息、同理練習、21 天計畫
   d.quadrantTasks.filter((t) => t.done).forEach((t) => add(t.updatedAt, '7 習慣'));
   d.renewalHabitLogs.forEach((l) => add(l.date, '7 習慣'));
   d.restLogs.forEach((r) => add(r.date, '7 習慣'));
@@ -113,7 +113,7 @@ export function milestones(d: AppData): Milestone[] {
     { id: 'm13', label: '看見自己的模式', desc: '完成第一次七大習慣自我覺察評估', achieved: d.patternAssessments.length >= 1 || d.habitAudits.length >= 1 },
     { id: 'm14', label: '一步一步來', desc: '累積 10 次行動實驗或打破慣性', achieved: d.counterChoices.length >= 10 },
     { id: 'm15', label: '說到做到', desc: '微承諾累積完成 7 次', achieved: d.commitmentLogs.filter((l) => l.status === 'done').length >= 7 },
-    { id: 'm17', label: '個人成功', desc: '完成習慣一至三（7 Habits）', achieved: (['proactive', 'end', 'first'] as const).every((id) => d.h7Progress[id]?.status === 'done') },
+    { id: 'm17', label: '個人成功', desc: '完成習慣一至三（高效能生活）', achieved: (['proactive', 'end', 'first'] as const).every((id) => d.h7Progress[id]?.status === 'done') },
     { id: 'm18', label: '寫下願景', desc: '建立個人願景宣言', achieved: !!d.lifeCompass.vision.trim() },
     { id: 'm19', label: '21 天探索', desc: '完成 21 天七習慣探索計畫', achieved: Object.values(d.h7Plan.days).filter((p) => p.completed).length >= 21 },
     { id: 'm16', label: '打破慣性', desc: '完成任一習慣的 14 天打破慣性挑戰', achieved: Object.values(d.patternChallenge.progress).some((days) => Object.values(days ?? {}).filter((r) => r.completed).length >= 14) },

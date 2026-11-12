@@ -88,7 +88,7 @@ export default function BrainLab() {
       </div>
       </>}
       {tools.length > 0 && <>
-      <h2 className="mb-3 mt-12 text-xl font-bold">{goal ? '神經可塑性實踐工具' : '七個神經可塑性實踐工具'}</h2>
+      <h2 className="mb-3 mt-12 text-xl font-bold">{goal ? '神經可塑性實踐工具' : '七個日常練習'}</h2>
       <ToolCards initial={tool?.id} only={goal ? tools : undefined} />
       </>}
     </div>

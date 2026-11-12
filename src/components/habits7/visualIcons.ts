@@ -1,5 +1,5 @@
 /**
- * 7 Habits 學習頁的圖解圖示（純呈現）：依情境標籤（求職、職場、生活……）對應 lucide 圖示。
+ * 高效能生活學習頁的圖解圖示（純呈現）：依情境標籤（求職、職場、生活……）對應 lucide 圖示。
  * 新增標籤時在這裡補上；沒有對應時使用通用圖示。
  */
 import { Activity, Brain, Briefcase, Building2, ClipboardList, GraduationCap, Handshake, Heart, HeartPulse, Home, Lightbulb, MessageCircle, Shapes, TrendingUp, Users, UsersRound, type LucideIcon } from 'lucide-react';

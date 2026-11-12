@@ -44,7 +44,7 @@ export default function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSea
         <Link to="/" className="flex min-w-0 items-center gap-2 rounded-lg" aria-label="Rewire 首頁">
           <img src="./icon.svg" alt="" className="h-8 w-8 shrink-0" />
           <span className="truncate font-display text-lg font-bold text-forest">Rewire</span>
-          <span className="hidden truncate font-serif text-sm text-muted sm:inline">｜重塑大腦的可能</span>
+          <span className="hidden truncate font-serif text-sm text-muted sm:inline">｜神經可塑性的學習與練習</span>
         </Link>
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
           <button

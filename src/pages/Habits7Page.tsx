@@ -1,10 +1,10 @@
 /**
- * 7 Habits 單一習慣頁：十個學習面向＋互動工具＋章節完成體驗（測驗、應用情境、立即行動、反思、心智語句、延伸練習）
+ * 高效能生活單一習慣頁：十個學習面向＋互動工具＋章節完成體驗（測驗、應用情境、立即行動、反思、心智語句、延伸練習）
  */
 import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, FlaskConical, Sparkles, CheckCircle2 } from 'lucide-react';
-import { h7Habits, h7Map, H7_STAGES, selfCheckScale } from '../content/habits7';
+import { h7Habits, H7_TAG, h7Map, H7_STAGES, selfCheckScale } from '../content/habits7';
 import { affirmationMap } from '../content/dailyRewire';
 import { chapterMap } from '../content/chapters';
 import { patternMap } from '../content/breakPattern';
@@ -71,7 +71,7 @@ export default function Habits7Page() {
   return (
     // key＝習慣 id：換到另一個習慣時重新建立頁面，段落展開狀態不會沿用上一個習慣
     <article key={h.id} className="motion-safe:animate-fade-up">
-      <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/habits7" className="hover:text-accent">7 Habits</Link> / {stage.title} / 習慣{'一二三四五六七'[h.no - 1]}</nav>
+      <nav aria-label="麵包屑" className="text-sm text-muted"><Link to="/habits7" className="hover:text-accent">高效能生活</Link> / {stage.title} / 習慣{'一二三四五六七'[h.no - 1]}</nav>
       <header className="mt-3 flex items-start gap-4">
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-soft text-accent"><H7Icon h={h} className="h-7 w-7" /></span>
         <div>
@@ -167,8 +167,8 @@ export default function Habits7Page() {
         <div className="mt-4">
           <p className="font-medium text-accent">4. 反思問題</p>
           <p className="font-serif">{h.finalReflection}</p>
-          <div className="mt-2"><TextArea label="寫下你的反思（存入筆記，標籤：7 Habits）" rows={2} value={reflection} onChange={(e) => setReflection(e.target.value)} /></div>
-          <button className="btn-secondary btn-sm mt-2" disabled={!reflection.trim()} onClick={() => { const t = nowIso(); upsert('notes', { id: uid(), chapterId: 'general', kind: 'reflection', source: `7 Habits：${h.title}`, content: reflection.trim(), tags: ['7 Habits', h.title], createdAt: t, updatedAt: t }); setReflection(''); toast('已儲存反思'); }}>儲存反思</button>
+          <div className="mt-2"><TextArea label="寫下你的反思（存入筆記，標籤：高效能生活）" rows={2} value={reflection} onChange={(e) => setReflection(e.target.value)} /></div>
+          <button className="btn-secondary btn-sm mt-2" disabled={!reflection.trim()} onClick={() => { const t = nowIso(); upsert('notes', { id: uid(), chapterId: 'general', kind: 'reflection', source: `高效能生活：${h.title}`, content: reflection.trim(), tags: [H7_TAG, h.title], createdAt: t, updatedAt: t }); setReflection(''); toast('已儲存反思'); }}>儲存反思</button>
         </div>
         <div className="mt-4 rounded-2xl bg-gradient-to-br from-soft to-apricot/25 p-4">
           <p className="text-xs font-medium text-accent">5. 對應的 Daily Rewire 語句</p>
@@ -183,7 +183,7 @@ export default function Habits7Page() {
         {status === '已完成' && (
           <CompletionCard title={`習慣${'一二三四五六七'[h.no - 1]}「${h.title}」完成了`} takeaway={h.quickAction} takeawayLabel="帶走一個小行動"
             next={next ? { to: `/habits7/${next.id}`, label: `下一個習慣：${next.title}` } : { to: '/habits7/plan', label: '看看 21 天探索計畫' }}
-            note={{ chapterId: 'general', source: `7 Habits：${h.title}`, tags: ['完成卡', '7 Habits', h.title] }} />
+            note={{ chapterId: 'general', source: `高效能生活：${h.title}`, tags: ['完成卡', H7_TAG, h.title] }} />
         )}
       </section>
 

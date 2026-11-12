@@ -43,8 +43,8 @@ describe('Break the Pattern 資料', () => {
   });
 });
 
-describe('7 Habits 資料與版本相容', () => {
-  it('舊修訂（沒有 7 Habits 欄位）的資料可正常讀取並補齊預設值，既有紀錄不遺失', () => {
+describe('高效能生活資料與版本相容', () => {
+  it('舊修訂（沒有高效能生活欄位）的資料可正常讀取並補齊預設值，既有紀錄不遺失', () => {
     const old = { version: 1, notes: [{ id: 'n', content: 'x', tags: [] }], patternFocus: ['approval'] };
     const d = normalize(old);
     expect(d.notes).toHaveLength(1);

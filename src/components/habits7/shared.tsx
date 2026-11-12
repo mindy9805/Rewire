@@ -1,5 +1,5 @@
 /**
- * 7 Habits 共用元件：習慣圖示、來源類型標籤、三階段學習地圖、跨模組推薦
+ * 高效能生活共用元件：習慣圖示、來源類型標籤、三階段學習地圖、跨模組推薦
  */
 import { Link } from 'react-router-dom';
 import { Compass, Target, ListTodo, Handshake, MessagesSquare, Network, RefreshCcw, ArrowRight, type LucideIcon } from 'lucide-react';
@@ -82,7 +82,7 @@ export function StageMap() {
   );
 }
 
-/** 依 Break the Pattern 的焦點習慣推薦 7 Habits 章節；並可展開完整規則表 */
+/** 依 Break the Pattern 的焦點習慣推薦高效能生活章節；並可展開完整規則表 */
 export function Recommendations() {
   const { data } = useStore();
   const { rules } = recommendFor(data.patternFocus);
@@ -97,7 +97,7 @@ export function Recommendations() {
             <li key={r.patternId} className="rounded-xl bg-surface p-3 text-sm">
               <p className="text-xs text-muted">因為你選擇了「{patternMap[r.patternId].short}」：{r.reason}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
-                {r.habits.map((id) => <Link key={id} to={`/habits7/${id}`} className="chip hover:bg-sage/40">7 Habits：{h7Map[id].title}</Link>)}
+                {r.habits.map((id) => <Link key={id} to={`/habits7/${id}`} className="chip hover:bg-sage/40">高效能生活：{h7Map[id].title}</Link>)}
                 {r.practices.map((p) => <Link key={p.to} to={p.to} className="chip hover:bg-sage/40">{p.label}</Link>)}
               </div>
             </li>
@@ -109,7 +109,7 @@ export function Recommendations() {
         <div className="mt-2 overflow-x-auto">
           <table className="w-full min-w-[32rem] text-left text-xs">
             <caption className="sr-only">跨模組推薦規則</caption>
-            <thead className="text-muted"><tr><th scope="col" className="py-1">如果你選擇（Break the Pattern）</th><th scope="col">推薦的 7 Habits 章節</th><th scope="col">推薦練習</th></tr></thead>
+            <thead className="text-muted"><tr><th scope="col" className="py-1">如果你選擇（Break the Pattern）</th><th scope="col">推薦的高效能生活章節</th><th scope="col">推薦練習</th></tr></thead>
             <tbody>
               {recommendationRules.map((r) => (
                 <tr key={r.patternId} className="border-t border-line align-top"><th scope="row" className="py-1.5 font-normal">{patternMap[r.patternId].short}</th><td>{r.habits.map((id) => h7Map[id].title).join('、')}</td><td>{r.practices.map((p) => p.label).join('、')}</td></tr>

@@ -187,7 +187,7 @@ export const socialStories: SocialStory[] = [
       { text: '在群組提議：「我們來重新確認一下每個人的進度和需要的幫忙。」', outcome: '大家重新分配工作，進度變得清楚。', pros: '把焦點放在問題本身，而非指責個人。', limits: '需要有人願意帶頭；也要留意不讓特定的人感到被公開指責。' },
     ],
     reflection: '如果你是那位遲交的組員，你會希望別人怎麼對待你？',
-    link: { label: '7 Habits：統合綜效', to: '/habits7/synergize' },
+    link: { label: '高效能生活：統合綜效', to: '/habits7/synergize' },
   },
   {
     id: 'negotiate',
@@ -260,7 +260,7 @@ export const badges: BadgeDef[] = [
   { id: 'creative', title: '創意冒險家', emoji: '🎨', desc: '用不同的方式看待問題。', how: '建立一個團隊思考板，或玩過三個不同的人際小劇場。' },
   { id: 'collector', title: '小卡收藏家', emoji: '🃏', desc: '把喜歡的句子與知識帶在身邊。', how: '在心情盲盒收藏 3 張卡片。' },
   { id: 'messenger', title: '未來的信差', emoji: '✉️', desc: '寫下一句話，交給未來的自己。', how: '建立一個時光膠囊。' },
-  { id: 'reader', title: '知識旅人', emoji: '📖', desc: '在知識中慢慢旅行。', how: '完成任一個神經可塑性章節或 7 Habits 章節。' },
+  { id: 'reader', title: '知識旅人', emoji: '📖', desc: '在知識中慢慢旅行。', how: '完成任一個神經可塑性章節或高效能生活章節。' },
 ];
 
 /* ========== 6. 心智花園：植物、裝飾與景觀 ========== */

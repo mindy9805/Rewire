@@ -169,7 +169,7 @@ export default function Dashboard() {
       <PatternDashboard />
       </Hideable>
 
-      <Hideable id="habits7" title="7 Habits">
+      <Hideable id="habits7" title="高效能生活">
       <H7Dashboard />
       </Hideable>
 

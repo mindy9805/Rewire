@@ -96,7 +96,7 @@ export default function ChapterPage() {
   return (
     <article className="motion-safe:animate-fade-up">
       <nav aria-label="麵包屑" className="text-sm text-muted">
-        <Link to="/learn" className="hover:text-accent">深度導讀</Link> / 第 {chapter.number} 章
+        <Link to="/learn" className="hover:text-accent">主題學習</Link> / 第 {chapter.number} 章
       </nav>
       <header className="mt-3">
         <p className="font-display text-sm italic text-accent">Chapter {chapter.number} · {chapter.enTitle}</p>
@@ -256,7 +256,7 @@ export default function ChapterPage() {
         {progress?.completed && (
           <CompletionCard title={`第 ${chapter.number} 章完成了`} takeaway={chapter.summary[0]}
             next={next ? { to: `/learn/${next.id}`, label: `下一章：第 ${next.number} 章` } : { to: '/learning', label: '回到「學習」看看其他系統' }}
-            note={{ chapterId: chapter.id, source: `第 ${chapter.number} 章重點`, tags: ['完成卡', '深度導讀'] }} />
+            note={{ chapterId: chapter.id, source: `第 ${chapter.number} 章重點`, tags: ['完成卡', '主題學習'] }} />
         )}
       </Block>
 

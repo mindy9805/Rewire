@@ -3,7 +3,7 @@
  * 數字只來自真實紀錄；沒有紀錄時顯示說明文字，不顯示 0 分之類的指標。
  */
 import { Link } from 'react-router-dom';
-import { NotebookPen, LayoutDashboard, Flower2, Award, Mail, Database, ArrowRight, History } from 'lucide-react';
+import { NotebookPen, LayoutDashboard, Flower2, Award, Mail, Database, Info, ArrowRight, History } from 'lucide-react';
 import { useStore } from '../store/AppStore';
 import { SectionTitle } from '../components/ui/basics';
 import { collectActivity } from '../lib/activity';
@@ -20,6 +20,7 @@ export default function Me() {
     { to: '/play/collection', icon: Award, title: '成長收藏冊', desc: badges ? `已收藏 ${badges} 枚徽章` : '完成任何練習或紀錄，都可能解鎖收藏。' },
     { to: '/play/capsule', icon: Mail, title: '時光膠囊', desc: data.capsules.length ? `${data.capsules.length} 個膠囊` : '寫一封信給未來的自己。' },
     { to: '/data', icon: Database, title: '資料與隱私', desc: '備份、還原、外觀、朗讀聲音與動畫設定。' },
+    { to: '/about', icon: Info, title: '關於與聲明', desc: '非官方說明、內容來源、授權與免責。' },
   ];
   return (
     <div className="space-y-6 motion-safe:animate-fade-up">
