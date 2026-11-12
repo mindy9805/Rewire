@@ -44,6 +44,9 @@ export const PATTERN_CLOSING = [
 /** 每個習慣對應的互動工具 */
 export type PatternToolKind = 'validation' | 'comfort' | 'spending' | 'quiet' | 'commitment' | 'environment' | 'choice';
 
+/** 循環圖的一個節點：label 為節點名稱（例如「提示」），text 為內容 */
+export interface LoopStep { label: string; text: string }
+
 export interface PatternHabit {
   id: PatternHabitId;
   no: number;
@@ -74,6 +77,17 @@ export interface PatternHabit {
   toolTitle: string;
   /** 14 天打破慣性挑戰：每日行動（標準版） */
   challengeActions: string[];
+  /**
+   * 圖解用的短標籤（由本習慣既有文字提煉，不新增事實）。有這個欄位的習慣頁會以圖解呈現。
+   * loop：心理機制循環圖的四個節點（名稱＋內容，各 ≤ 10 字）。
+   *   只有原文本身描述了「循環」時才提供；沒有時，機制段落改以概念卡呈現，不硬畫循環。
+   * evidenceKind／evidenceLabel：研究證據的類型標籤
+   */
+  visual?: {
+    loop?: [LoopStep, LoopStep, LoopStep, LoopStep];
+    evidenceKind: 'research' | 'preliminary' | 'inference';
+    evidenceLabel: string;
+  };
 }
 
 export const patternHabits: PatternHabit[] = [
@@ -81,6 +95,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'approval',
     no: 1,
+    // 圖解標籤：提示／行為取自「常見情境」1、2；短期獎賞取自機制「討好型行為」（避免衝突、短期降低焦慮）；
+    // 強化取自「與神經可塑性的關聯」（重複會強化路徑）；證據類型取自「適用限制」（相關性設計）
+    visual: {
+      loop: [{ label: '提示', text: '主管皺眉、別人請求' }, { label: '行為', text: '附和、答應' }, { label: '短期獎賞', text: '避免衝突、焦慮降低' }, { label: '強化', text: '下次更快附和' }],
+      evidenceKind: 'preliminary',
+      evidenceLabel: '相關性研究為主',
+    },
     short: '過度尋求認可',
     title: '過度尋求他人認可',
     concept: 'External Validation',
@@ -142,6 +163,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'convenience',
     no: 2,
+    // 圖解標籤：提示／行為取自「常見情境」；短期獎賞與強化取自機制「逃避學習」（解脫感、下一次更容易逃避）；
+    // 證據類型取自「適用限制」（暴露療法研究主要來自臨床族群，日常應用為延伸）
+    visual: {
+      loop: [{ label: '提示', text: '覺得難、開始喘' }, { label: '行為', text: '關掉或先做瑣事' }, { label: '短期獎賞', text: '不舒服立刻下降' }, { label: '強化', text: '下次更容易逃避' }],
+      evidenceKind: 'inference',
+      evidenceLabel: '臨床研究的延伸應用',
+    },
     short: '過度依賴便利',
     title: '過度依賴便利與舒適',
     concept: 'Comfort Seeking',
@@ -202,6 +230,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'impress',
     no: 3,
+    // 圖解標籤：提示取自「常見情境」；行為取自「與神經可塑性的關聯」（想買 → 立刻下單）；
+    // 短期獎賞取自「長期影響」（購買後的短暫滿足）；強化取自機制「享樂適應」（想再追求下一個新東西）；證據類型取自「適用限制」
+    visual: {
+      loop: [{ label: '提示', text: '聚會、開箱、心情差' }, { label: '行為', text: '立刻下單' }, { label: '短期獎賞', text: '短暫的滿足' }, { label: '強化', text: '想追下一個新東西' }],
+      evidenceKind: 'preliminary',
+      evidenceLabel: '相關性研究為主',
+    },
     short: '為他人印象消費',
     title: '為了他人印象而過度消費',
     concept: 'Status Consumption',
@@ -263,6 +298,11 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'solitude',
     no: 4,
+    // 機制以注意力與後設認知為主，原文沒有描述獎賞循環，因此不畫循環圖；證據類型取自「適用限制」（重複驗證結果不一致）
+    visual: {
+      evidenceKind: 'preliminary',
+      evidenceLabel: '部分結果尚不一致',
+    },
     short: '缺少獨處思考',
     title: '缺少與自己獨處及思考的時間',
     concept: 'Constant Stimulation',
@@ -324,6 +364,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'promises',
     no: 5,
+    // 圖解標籤：原文描述的是「自責循環」——取自「常見情境」（每天運動一小時、加班就放棄、責怪自己）與「長期影響」（越來越不敢設定目標）；
+    // 證據類型取自「適用限制」（多數研究為短期或特定行為）
+    visual: {
+      loop: [{ label: '承諾', text: '每天運動一小時' }, { label: '中斷', text: '加班就整個放棄' }, { label: '自責', text: '怪自己沒用' }, { label: '退縮', text: '越來越不敢設目標' }],
+      evidenceKind: 'preliminary',
+      evidenceLabel: '多為短期研究',
+    },
     short: '反覆違背承諾',
     title: '反覆違背對自己的承諾',
     concept: 'Self-Trust & Behavioral Consistency',
@@ -385,6 +432,11 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'environment',
     no: 6,
+    // 機制以社會學習與環境提示為主，原文沒有描述獎賞循環，因此不畫循環圖；證據類型取自「適用限制」（多為觀察性資料）
+    visual: {
+      evidenceKind: 'preliminary',
+      evidenceLabel: '觀察性研究為主',
+    },
     short: '缺乏支持性環境',
     title: '長期處於不利於成長的環境',
     concept: 'Social Environment & Behavioral Influence',
@@ -446,6 +498,13 @@ export const patternHabits: PatternHabit[] = [
   {
     id: 'shortterm',
     no: 7,
+    // 圖解標籤：提示、行為、立即回饋取自「與神經可塑性的關聯」（片尾倒數、按下一集、立即回饋）；
+    // 強化取自機制「獎勵學習」（容易被強化與重複）；證據類型取自「適用限制」（實驗多以金錢為獎勵）
+    visual: {
+      loop: [{ label: '提示', text: '片尾倒數' }, { label: '行為', text: '按下一集' }, { label: '短期獎賞', text: '立即回饋' }, { label: '強化', text: '更容易重複' }],
+      evidenceKind: 'preliminary',
+      evidenceLabel: '多為金錢獎勵實驗',
+    },
     short: '過度偏向立即滿足',
     title: '長期偏向立即滿足',
     concept: 'Immediate Gratification',

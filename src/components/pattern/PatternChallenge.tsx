@@ -17,6 +17,7 @@ import { nowIso } from '../../lib/id';
 import { patternChallengeDone } from '../../lib/pattern';
 import type { PatternChallengeState, PatternDayRecord, PatternHabitId } from '../../types';
 import { HabitIcon } from './shared';
+import { Timeline } from '../visual';
 
 const emptyDay: PatternDayRecord = { completed: false, note: '', reflection: '', oldPattern: '', usedAlternative: false };
 const OLD = [
@@ -117,19 +118,8 @@ export default function PatternChallenge() {
           </div>
           {pc.status === 'paused' && <p className="rounded-xl bg-apricot/25 px-4 py-2 text-sm">挑戰暫停中。你仍可查看與補寫紀錄；準備好時按「恢復挑戰」即可。</p>}
           <nav aria-label="選擇天數">
-            <ol className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 14 }, (_, i) => i + 1).map((d) => {
-                const c = progress[String(d)]?.completed;
-                return (
-                  <li key={d}>
-                    <button onClick={() => goDay(d)} aria-current={d === day ? 'step' : undefined} aria-label={`第 ${d} 天${c ? '（已完成）' : ''}`}
-                      className={`flex aspect-square w-full flex-col items-center justify-center rounded-xl border text-sm ${d === day ? 'border-accent bg-accent text-onaccent' : c ? 'border-sage bg-soft text-accent' : 'border-line bg-surface hover:border-accent/50'}`}>
-                      <span className="font-display">{d}</span>{c && <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />}
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
+            <Timeline ariaLabel="14 天打破慣性挑戰進度" current={day - 1} onSelect={(i) => goDay(i + 1)}
+              items={Array.from({ length: 14 }, (_, i) => i + 1).map((d) => ({ label: String(d), title: `第 ${d} 天`, state: progress[String(d)]?.completed ? 'done' : d === firstOpen ? 'today' : 'later' }))} />
           </nav>
 
           <article aria-labelledby="pc-day" className="rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-7">

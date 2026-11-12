@@ -115,6 +115,12 @@ rewire/
 - **朗讀**：`lib/speech.ts` 會優先挑「台灣中文＋女聲＋自然語音」，長文字依句號切段；使用者可在「資料與隱私 → 朗讀聲音」指定聲音、試聽與使用「朗讀檢查」。實際可用的聲音由裝置提供。
   - **手機規則（重要）**：`speak()` 必須在點擊或按鍵事件中**直接**呼叫，不可放在 `useEffect`、`await`、`setTimeout` 之後，否則 iPhone 會無聲擋下。語音清單未載入時不等待，直接以 `zh-TW` 朗讀。
   - 進入朗讀模式的連結加上 `onClick={unlockSpeech}`；介面用 `<SpeechStatus />` 顯示朗讀中／排除提示。
+- **圖解（內容視覺化）**：學習頁先以圖解呈現、完整文字收在「看完整說明」，內容一字不刪。元件在 `src/components/visual/`：
+  - `KeyPointCard` 重點卡、`IconCardGrid` 圖示卡、`LoopDiagram` 循環圖、`ChainDiagram` 因果鏈（只用在有先後順序的內容）、`SpectrumBar` 光譜對照、`CompareColumns` 左右對照、`StepCards` 步驟卡、`EvidenceBadge` 證據標籤、`Timeline` 時間軸、`RangeChart` 研究數據範圍圖、`WatercolorSpot` 水彩小插畫、`MoreDetails` 看完整說明。
+  - 開發時執行 `npm run dev` 後開啟 `#/dev/visual` 可預覽所有元件（正式建置不包含這一頁）。
+  - **新增圖解的規則**：每張圖都要在解釋內容本身（不放裝飾圖）；圖上的短標籤必須由既有文字提煉，寫在 `src/content/` 對應欄位並註明出處（例如打破慣性的 `visual.loop`）；原文沒有描述「循環」時不硬畫循環圖；沒有數據的概念圖標示「示意圖，非實際數據」；圖表只用研究實際報告的數字並附出處；每張圖要有 `role="img"`＋完整 `aria-label`。
+  - 圖示對應放在呈現層：`components/pattern/visualIcons.ts`（打破慣性）、`components/habits7/visualIcons.ts`（7 Habits 情境標籤）；水彩插畫在 `WatercolorSpot.tsx` 的 `SPOTS` 新增一個主題即可。
+  - 圖解元件的根元素帶有 `data-visual`，量測「每個螢幕是否有圖解」時使用。
 - **標題**：較長的中文標題用 `<Phrased text={...} />`，只在標點後換行，手機上不會出現單字落行。
 - **響應式**：以手機為基準撰寫，再用 `sm:`（640px）、`md:`（768px）、`lg:`（1024px，顯示側邊欄）、`xl:`（1280px，顯示右側面板）往上加。
 

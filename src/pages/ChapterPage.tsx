@@ -1,11 +1,13 @@
 /**
  * 章節閱讀頁
+ * 圖解版：深入解釋每一小節以「第一句話」作為重點卡（原文第一句，不另寫），其餘段落收在「看完整說明」；
+ *       生活案例為兩格故事卡（情境 → 怎麼理解）；實際應用為步驟卡；第 6 章加上研究數據範圍圖（Lally 等人，2010）。
  * 結構：學習目標 → 核心概念 → 深入解釋（可收藏段落）→ 示意圖 → 生活案例 → 實際應用
  *       → 互動練習 → 反思問題 → 測驗 → 重點摘要 → 研究來源 → 對應每日心智語句 → 本章筆記
  */
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { Bookmark, BookmarkCheck, CheckCircle2, ChevronLeft, ChevronRight, Clock, Target, Lightbulb, Users, Wrench, MessageCircleQuestion, ListChecks, Library, Sparkles, NotebookPen, FlaskConical, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ArrowRight, Bookmark, BookmarkCheck, CheckCircle2, ChevronLeft, ChevronRight, Clock, Target, Lightbulb, Users, Wrench, MessageCircleQuestion, ListChecks, Library, Sparkles, NotebookPen, FlaskConical, ShieldCheck } from 'lucide-react';
 import { chapterMap, chapters } from '../content/chapters';
 import { affirmationMap } from '../content/dailyRewire';
 import { getReferences } from '../content/references';
@@ -27,6 +29,7 @@ import SectionProgress from '../components/ui/SectionProgress';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
 import { unlockSpeech } from '../lib/speech';
+import { IconCardGrid, MoreDetails, RangeChart, StepCards, WatercolorSpot } from '../components/visual';
 
 function Block({ id, icon: Icon, title, children }: { id: string; icon: typeof Target; title: string; children: ReactNode }) {
   return (
@@ -117,20 +120,19 @@ export default function ChapterPage() {
       <SectionProgress pageKey={`${chapter.id}-${full ? 'full' : 'brief'}`} />
 
       <Block id="objectives" icon={Target} title="學習目標">
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {chapter.objectives.map((o) => <li key={o} className="rounded-xl bg-soft/60 px-4 py-3 text-sm leading-relaxed">✓ {o}</li>)}
-        </ul>
+        {/* 學習目標：勾選清單式的圖示卡 */}
+        <IconCardGrid columns={2} items={chapter.objectives.map((text) => ({ icon: CheckCircle2, text }))} />
       </Block>
 
       <Block id="concepts" icon={Lightbulb} title="核心概念">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div data-visual="concepts" className="grid gap-3 sm:grid-cols-2">
           {chapter.coreConcepts.map((k) => {
             const src = `概念：${k.term}`;
             const saved = !!highlightOf(src);
             return (
               <div key={k.term} className="relative rounded-2xl border border-line bg-surface p-4 pr-12">
                 <dl>
-                  <dt className="font-serif font-bold text-accent">{k.term}</dt>
+                  <dt className="flex items-center gap-2 font-serif font-bold text-accent"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-soft"><Lightbulb className="h-4 w-4" aria-hidden /></span>{k.term}</dt>
                   <dd className="mt-1 text-sm leading-relaxed">{k.definition}</dd>
                 </dl>
                 <button className="icon-btn absolute right-2 top-2" aria-pressed={saved} aria-label={saved ? `取消收藏「${k.term}」` : `收藏「${k.term}」`} onClick={() => toggleHighlight(src, `${k.term}：${k.definition}`)}>
@@ -156,9 +158,24 @@ export default function ChapterPage() {
                   {saved ? <BookmarkCheck className="h-5 w-5 text-accent" aria-hidden /> : <Bookmark className="h-5 w-5 text-muted" aria-hidden />}
                 </button>
               </div>
-              <div className="prose-rw mt-3">
-                {s.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
-              </div>
+              {(() => {
+                // 重點卡：第一段的第一句話；剩下的文字放進「看完整說明」，一字不刪
+                const [first, ...rest] = s.paragraphs.join('\n').split(/(?<=[。！？])/);
+                const restText = rest.join('').trim();
+                return (
+                  <div data-visual="keypoint" className="mt-3 rounded-2xl border border-line bg-surface p-4">
+                    <p className="flex gap-3 font-medium leading-relaxed"><Lightbulb className="mt-1 h-5 w-5 shrink-0 text-amber" aria-hidden />{first}</p>
+                    {restText && (
+                      <MoreDetails>
+                        <div className="prose-rw">{restText.split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}</div>
+                      </MoreDetails>
+                    )}
+                  </div>
+                );
+              })()}
+              {chapter.id === 'ch6' && s.id === 'variation' && (
+                <div className="mt-4"><RangeChart title="達到自動化高原期所需天數（研究估計）" min={18} max={254} median={66} axisMax={260} unit="天" source="Lally 等人（2010）" /></div>
+              )}
               {s.callout && (
                 <div role="note" className="rounded-2xl border-l-4 border-apricot bg-apricot/20 px-4 py-3 text-sm leading-relaxed">
                   <p className="font-medium">{s.callout.label}</p>
@@ -175,25 +192,29 @@ export default function ChapterPage() {
       </section>
 
       <Block id="cases" icon={Users} title="生活案例">
-        <div className="grid gap-4 md:grid-cols-2">
-          {chapter.cases.map((c) => (
-            <div key={c.title} className="rounded-2xl border border-line bg-surface p-5">
-              <p className="font-serif font-bold">{c.title}</p>
-              <p className="mt-2 text-sm leading-relaxed">{c.story}</p>
-              <p className="mt-3 rounded-xl bg-soft/70 p-3 text-sm leading-relaxed"><strong className="text-accent">怎麼理解：</strong>{c.insight}</p>
-            </div>
-          ))}
+        {/* 兩格故事卡：情境 → 怎麼理解（原文只有兩部分，不另外編第三格） */}
+        <div className="space-y-4">
+          {chapter.cases.map((c) => {
+            const [first, ...rest] = c.insight.split(/(?<=[。！？])/);
+            return (
+              <div key={c.title} className="rounded-2xl border border-line bg-surface p-4">
+                <p className="font-serif font-bold">{c.title}</p>
+                <div data-visual="story" className="mt-3 grid items-stretch gap-2 sm:grid-cols-[1fr_auto_1fr]">
+                  <div className="rounded-xl bg-apricot/25 p-3 text-sm leading-relaxed"><p className="mb-1 flex items-center gap-1 text-xs font-bold text-rose"><Users className="h-3.5 w-3.5" aria-hidden />情境</p>{c.story}</div>
+                  <ArrowRight className="mx-auto hidden h-5 w-5 self-center text-accent sm:block" aria-hidden />
+                  <ArrowDown className="mx-auto h-5 w-5 text-accent sm:hidden" aria-hidden />
+                  <div className="rounded-xl bg-soft p-3 text-sm leading-relaxed"><p className="mb-1 flex items-center gap-1 text-xs font-bold text-accent"><Lightbulb className="h-3.5 w-3.5" aria-hidden />怎麼理解</p>{first}
+                    {rest.join('').trim() && <MoreDetails>{rest.join('').trim()}</MoreDetails>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Block>
 
       <Block id="apply" icon={Wrench} title="實際應用方式">
-        <ol className="space-y-2">
-          {chapter.applications.map((a, i) => (
-            <li key={a} className="flex gap-3 rounded-xl bg-surface p-3 text-sm leading-relaxed shadow-card">
-              <span className="font-display text-lg text-sageink">{i + 1}</span>{a}
-            </li>
-          ))}
-        </ol>
+        <StepCards steps={chapter.applications.map((text) => ({ text }))} />
       </Block>
 
       </>)}
@@ -207,8 +228,8 @@ export default function ChapterPage() {
 
       {full && (
       <Block id="reflection" icon={MessageCircleQuestion} title="反思問題">
-        <div className="rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-5">
-          <p className="font-serif text-lg leading-relaxed">{chapter.reflection}</p>
+        <div data-visual="questions" className="rounded-2xl bg-gradient-to-br from-soft to-apricot/20 p-5">
+          <p className="flex gap-3 font-serif text-lg leading-relaxed"><MessageCircleQuestion className="mt-1 h-6 w-6 shrink-0 text-accent" aria-hidden />{chapter.reflection}</p>
           <label htmlFor="ch-reflection" className="sr-only">寫下你的反思</label>
           <textarea id="ch-reflection" className="field mt-4 min-h-[6rem]" value={reflection} onChange={(e) => setReflection(e.target.value)} placeholder="沒有標準答案，寫下此刻真實的想法就好。" />
           <button className="btn-secondary mt-3" onClick={saveReflection} disabled={!reflection.trim()}>儲存反思</button>
@@ -218,13 +239,15 @@ export default function ChapterPage() {
       )}
 
       <Block id="quiz" icon={ListChecks} title={`互動測驗（${chapter.quiz.length} 題）`}>
-        <Quiz chapterId={chapter.id} questions={chapter.quiz} />
+        {/* 測驗先收合，想做時再打開；已作答過的章節預設展開以便查看結果 */}
+        <MoreDetails label={`開始測驗（${chapter.quiz.length} 題）`} defaultOpen={!!data.quizzes[chapter.id]}>
+          <Quiz chapterId={chapter.id} questions={chapter.quiz} />
+        </MoreDetails>
       </Block>
 
       <Block id="summary" icon={ListChecks} title="本章重點摘要">
-        <ul className="space-y-2 rounded-2xl border border-line bg-surface p-5">
-          {chapter.summary.map((s) => <li key={s} className="flex gap-2 text-sm leading-relaxed"><span className="text-accent">●</span>{s}</li>)}
-        </ul>
+        {/* 重點摘要：編號步驟卡，一眼看完本章重點 */}
+        <StepCards steps={chapter.summary.map((text) => ({ text }))} />
         <button onClick={toggleComplete} className={`mt-5 ${progress?.completed ? 'btn-secondary' : 'btn-primary'}`} aria-pressed={!!progress?.completed}>
           <CheckCircle2 className="h-4 w-4" aria-hidden />
           {progress?.completed ? '已完成本章（點擊取消）' : '標記本章為已完成'}
@@ -244,9 +267,13 @@ export default function ChapterPage() {
       {full && (<>
       <Block id="daily" icon={Sparkles} title="對應的每日心智語句">
         <p className="-mt-2 mb-4 text-sm text-muted">把本章的知識帶進每天的自我對話。</p>
-        <div className="grid gap-4 md:grid-cols-2">
-          {chapter.affirmationIds.map((id) => <AffirmationCard key={id} a={affirmationMap[id]} compact />)}
-        </div>
+        {/* 延伸內容收合：先顯示句子本身（短），完整卡片想看再展開 */}
+        <ul className="flex flex-wrap gap-2">{chapter.affirmationIds.map((id) => <li key={id} className="chip text-sm">「{affirmationMap[id].text}」</li>)}</ul>
+        <MoreDetails label={`看 ${chapter.affirmationIds.length} 句心智語句的說明與練習`}>
+          <div className="grid gap-4 md:grid-cols-2">
+            {chapter.affirmationIds.map((id) => <AffirmationCard key={id} a={affirmationMap[id]} compact />)}
+          </div>
+        </MoreDetails>
         <Link onClick={unlockSpeech} to={`/daily/read?back=${encodeURIComponent(`/learn/${chapter.id}`)}`} className="btn-secondary mt-4">
           <Sparkles className="h-4 w-4" aria-hidden /> 進入每日朗讀練習
         </Link>
@@ -258,10 +285,13 @@ export default function ChapterPage() {
           <ul className="grid gap-3 md:grid-cols-2">
             {relatedHabits.map((h) => (
               <li key={h.id}>
-                <Link to={`/pattern/${h.id}`} className="card-hover block h-full rounded-2xl border border-line bg-surface p-4">
+                <Link to={`/pattern/${h.id}`} className="card-hover flex h-full gap-3 rounded-2xl border border-line bg-surface p-4">
+                  <span className="w-20 shrink-0"><WatercolorSpot kind={h.id} /></span>
+                  <span className="min-w-0">
                   <span className="chip">Habit 0{h.no} · {h.concept}</span>
                   <span className="mt-2 block font-serif font-bold">{h.title}</span>
                   <span className="mt-1 block text-sm text-muted">互動工具：{h.toolTitle}</span>
+                  </span>
                 </Link>
               </li>
             ))}
@@ -283,7 +313,9 @@ export default function ChapterPage() {
       </Block>
 
       <Block id="references" icon={Library} title="研究來源">
-        <ReferenceList refs={getReferences(chapter.referenceIds)} />
+        <MoreDetails label={`看 ${chapter.referenceIds.length} 筆研究來源`}>
+          <ReferenceList refs={getReferences(chapter.referenceIds)} />
+        </MoreDetails>
       </Block>
       </>)}
 

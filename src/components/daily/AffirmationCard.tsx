@@ -13,6 +13,7 @@ import { copyText } from '../../lib/clipboard';
 import { chapterMap } from '../../content/chapters';
 import { patternHabits } from '../../content/breakPattern';
 import { h7Habits } from '../../content/habits7';
+import WatercolorSpot from '../visual/WatercolorSpot';
 
 export default function AffirmationCard({ a, defaultOpen = false, compact = false }: { a: Affirmation; defaultOpen?: boolean; compact?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -29,13 +30,6 @@ export default function AffirmationCard({ a, defaultOpen = false, compact = fals
 
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
-      {/* 背景的神經連結光點裝飾 */}
-      <svg aria-hidden className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 text-sage/40" viewBox="0 0 100 100">
-        <path d="M10 80 Q 40 40 60 55 T 95 15" stroke="currentColor" strokeWidth="2" fill="none" />
-        <circle cx="10" cy="80" r="4" fill="currentColor" />
-        <circle cx="60" cy="55" r="3" className="motion-safe:animate-twinkle" fill="rgb(var(--apricot))" />
-        <circle cx="95" cy="15" r="4" fill="currentColor" />
-      </svg>
       <div className="p-5">
         <div className="flex items-start gap-3">
           <span className="font-display text-2xl italic text-sageink">{String(a.id).padStart(2, '0')}</span>
@@ -43,6 +37,8 @@ export default function AffirmationCard({ a, defaultOpen = false, compact = fals
             <p className="text-xs font-medium tracking-wider text-accent">{a.theme}</p>
             <h3 className={`mt-1 font-serif font-bold leading-snug text-ink ${compact ? 'text-lg' : 'text-xl'}`}>{a.text}</h3>
           </div>
+          {/* 與句意相關的水彩小插畫 */}
+          <div className={`-mr-1 -mt-1 shrink-0 ${compact ? 'w-16' : 'w-20'}`}><WatercolorSpot kind={`aff${a.id}`} /></div>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted">{a.meaning}</p>
 

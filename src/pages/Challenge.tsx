@@ -22,6 +22,7 @@ import PatternChallenge from '../components/pattern/PatternChallenge';
 import { celebrate } from '../lib/celebrate';
 import CompletionCard from '../components/ui/CompletionCard';
 import { unlockSpeech } from '../lib/speech';
+import { Timeline } from '../components/visual';
 
 const emptyRecord: ChallengeDayRecord = { completed: false, note: '', affirmationReflection: '', microActionDone: false, feeling: '' };
 
@@ -77,20 +78,9 @@ function NeuroChallenge() {
       )}
 
       <nav aria-label="選擇天數" className="mt-5">
-        <ol className="grid grid-cols-7 gap-2">
-          {challengeDays.map((d) => {
-            const c = data.challenge[String(d.day)]?.completed;
-            return (
-              <li key={d.day}>
-                <button onClick={() => goDay(d.day)} aria-current={d.day === day ? 'step' : undefined} aria-label={`Day ${d.day}：${d.theme}${c ? '（已完成）' : d.day === firstUndone ? '（下一個）' : ''}`}
-                  className={`flex aspect-square w-full flex-col items-center justify-center rounded-xl border text-sm transition ${d.day === day ? 'border-accent bg-accent text-onaccent' : c ? 'border-sage bg-soft text-accent' : 'border-line bg-surface hover:border-accent/50'} ${d.day === firstUndone && d.day !== day ? 'ring-2 ring-apricot ring-offset-2 ring-offset-bg' : ''}`}>
-                  <span className="font-display">{d.day}</span>
-                  {c && <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />}
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+        {/* 時間軸：已完成（勾勾）、下一個（琥珀色）、之後；點任一天可切換 */}
+        <Timeline ariaLabel="14 天練習進度" current={day - 1} onSelect={(i) => goDay(i + 1)}
+          items={challengeDays.map((d) => ({ label: String(d.day), title: `Day ${d.day}：${d.theme}`, state: data.challenge[String(d.day)]?.completed ? 'done' : d.day === firstUndone ? 'today' : 'later' }))} />
       </nav>
 
       <article className="mt-8 rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-8" aria-labelledby="day-title">

@@ -17,6 +17,7 @@ import { nowIso } from '../../lib/id';
 import { speak, speechSupported, stopSpeaking } from '../../lib/speech';
 import SpeechStatus from '../ui/SpeechStatus';
 import DailyLogForm from './DailyLogForm';
+import WatercolorSpot from '../visual/WatercolorSpot';
 
 const TOTAL = affirmations.length;
 
@@ -88,7 +89,10 @@ export default function ReadingMode() {
   const done = step === TOTAL;
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-bg">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-bg">
+      {/* 背景：柔和的水彩色塊（裝飾，不影響閱讀） */}
+      <div aria-hidden className="pointer-events-none fixed -left-24 -top-24 h-72 w-72 rounded-full bg-apricot/30 blur-3xl" />
+      <div aria-hidden className="pointer-events-none fixed -right-20 top-1/3 h-64 w-64 rounded-full bg-sage/25 blur-3xl" />
       {/* 背景：植物生長與光點意象 */}
       <svg aria-hidden className="pointer-events-none fixed inset-x-0 bottom-0 h-64 w-full text-sage/30" viewBox="0 0 400 120" preserveAspectRatio="none">
         <path d={`M200 120 C 200 ${100 - step * 8}, ${190 - step * 3} ${90 - step * 9}, 200 ${80 - step * 10}`} stroke="currentColor" strokeWidth="3" fill="none" className="transition-all duration-700" />
@@ -124,6 +128,8 @@ export default function ReadingMode() {
       <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
         {!done ? (
           <div key={step} className="max-w-2xl motion-safe:animate-fade-up">
+            {/* 與句意相關的水彩小插畫 */}
+            <div className="mx-auto mb-2 w-28 sm:w-36"><WatercolorSpot kind={`aff${a.id}`} /></div>
             <p className="font-display text-lg italic text-sageink">{String(a.id).padStart(2, '0')}｜{a.theme}</p>
             {getDailyLog(data).practiceId === a.id && <p className="mt-2"><span className="chip">✦ 你今天選擇練習的句子</span></p>}
             <h1 ref={heading} tabIndex={-1} className="mt-4 font-serif text-4xl font-bold leading-tight text-ink outline-none sm:text-5xl md:text-6xl">

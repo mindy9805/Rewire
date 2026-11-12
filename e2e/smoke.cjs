@@ -117,6 +117,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('章節測驗作答、評分、重新作答', async () => {
     const quiz = page.locator('#quiz');
+    // 測驗收在「開始測驗」裡：先打開
+    if (!(await quiz.locator('details').evaluate((d) => d.open))) await quiz.locator('summary').click();
     for (const q of await quiz.locator('fieldset').all()) await q.locator('input[type=radio]').nth(1).check();
     await quiz.getByRole('button', { name: '送出答案' }).click();
     await quiz.getByText(/得分：4\/4/).waitFor();
@@ -219,7 +221,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await open('睡眠與記憶鞏固');
     await page.getByRole('button', { name: '儲存紀錄' }).click();
     if ((await store(page)).sleepLogs.length !== 1) throw new Error('睡眠');
-    await page.getByText('不是醫療診斷工具').first().waitFor();
+    // 章節正文也有這句話（收在「看完整說明」裡），這裡確認的是睡眠工具中「看得到」的提醒
+    await page.getByText('不是醫療診斷工具').locator('visible=true').first().waitFor();
   });
   await step('第 8 章 If-Then：建立、複製、編輯', async () => {
     await page.goto(BASE + '#/learn/ch8');
@@ -254,8 +257,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
         await page.getByRole('heading', { name: h }).first().waitFor({ timeout: 3000 });
       }
       await page.locator('#tool').waitFor();
-      // 研究證據段落預設收合：展開後才看得到 DOI 連結
-      await page.getByRole('button', { name: /研究證據與適用限制/ }).click();
+      // 研究證據段落：收合時先展開；圖解版的文獻清單收在「看完整說明與研究來源」裡
+      const evBtn = page.getByRole('button', { name: /研究證據與適用限制/ });
+      if ((await evBtn.getAttribute('aria-expanded')) === 'false') await evBtn.click();
+      const more = page.locator('#evidence summary', { hasText: '看完整說明與研究來源' });
+      if (await more.count()) await more.click();
       await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
     }
   });
@@ -584,6 +590,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   await step('7 Habits 章節完成：測驗、自我評估、反思、狀態', async () => {
     await page.goto(BASE + '#/habits7/first');
     const fin = page.locator('section[aria-labelledby="finish-h"]');
+    if (!(await fin.locator('details').first().evaluate((d) => d.open))) await fin.locator('summary').first().click();
     for (const f of await fin.locator('fieldset').all()) await f.locator('input[type=radio]').nth(1).check();
     await fin.getByRole('button', { name: '送出答案' }).click();
     await fin.getByText(/得分：/).waitFor();
@@ -950,9 +957,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   });
   await step('第二階段：學習頁段落可展開，段落列可展開全部', async () => {
     await page.goto(BASE + '#/habits7/end');
+    // 圖解版：段落預設展開；點標題可收合，段落列可「展開全部段落」
     const myths = page.getByRole('button', { name: /常見認知誤區/ });
-    if ((await myths.getAttribute('aria-expanded')) !== 'false') throw new Error('應預設收合');
-    if ((await page.getByRole('button', { name: /自我評估/ }).first().getAttribute('aria-expanded')) !== 'true') throw new Error('有練習的段落應預設展開');
+    if ((await myths.getAttribute('aria-expanded')) !== 'true') throw new Error('圖解版應預設展開');
+    await myths.click();
+    if ((await myths.getAttribute('aria-expanded')) !== 'false') throw new Error('點標題應可收合');
     const bar = page.getByTestId('section-progress');
     await bar.getByRole('button', { name: /段落/ }).click();
     await bar.getByRole('button', { name: '展開全部段落' }).click();
@@ -1104,6 +1113,58 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByText('朗讀檢查（聽不到聲音時使用）').click();
     await p2.getByTestId('speech-check').getByText('否').first().waitFor();
     await c2.close();
+  });
+  await step('（二）樣板頁：過度尋求認可以圖解呈現，完整文字可展開且一字不少', async () => {
+    await page.goto(BASE + '#/pattern/approval');
+    await page.locator('#definition').waitFor();
+    // 圖解：水彩插畫、循環圖、光譜、步驟卡、證據標籤
+    await page.getByRole('img', { name: /插畫：兩個對話框/ }).waitFor();
+    await page.getByRole('img', { name: /過度尋求認可的心理循環（示意圖，非實際數據）：1\. 提示：主管皺眉、別人請求/ }).waitFor();
+    await page.getByRole('img', { name: /從「健康」到「需要留意」的光譜/ }).waitFor();
+    await page.locator('#alternatives ol li').nth(3).waitFor();
+    await page.locator('#evidence').getByText('相關性研究為主').waitFor();
+    // 圖解版：10 個段落都預設展開
+    const closed = await page.locator('section[data-collapsible="closed"]').count();
+    if (closed) throw new Error('圖解版不應有收合的段落：' + closed);
+    // 「看完整說明」：常見表現、5 個概念說明、研究原文與文獻都還在
+    await page.locator('#definition summary').click();
+    await page.locator('#definition').getByText('害怕拒絕別人的要求。').waitFor();
+    await page.locator('#mechanisms summary').click();
+    await page.locator('#mechanisms').getByText(/為避免衝突或被拒絕而優先滿足他人/).waitFor();
+    await page.locator('#evidence summary').click();
+    await page.locator('#evidence a[href^="https://doi.org/"]').first().waitFor();
+    // 其他習慣：有循環描述的畫循環圖；沒有循環描述的（缺少獨處）改用概念卡，不硬畫循環
+    await page.goto(BASE + '#/pattern/convenience');
+    await page.getByRole('img', { name: /的心理循環/ }).waitFor();
+    await page.goto(BASE + '#/pattern/solitude');
+    await page.locator('#mechanisms').getByText('注意力調節').waitFor();
+    if (await page.getByRole('img', { name: /的心理循環/ }).count()) throw new Error('缺少獨處不應畫循環圖');
+  });
+  await step('（二）第 4 步：7 Habits、章節、每日練習、計畫頁的圖解', async () => {
+    // 7 Habits：誤區對照、延伸推論標籤、情境圖示卡
+    await page.goto(BASE + '#/habits7/proactive');
+    await page.locator('#myths').getByText('常見誤解').first().waitFor();
+    await page.locator('#myths').getByText('更貼近的理解').first().waitFor();
+    await page.locator('#neuro').getByText('延伸推論').first().waitFor();
+    await page.locator('#situations').getByText('求職').waitFor();
+    // 章節：小節重點卡＋「看完整說明」後原文完整
+    await page.goto(BASE + '#/learn/ch1');
+    const sec = page.locator('#sec-definition');
+    await sec.getByText('神經可塑性指的是大腦會隨著經驗而改變。').waitFor();
+    if (await sec.getByText(/推翻了過去「成年後大腦就定型」的看法/).isVisible()) throw new Error('其餘段落應收在看完整說明');
+    await sec.locator('summary').click();
+    await sec.getByText(/推翻了過去「成年後大腦就定型」的看法/).waitFor();
+    // 第 6 章：研究數據範圍圖（只用研究報告的數字）
+    await page.goto(BASE + '#/learn/ch6');
+    await page.getByRole('img', { name: /範圍約 18–254 天，中位數約 66 天（出處：Lally 等人（2010））/ }).waitFor();
+    // 每日心智練習：七句各有一張插畫
+    await page.goto(BASE + '#/daily');
+    await page.locator('article').nth(6).waitFor();
+    const spots = await page.locator('article [role=img][aria-label^="插畫："]').count();
+    if (spots < 7) throw new Error('每日七句插畫 ' + spots);
+    // 14 天練習：時間軸
+    await page.goto(BASE + '#/challenge');
+    await page.getByRole('list', { name: '14 天練習進度' }).waitFor();
   });
   await step('無資料空狀態（新的瀏覽器）', async () => {
     const c2 = await browser.newContext();
