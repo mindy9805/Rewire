@@ -40,18 +40,13 @@ export default function About() {
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed">
           <li>本站原創的文字與插畫，以 <a className="underline" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh_TW" target="_blank" rel="noopener noreferrer">創用 CC 姓名標示—非商業性 4.0 國際</a> 授權：可以分享與改作，但需註明出處、不可作商業用途，並標示是否做過修改。</li>
           <li>上述授權不包含第三方的著作與商標（例如參考書籍、書名與引用的研究論文），它們仍屬各自的權利人。</li>
-          <li>網站的程式碼目前未另外授權，著作權保留；若想使用，請先聯絡。</li>
+          <li>網站的程式碼目前未另外授權，著作權保留。</li>
         </ul>
       </Card>
 
       <Card>
         <h2 className="font-serif text-lg font-bold">隱私重點</h2>
         <p className="mt-2 text-sm leading-relaxed">沒有帳號、沒有後端伺服器，你寫的內容只存在你這台裝置的瀏覽器裡。朗讀的線上聲音、網站主機的存取紀錄等例外，都寫在「<Link to="/data" className="underline">資料與隱私</Link>」。</p>
-      </Card>
-
-      <Card>
-        <h2 className="font-serif text-lg font-bold">更正與聯絡</h2>
-        <p className="mt-2 text-sm leading-relaxed">發現內容有誤、疑似侵權，或權利人希望調整引用方式，請透過發布本站連結的社群貼文留言或私訊，我們會盡快查證並處理。</p>
       </Card>
     </div>
   );
