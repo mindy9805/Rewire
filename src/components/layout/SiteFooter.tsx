@@ -8,7 +8,7 @@ export default function SiteFooter() {
   return (
     <section className="mt-12 border-t border-line pt-5 text-xs leading-relaxed text-muted" aria-label="網站聲明">
       <p>
-        Rewire 是個人製作、免費提供的學習與練習工具，<strong className="font-medium text-ink">非官方網站，與參考書籍的作者、出版社無關</strong>。
+        Rewire 是個人製作、免費提供的學習與練習工具，<strong className="font-medium text-ink">非官方網站，與參考書籍的作者、出版社無關</strong>。<br />
         內容為自我成長與覺察練習，<strong className="font-medium text-ink">不具醫療、診斷或心理諮商功能</strong>，也不能保證任何效果。
       </p>
       <p className="mt-1.5">

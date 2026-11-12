@@ -12,7 +12,7 @@ export default function About() {
 
       <Card>
         <h2 className="font-serif text-lg font-bold">這個網站是什麼</h2>
-        <p className="mt-2 text-sm leading-relaxed">Rewire 是個人製作、免費提供的學習與練習工具，用互動的方式認識神經可塑性與日常習慣。<strong>非官方網站，與參考書籍的作者、出版社、書名或商標的權利人沒有任何關係，也沒有獲得他們的授權或背書。</strong></p>
+        <p className="mt-2 text-sm leading-relaxed">Rewire 是個人製作、免費提供的學習與練習工具，用互動的方式認識神經可塑性與日常習慣。<br /><strong>非官方網站，與參考書籍的作者、出版社、書名或商標的權利人沒有任何關係，也沒有獲得他們的授權或背書。</strong></p>
       </Card>
 
       <Card>
