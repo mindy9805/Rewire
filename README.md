@@ -115,7 +115,7 @@ rewire/
 - **朗讀**：`lib/speech.ts` 第一優先「Google 國語（臺灣）」，其次「台灣中文＋女聲＋自然語音」；不列出中國大陸聲音（zh-CN 與未標地區的 zh），香港／澳門／新加坡／馬來西亞的中文另列「其他地區中文」。iPhone／iPad 上沒有 Google 聲音，會改用美佳。長文字依句號切段；使用者可在「資料與隱私 → 朗讀聲音」指定聲音、試聽與使用「朗讀檢查」。實際可用的聲音由裝置提供。
   - **手機規則（重要）**：`speak()` 必須在點擊或按鍵事件中**直接**呼叫，不可放在 `useEffect`、`await`、`setTimeout` 之後，否則 iPhone 會無聲擋下。語音清單未載入時不等待，直接以 `zh-TW` 朗讀。
   - 進入朗讀模式的連結加上 `onClick={unlockSpeech}`；介面用 `<SpeechStatus />` 顯示朗讀中／排除提示。
-  - **聽不到聲音的排查**：「朗讀檢查」記錄實際發聲時間（太快結束＝語音資料問題；時間正常＝靜音或音量），並提供非語音的「播放測試音」（`lib/testTone.ts`）。聲音選單有「相容模式」（`voiceURI='system'`），不指定聲音、只設 `lang='zh-TW'`。`unlockSpeech()` 不設 `volume=0`。
+  - **聽不到聲音的排查**：「朗讀檢查」記錄實際發聲時間（太快結束＝語音資料問題；時間正常＝靜音或音量），並提供非語音的「播放測試音」（`lib/testTone.ts`）。聲音選單有「相容模式」（`voiceURI='system'`），不指定聲音、只設 `lang='zh-TW'`。`unlockSpeech()` 不設 `volume=0`。**靜音開關**：iPhone 的朗讀會被靜音開關消音（網頁 `<audio>` 不會），`speak()` 會同步啟動無聲循環音訊（`startPlaybackSession`），結束後停止。
 - **圖解（內容視覺化）**：學習頁先以圖解呈現、完整文字收在「看完整說明」，內容一字不刪。元件在 `src/components/visual/`：
   - `KeyPointCard` 重點卡、`IconCardGrid` 圖示卡、`LoopDiagram` 循環圖、`ChainDiagram` 因果鏈（只用在有先後順序的內容）、`SpectrumBar` 光譜對照、`CompareColumns` 左右對照、`StepCards` 步驟卡、`EvidenceBadge` 證據標籤、`Timeline` 時間軸、`RangeChart` 研究數據範圍圖、`WatercolorSpot` 水彩小插畫、`MoreDetails` 看完整說明。
   - 開發時執行 `npm run dev` 後開啟 `#/dev/visual` 可預覽所有元件（正式建置不包含這一頁）。
