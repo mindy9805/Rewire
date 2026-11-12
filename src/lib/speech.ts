@@ -82,6 +82,10 @@ export const isGoogleTaiwan = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) =
 /** 是否為「台灣女聲」（設定頁用來提示使用者裝置是否有合適的聲音） */
 export const isTaiwanFemale = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) => TW.test(v.lang) && FEMALE.test(v.name);
 
+/** 是否為 iPhone／iPad（含 iPad 要求桌面版網站的情況） */
+export const isIOS = (ua = typeof navigator !== 'undefined' ? navigator.userAgent : '', touch = typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0) =>
+  /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && touch > 1);
+
 /** 是否在 LINE／Facebook／Instagram 等 App 內建瀏覽器中 */
 export const isInAppBrowser = (ua = typeof navigator !== 'undefined' ? navigator.userAgent : '') => IN_APP.test(ua);
 

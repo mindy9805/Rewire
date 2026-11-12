@@ -3,17 +3,19 @@
  * 按下後約 1.5 秒仍未開始（或出錯）時，顯示溫和的排除方法。
  */
 import { Square } from 'lucide-react';
-import { isInAppBrowser, stopSpeaking } from '../../lib/speech';
+import { isInAppBrowser, isIOS, stopSpeaking } from '../../lib/speech';
 import { useSpeechState } from '../../lib/useSpeech';
 
 export default function SpeechStatus({ className = '' }: { className?: string }) {
   const s = useSpeechState();
   if (s.status === 'starting' || s.status === 'speaking') {
     return (
-      <div role="status" className={`inline-flex items-center gap-2 rounded-full bg-soft px-3 py-1.5 text-sm text-accent ${className}`}>
+      <div role="status" className={`inline-flex flex-wrap items-center gap-2 rounded-2xl bg-soft px-3 py-1.5 text-sm text-accent ${className}`}>
         <span className="relative flex h-2.5 w-2.5" aria-hidden><span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-60 motion-safe:animate-ping" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" /></span>
         {s.status === 'starting' ? '準備朗讀…' : '正在朗讀…'}
         <button type="button" className="btn-ghost btn-sm -my-1 -mr-2" onClick={stopSpeaking} aria-label="停止朗讀"><Square className="h-3.5 w-3.5" aria-hidden />停止</button>
+        {/* iPhone 的朗讀會被側邊靜音開關消音，網頁無法繞過，只能提醒 */}
+        {isIOS() && <span className="basis-full text-xs text-muted">沒聽到聲音？請確認 iPhone 側邊的靜音開關（看得到橘色代表靜音）。</span>}
       </div>
     );
   }
