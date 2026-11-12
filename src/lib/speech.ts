@@ -7,8 +7,7 @@
  * 2. 語音清單還沒載入時，不等待：只設定 lang='zh-TW' 立即朗讀（交給系統挑中文聲音），
  *    同時在背景監聽 voiceschanged，下一句就能用上挑好的台灣女聲。
  * 3. 只有「正在朗讀或有排隊中的語句」時才 cancel()；部分 iOS 版本在 cancel() 後立刻 speak() 會失效。
- * 4. 靜音開關：iPhone 的朗讀會被靜音開關消音（網頁 <audio> 則不會）。speak() 同步啟動無聲循環音訊（見 testTone.ts），朗讀結束後停止。
- * 5. unlockSpeech()：在第一次相關點擊（例如「開始每日心智練習」）時同步播放一段無聲短句，
+ * 4. unlockSpeech()：在第一次相關點擊（例如「開始每日心智練習」）時同步播放一段無聲短句，
  *    之後頁面中的朗讀比較不會被擋。
  *
  * ── 聲音選擇 ──
@@ -26,8 +25,6 @@
  * 透過 subscribeSpeech／getSpeechState（React 端用 useSpeechState）讓介面顯示「正在朗讀…」、
  * 「按下後 1.5 秒仍未開始」的排除提示，以及「朗讀檢查」所需的最後一次結果。
  */
-
-import { startPlaybackSession, stopPlaybackSession } from './testTone';
 
 export const speechSupported = () =>
   typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window && !!window.speechSynthesis;
@@ -84,6 +81,10 @@ export const isGoogleTaiwan = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) =
 
 /** 是否為「台灣女聲」（設定頁用來提示使用者裝置是否有合適的聲音） */
 export const isTaiwanFemale = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) => TW.test(v.lang) && FEMALE.test(v.name);
+
+/** 是否為 iPhone／iPad（含 iPad 要求桌面版網站的情況） */
+export const isIOS = (ua = typeof navigator !== 'undefined' ? navigator.userAgent : '', touch = typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0) =>
+  /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && touch > 1);
 
 /** 是否在 LINE／Facebook／Instagram 等 App 內建瀏覽器中 */
 export const isInAppBrowser = (ua = typeof navigator !== 'undefined' ? navigator.userAgent : '') => IN_APP.test(ua);
@@ -204,7 +205,6 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
     // 只有正在朗讀或有排隊時才取消，避免 iOS 吃掉下一句
     if (synth.speaking || synth.pending) synth.cancel();
     if (synth.paused) synth.resume();
-    startPlaybackSession();
     const voices = chineseVoicesNow();
     const voice = preferredVoiceURI === SYSTEM_VOICE ? undefined : voices.find((v) => v.voiceURI === preferredVoiceURI) ?? voices[0];
     const parts = splitForSpeech(tidyForSpeech(text));
@@ -218,12 +218,11 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
       u.rate = rate;
       u.pitch = SPEECH_PITCH;
       if (i === 0) u.onstart = () => { if (my === token) { startedAt = Date.now(); clearTimeout(watchdog); setState({ status: 'speaking' }); } };
-      if (i === parts.length - 1) u.onend = () => { if (my === token) { stopPlaybackSession(); setState({ status: 'idle', lastResult: 'success', lastError: '', lastDurationMs: startedAt ? Date.now() - startedAt : -1 }); } };
+      if (i === parts.length - 1) u.onend = () => { if (my === token) setState({ status: 'idle', lastResult: 'success', lastError: '', lastDurationMs: startedAt ? Date.now() - startedAt : -1 }); };
       u.onerror = (e: Event) => {
         const code = (e as SpeechSynthesisErrorEvent).error ?? 'unknown';
         if (my !== token || code === 'interrupted' || code === 'canceled') return; // 我們自己取消的不算錯誤
         clearTimeout(watchdog);
-        stopPlaybackSession();
         setState({ status: 'error', lastResult: code === 'not-allowed' ? 'blocked' : 'error', lastError: code });
       };
       synth.speak(u);
@@ -232,7 +231,7 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
     // 1.5 秒後仍未開始：多半是被瀏覽器擋下或裝置靜音，讓介面顯示排除方法
     clearTimeout(watchdog);
     watchdog = setTimeout(() => {
-      if (my === token && state.status === 'starting') { stopPlaybackSession(); setState({ status: 'blocked', lastResult: 'blocked', lastError: 'no-start' }); }
+      if (my === token && state.status === 'starting') setState({ status: 'blocked', lastResult: 'blocked', lastError: 'no-start' });
     }, BLOCKED_AFTER_MS);
     ensureVoiceListener();
     return true;
@@ -244,7 +243,6 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
 
 export function stopSpeaking() {
   token++;
-  stopPlaybackSession();
   clearTimeout(watchdog);
   if (speechSupported()) {
     const synth = window.speechSynthesis;

@@ -65,7 +65,7 @@ export default function SpeechCheck() {
         <button type="button" className="btn-secondary btn-sm" onClick={() => { void playTestTone().then((ok) => setTone(ok ? 'ok' : 'fail')); }}><Bell className="h-4 w-4" aria-hidden />播放測試音</button>
         <button type="button" className="btn-ghost btn-sm" onClick={async () => toast((await copyText(report())) ? '已複製檢查結果，可以貼給我們' : '無法複製，請手動截圖', 'info')}><ClipboardCopy className="h-4 w-4" aria-hidden />複製檢查結果</button>
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-muted">判讀：測試音也聽不到 → 多半是靜音模式（iPhone 側邊開關）或媒體音量太小，請在播放時按音量鍵調大；測試音聽得到、朗讀聽不到 → 多半是 iPhone 靜音開關只擋了朗讀（網頁音效不受影響），請把側邊開關切到有聲音再試，或在上方「朗讀聲音」改選「相容模式」再試一次。</p>
+      <p className="mt-2 text-xs leading-relaxed text-muted">判讀：測試音也聽不到 → 多半是靜音模式（iPhone 側邊開關）或媒體音量太小，請在播放時按音量鍵調大；測試音聽得到、朗讀聽不到 → 多半是 iPhone 靜音開關只擋了朗讀（網頁音效不受影響，網站無法繞過），請把側邊開關切到有聲音再試，或在上方「朗讀聲音」改選「相容模式」再試一次。</p>
       <p className="mt-1 text-xs text-muted">只複製上面的技術資訊與瀏覽器版本，不包含你的任何紀錄。</p>
     </details>
   );
