@@ -1,12 +1,13 @@
 /**
  * 朗讀聲音設定：列出裝置上的中文聲音（台灣女聲排最前面），可試聽與指定。
  * 預設「自動」＝挑選分數最高的聲音（台灣中文＋女聲＋自然語音優先）。
+ * 「相容模式」＝不指定聲音、只告訴系統要台灣中文；給「指定聲音後有朗讀卻沒聲音」的裝置使用。
  * 裝置沒有台灣女聲時，提示各平台安裝方式（聲音由裝置提供，本站無法自行下載）。
  */
 import { useEffect, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { useStore } from '../../store/AppStore';
-import { isTaiwanFemale, loadChineseVoices, speak, speechSupported } from '../../lib/speech';
+import { isTaiwanFemale, loadChineseVoices, speak, speechSupported, SYSTEM_VOICE } from '../../lib/speech';
 import SpeechStatus from './SpeechStatus';
 import SpeechCheck from './SpeechCheck';
 
@@ -26,9 +27,10 @@ export default function VoicePicker() {
     <div className="space-y-2">
       <label htmlFor="voice" className="field-label">朗讀聲音</label>
       <div className="flex flex-wrap items-center gap-2">
-        <select id="voice" className="field w-auto max-w-full" value={voices.some((v) => v.voiceURI === current) ? current : ''}
+        <select id="voice" className="field w-auto max-w-full" value={current === SYSTEM_VOICE || voices.some((v) => v.voiceURI === current) ? current : ''}
           onChange={(e) => update((p) => ({ ...p, settings: { ...p.settings, voiceURI: e.target.value } }))}>
           <option value="">自動（{auto ? label(auto) : '裝置預設'}）</option>
+          <option value={SYSTEM_VOICE}>相容模式（不指定聲音，交給系統）</option>
           {voices.map((v) => <option key={v.voiceURI} value={v.voiceURI}>{label(v)}</option>)}
         </select>
         <button type="button" className="btn-secondary btn-sm" onClick={() => speak(SAMPLE)}><Volume2 className="h-4 w-4" aria-hidden />試聽</button>

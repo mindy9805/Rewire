@@ -80,12 +80,33 @@ describe('手機朗讀：同步朗讀', () => {
     expect(getSpeechState()).toMatchObject({ status: 'idle', lastResult: 'success' });
   });
 
-  it('unlockSpeech() 同步播放一段無聲短句', async () => {
+  it('unlockSpeech() 同步播放一段短句，且不把音量設為 0', async () => {
     const synth = installFakeSpeech();
     const { unlockSpeech } = await import('./speech');
     unlockSpeech();
     expect(synth.speak).toHaveBeenCalledTimes(1);
-    expect(synth.spoken[0].volume).toBe(0);
+    expect(synth.spoken[0].volume).toBeUndefined();
+  });
+
+  it('相容模式不指定聲音，只設定 zh-TW', async () => {
+    const synth = installFakeSpeech([{ name: '美佳', lang: 'zh-TW', voiceURI: 'meijia', localService: true }]);
+    const { speak, setPreferredVoice, SYSTEM_VOICE } = await import('./speech');
+    setPreferredVoice(SYSTEM_VOICE);
+    speak('測試');
+    expect(synth.spoken[0].voice).toBeUndefined();
+    expect(synth.spoken[0].lang).toBe('zh-TW');
+    setPreferredVoice('');
+  });
+
+  it('記錄實際發聲時間與字數', async () => {
+    const synth = installFakeSpeech();
+    const { speak, getSpeechState } = await import('./speech');
+    speak('你好世界');
+    expect(getSpeechState().lastChars).toBeGreaterThan(0);
+    expect(getSpeechState().lastDurationMs).toBe(-1);
+    synth.spoken[0].onstart?.();
+    synth.spoken[synth.spoken.length - 1].onend?.();
+    expect(getSpeechState().lastDurationMs).toBeGreaterThanOrEqual(0);
   });
 
   it('辨識 App 內建瀏覽器', async () => {

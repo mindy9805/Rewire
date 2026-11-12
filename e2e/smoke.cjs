@@ -1114,6 +1114,17 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByTestId('speech-check').getByText('否').first().waitFor();
     await c2.close();
   });
+  await step('（一）朗讀檢查：相容模式不指定聲音、測試音按鈕、發聲時間列', async () => {
+    await page.goto(BASE + '#/data');
+    await page.locator('#voice').selectOption('system');
+    await page.getByText('朗讀檢查（聽不到聲音時使用）').click();
+    const box = page.getByTestId('speech-check');
+    await box.getByText('相容模式：交給系統挑選（zh-TW）').waitFor();
+    await box.getByText('實際發聲時間').waitFor();
+    await page.getByRole('button', { name: '播放測試音' }).click();
+    await box.getByText(/已播放|無法播放/).waitFor();
+    await page.locator('#voice').selectOption('');
+  });
   await step('（二）樣板頁：過度尋求認可以圖解呈現，完整文字可展開且一字不少', async () => {
     await page.goto(BASE + '#/pattern/approval');
     await page.locator('#definition').waitFor();

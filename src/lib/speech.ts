@@ -112,8 +112,15 @@ export interface SpeechState {
   lastError: string;
   /** 最後一次實際使用的聲音名稱（空字串＝交給系統挑選的 zh-TW 聲音） */
   lastVoice: string;
+  /**
+   * 最後一次從開始到結束的毫秒數（-1＝尚未量到）。用來分辨「聽不到」的原因：
+   * 時間正常（每字約 0.2 秒以上）但沒聲音 → 多半是靜音模式或媒體音量；幾乎瞬間結束 → 多半是語音資料缺漏。
+   */
+  lastDurationMs: number;
+  /** 最後一次朗讀的字數（用來判斷時間長度是否合理） */
+  lastChars: number;
 }
-let state: SpeechState = { status: 'idle', lastResult: 'none', lastError: '', lastVoice: '' };
+let state: SpeechState = { status: 'idle', lastResult: 'none', lastError: '', lastVoice: '', lastDurationMs: -1, lastChars: 0 };
 const listeners = new Set<() => void>();
 const setState = (patch: Partial<SpeechState>) => { state = { ...state, ...patch }; listeners.forEach((l) => l()); };
 export const getSpeechState = () => state;
@@ -121,7 +128,12 @@ export function subscribeSpeech(l: () => void) { listeners.add(l); return () => 
 
 /* ───────── 朗讀 ───────── */
 
-/** 使用者指定的聲音（voiceURI）；空字串代表自動挑選 */
+/**
+ * 使用者指定的聲音（voiceURI）；空字串代表自動挑選台灣女聲。
+ * SYSTEM_VOICE（'system'）＝相容模式：不指定聲音、只設定 lang='zh-TW'，交給系統挑選；
+ * 部分 iOS 版本在網頁直接指定聲音時會發生「有朗讀事件、沒有聲音」，可改用這個模式。
+ */
+export const SYSTEM_VOICE = 'system';
 let preferredVoiceURI = '';
 export const setPreferredVoice = (uri: string) => { preferredVoiceURI = uri; };
 
@@ -139,8 +151,8 @@ let unlocked = false;
 export function unlockSpeech() {
   if (unlocked || !speechSupported()) return;
   try {
+    // 不設定 volume=0：避免部分 iOS 版本把音量設定沿用到之後的語句
     const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0;
     u.lang = 'zh-TW';
     window.speechSynthesis.speak(u);
     unlocked = true;
@@ -164,17 +176,19 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
     if (synth.speaking || synth.pending) synth.cancel();
     if (synth.paused) synth.resume();
     const voices = chineseVoicesNow();
-    const voice = voices.find((v) => v.voiceURI === preferredVoiceURI) ?? voices[0];
+    const voice = preferredVoiceURI === SYSTEM_VOICE ? undefined : voices.find((v) => v.voiceURI === preferredVoiceURI) ?? voices[0];
     const parts = splitForSpeech(tidyForSpeech(text));
-    setState({ status: 'starting', lastVoice: voice?.name ?? '' });
+    const chars = parts.join('').length;
+    let startedAt = 0;
+    setState({ status: 'starting', lastVoice: voice?.name ?? '', lastDurationMs: -1, lastChars: chars });
     parts.forEach((part, i) => {
       const u = new SpeechSynthesisUtterance(part);
       u.lang = voice?.lang || 'zh-TW';
       if (voice) u.voice = voice;
       u.rate = rate;
       u.pitch = SPEECH_PITCH;
-      if (i === 0) u.onstart = () => { if (my === token) { clearTimeout(watchdog); setState({ status: 'speaking' }); } };
-      if (i === parts.length - 1) u.onend = () => { if (my === token) setState({ status: 'idle', lastResult: 'success', lastError: '' }); };
+      if (i === 0) u.onstart = () => { if (my === token) { startedAt = Date.now(); clearTimeout(watchdog); setState({ status: 'speaking' }); } };
+      if (i === parts.length - 1) u.onend = () => { if (my === token) setState({ status: 'idle', lastResult: 'success', lastError: '', lastDurationMs: startedAt ? Date.now() - startedAt : -1 }); };
       u.onerror = (e: Event) => {
         const code = (e as SpeechSynthesisErrorEvent).error ?? 'unknown';
         if (my !== token || code === 'interrupted' || code === 'canceled') return; // 我們自己取消的不算錯誤
