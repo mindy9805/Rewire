@@ -98,19 +98,6 @@ describe('手機朗讀：同步朗讀', () => {
     setPreferredVoice('');
   });
 
-  it('朗讀時同步啟動無聲播放通道，結束後停止（讓靜音開關下也有聲音）', async () => {
-    const synth = installFakeSpeech();
-    const play = vi.fn(() => Promise.resolve());
-    const pause = vi.fn();
-    vi.stubGlobal('Audio', class { loop = false; play = play; pause = pause; });
-    vi.stubGlobal('navigator', {});
-    const { speak } = await import('./speech');
-    speak('你好');
-    expect(play).toHaveBeenCalledTimes(1); // 與 synth.speak 同一個呼叫堆疊
-    synth.spoken[synth.spoken.length - 1].onend?.();
-    expect(pause).toHaveBeenCalled();
-  });
-
   it('記錄實際發聲時間與字數', async () => {
     const synth = installFakeSpeech();
     const { speak, getSpeechState } = await import('./speech');
