@@ -18,10 +18,10 @@ export interface NavItem {
 export const mainNav: NavItem[] = [
   { to: '/', label: '今天', en: 'Today', icon: Home, group: '今天' },
   { to: '/play', label: '輕鬆探索', en: 'Play', icon: Gamepad2, group: '今天' },
-  { to: '/learn', label: '深度導讀', en: 'Learn', icon: BookOpen, group: '學習' },
+  { to: '/learn', label: '主題學習', en: 'Learn', icon: BookOpen, group: '學習' },
   { to: '/daily', label: '每日心智練習', en: 'Daily Rewire', icon: Sparkles, group: '學習' },
   { to: '/pattern', label: '打破慣性', en: 'Break the Pattern', icon: ShieldCheck, group: '學習' },
-  { to: '/habits7', label: '7 Habits 高效能生活', en: '7 Habits', icon: Compass, group: '學習' },
+  { to: '/habits7', label: '高效能生活', en: 'Effective Living', icon: Compass, group: '學習' },
   { to: '/lab', label: '知識實驗室', en: 'Brain Lab', icon: FlaskConical, group: '學習' },
   { to: '/plans', label: '我的計畫', en: 'My Plans', icon: CalendarCheck, group: '學習' },
   { to: '/references', label: '研究來源', en: 'References', icon: Library, group: '學習' },

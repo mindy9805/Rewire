@@ -127,9 +127,9 @@ export function patternToMarkdown(d: AppData): string {
   return L.join('\n');
 }
 
-/** 7 Habits：學習進度、願景、四象限、協商、同理、思考板、四維成長、21 天計畫 */
+/** 高效能生活：學習進度、願景、四象限、協商、同理、思考板、四維成長、21 天計畫 */
 export function habits7ToMarkdown(d: AppData): string {
-  const L = ['# 7 Habits｜高效能生活實踐 紀錄', ''];
+  const L = ['# 高效能生活實踐 紀錄', ''];
   L.push('## 學習進度', '', ...h7Habits.map((h) => `- 習慣${h.no}「${h.title}」：${d.h7Progress[h.id]?.status === 'done' ? '已完成' : d.h7Progress[h.id] ? '學習中' : '未開始'}${d.h7Quizzes[h.id] ? `（測驗 ${d.h7Quizzes[h.id]!.score}/${d.h7Quizzes[h.id]!.total}）` : ''}`), '');
   if (d.h7SelfChecks.length) L.push('## 自我評估', '', ...d.h7SelfChecks.map((c) => `- ${formatDate(c.date)}｜${h7Map[c.habitId].title}：平均 ${selfCheckAverage(c.answers)}／5`), '');
   for (const c of d.circles) L.push(`## 關注圈與影響圈：${c.problem}`, '', ...c.items.map((i) => `- [${i.zone === 'control' ? '能控制' : i.zone === 'influence' ? '能影響' : '超出控制'}] ${i.text}`), '');

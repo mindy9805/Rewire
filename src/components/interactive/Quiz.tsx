@@ -9,7 +9,7 @@ import { useToast } from '../ui/Toast';
 import { nowIso } from '../../lib/id';
 
 /**
- * chapterId：用於章節測驗（存入 quizzes）；也可傳入 saved／onSave 讓其他模組（7 Habits）保存成績。
+ * chapterId：用於章節測驗（存入 quizzes）；也可傳入 saved／onSave 讓其他模組（高效能生活）保存成績。
  */
 export default function Quiz({ chapterId, questions, saved: savedProp, onSave }: { chapterId: ChapterId | string; questions: QuizQuestion[]; saved?: QuizResult; onSave?: (r: QuizResult) => void }) {
   const { data, update } = useStore();

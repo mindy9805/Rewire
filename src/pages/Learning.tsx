@@ -38,7 +38,7 @@ export default function Learning() {
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-xs text-muted">四個系統的性質不同：深度導讀整理科學研究，每日心智練習是覺察練習，打破慣性是行為實踐框架，7 Habits 是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
+        <p className="mt-3 text-xs text-muted">四個系統的性質不同：主題學習整理科學研究，每日心智練習是覺察練習，打破慣性是行為實踐框架，高效能生活是管理哲學。頁面中會清楚標示研究結論、管理哲學與本站的實踐建議。</p>
       </section>
       <section aria-labelledby="tools-h">
         <h2 id="tools-h" className="text-lg font-bold">練習與工具</h2>

@@ -43,7 +43,7 @@ export default function HomeHero() {
         ))}
       </svg>
       <div className="relative">
-        <p className="font-display text-sm italic text-[#E8CCB2]">Rewire｜重塑大腦的可能</p>
+        <p className="font-display text-sm italic text-[#E8CCB2]">Rewire｜神經可塑性的學習與練習</p>
         <h1 id="hero-h" className="mt-2 font-serif text-[1.6rem] font-bold leading-tight min-[380px]:text-[1.75rem] sm:text-4xl"><Phrased text={HOME_TITLE} /></h1>
         <p className="mt-2 text-[#E9EEE7]"><Phrased text={PLAY_PROMISE} /></p>
         <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3">

@@ -215,7 +215,7 @@ const MAP: Record<ChapterId, { el: () => JSX.Element; title: string }> = {
   ch4: { el: CbtModel, title: '認知行為模型圖' },
   ch5: { el: HabitLoop, title: '習慣循環示意圖' },
   ch6: { el: Curve, title: '習慣自動化曲線示意圖' },
-  ch7: { el: ToolsWheel, title: '七個實踐工具示意圖' },
+  ch7: { el: ToolsWheel, title: '七個日常練習示意圖' },
   ch8: { el: IfThen, title: 'If-Then 行動計畫流程圖' },
   ch9: { el: EvidenceLadder, title: '科學證據強度階梯示意圖' },
 };

@@ -442,7 +442,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await card.getByRole('button', { name: '反思與行動' }).click();
     await card.getByRole('link', { name: '打破慣性：反覆違背承諾' }).waitFor();
   });
-  await step('7 Habits：總覽、三階段地圖、來源標示、推薦規則', async () => {
+  await step('高效能生活：總覽、三階段地圖、來源標示、推薦規則', async () => {
     await page.goto(BASE + '#/habits7');
     await page.getByRole('heading', { name: '從管理自己，到與世界建立更好的關係' }).waitFor();
     const map = page.getByRole('group', { name: '三階段學習地圖' });
@@ -454,7 +454,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.getByText('查看完整推薦規則').click();
     await page.getByRole('table', { name: '跨模組推薦規則' }).waitFor();
   });
-  await step('7 Habits：七個章節都有 10 個面向、工具與完成區塊', async () => {
+  await step('高效能生活：七個章節都有 10 個面向、工具與完成區塊', async () => {
     for (const id of ['proactive', 'end', 'first', 'winwin', 'understand', 'synergize', 'renew']) {
       await page.goto(BASE + `#/habits7/${id}`);
       for (const h of ['習慣定義與核心觀念', '生活與職場情境', '常見認知誤區', '與神經可塑性的可能關聯', '心理學或管理學延伸概念', '實際行動策略', '互動工具', '反思問題', '自我評估', '與 Rewire 其他模組的連結', '完成本章']) {
@@ -587,7 +587,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     if (s.renewalSettings.weights.physical !== 5 || s.renewalSettings.spiritualLabel !== '人生意義') throw new Error(JSON.stringify(s.renewalSettings));
     if (s.renewalChecks.length !== 1 || s.renewalHabitLogs.length !== 1 || s.restLogs.length !== 1) throw new Error('紀錄');
   });
-  await step('7 Habits 章節完成：測驗、自我評估、反思、狀態', async () => {
+  await step('高效能生活 章節完成：測驗、自我評估、反思、狀態', async () => {
     await page.goto(BASE + '#/habits7/first');
     const fin = page.locator('section[aria-labelledby="finish-h"]');
     if (!(await fin.locator('details').first().evaluate((d) => d.open))) await fin.locator('summary').first().click();
@@ -601,7 +601,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await fin.getByRole('button', { name: '儲存反思' }).click();
     await page.getByRole('button', { name: '標記本章為已完成' }).click();
     const s = await store(page);
-    if (!s.h7Quizzes.first || s.h7SelfChecks.length !== 1 || s.h7Progress.first?.status !== 'done' || !s.notes.some((n) => n.tags.includes('7 Habits'))) throw new Error('完成');
+    if (!s.h7Quizzes.first || s.h7SelfChecks.length !== 1 || s.h7Progress.first?.status !== 'done' || !s.notes.some((n) => (n.tags.includes('高效能生活') || n.tags.includes('7 Habits')))) throw new Error('完成');
     if (s.quizzes.first) throw new Error('寫錯測驗儲存位置');
   });
   await step('21 天七習慣探索計畫：每日任務、反思、行動計畫、完成、回顧', async () => {
@@ -788,7 +788,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.getByText('七大習慣自我評估變化').waitFor();
     await page.getByText('晚上 11 點').first().waitFor();
     await page.getByText('關閉自動播放').first().waitFor();
-    for (const t of ['7 Habits｜高效能生活實踐', '成為健康、持續學習、支持他人的人', '完成提案初稿']) {
+    for (const t of ['高效能生活實踐', '成為健康、持續學習、支持他人的人', '完成提案初稿']) {
       if (!(await page.getByText(t).count())) throw new Error('儀表板找不到：' + t);
     }
   });
@@ -920,7 +920,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.getByRole('navigation', { name: '主要頁面' }).getByRole('link', { name: /^學習\s*（總覽）$/ }).click();
     await page.waitForURL(/#\/learning$/);
     await page.getByRole('heading', { name: '四大學習系統' }).waitFor();
-    // 章節清單只在深度導讀相關頁面出現
+    // 章節清單只在主題學習相關頁面出現
     if (await page.getByRole('navigation', { name: '章節導覽' }).count()) throw new Error('學習總覽不應顯示章節清單');
   });
   await step('第二階段：我的紀錄時間軸（篩選、查看連結）', async () => {
@@ -936,7 +936,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
   await step('第二階段：研究來源篩選與搜尋、預設只顯示 10 筆', async () => {
     await page.goto(BASE + '#/references');
     await page.getByText(/符合 \d+ 筆，先顯示前 10 筆/).waitFor();
-    await page.getByRole('group', { name: '依模組篩選' }).getByRole('button', { name: /^7 Habits/ }).click();
+    await page.getByRole('group', { name: '依模組篩選' }).getByRole('button', { name: /^高效能生活/ }).click();
     await page.getByLabel('搜尋文獻').fill('Covey');
     await page.getByText('符合 1 筆').waitFor();
     await page.getByLabel('搜尋文獻').fill('不存在的關鍵字xyz');
@@ -979,7 +979,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     if ((await p2.evaluate(() => JSON.parse(localStorage.getItem('rewire:v1') || '{}').patternAssessments?.length ?? 0)) !== 0) throw new Error('不應自動儲存');
     await c2.close();
   });
-  await step('第二階段：深度導讀主要按鈕、每日練習分頁', async () => {
+  await step('第二階段：主題學習主要按鈕、每日練習分頁', async () => {
     await page.goto(BASE + '#/learn');
     await page.getByRole('link', { name: /^(繼續第 \d+ 章|下一章：第 \d+ 章|從第 1 章開始)$/ }).waitFor();
     await page.goto(BASE + '#/daily?tab=records');
@@ -1026,11 +1026,11 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     if ((await p2.locator('main .btn-primary').count()) !== 1) throw new Error('資料頁應只有一個主要按鈕');
     await c2.close();
   });
-  await step('檢核修正：7 Habits 總覽第一屏主要按鈕、朗讀聲音設定、水彩小芽', async () => {
+  await step('檢核修正：高效能生活 總覽第一屏主要按鈕、朗讀聲音設定、水彩小芽', async () => {
     await page.goto(BASE + '#/habits7');
     const cta = page.getByRole('link', { name: /^(從習慣一開始|繼續|下一個|回顧 21 天)/ }).first();
     const box = await cta.boundingBox();
-    if (!box || box.y + box.height > 900) throw new Error('7 Habits 主要按鈕不在第一屏');
+    if (!box || box.y + box.height > 900) throw new Error('高效能生活 主要按鈕不在第一屏');
     await page.goto(BASE + '#/data');
     await page.getByRole('heading', { name: '資料與隱私', level: 1 }).waitFor();
     // 有語音的瀏覽器顯示聲音選單；沒有中文聲音時顯示安裝說明或不支援提示
@@ -1114,6 +1114,29 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByTestId('speech-check').getByText('否').first().waitFor();
     await c2.close();
   });
+  await step('法務與隱私：全站頁尾聲明、關於與聲明頁、不連第三方字型、名稱已更新', async () => {
+    const reqs = [];
+    page.on('request', (r) => reqs.push(r.url()));
+    for (const hash of ['#/', '#/learn', '#/pattern', '#/habits7']) {
+      await page.goto(BASE + hash);
+      const f = page.getByRole('region', { name: '網站聲明' });
+      await f.waitFor();
+      const t = await f.innerText();
+      if (!t.includes('非官方') || !t.includes('不具醫療') || !t.includes('1925')) throw new Error('頁尾聲明不完整 ' + hash + t);
+    }
+    await page.getByRole('link', { name: /關於與聲明/ }).last().click();
+    await page.getByRole('heading', { level: 1, name: '關於與聲明' }).waitFor();
+    await page.getByText('創用 CC 姓名標示—非商業性 4.0 國際').waitFor();
+    if (reqs.some((u) => /fonts\.(googleapis|gstatic)\.com/.test(u))) throw new Error('不應連到 Google Fonts');
+    // 名稱：導覽不再出現 7 Habits、深度導讀；第 7 章改名
+    await page.goto(BASE + '#/');
+    const body = await page.locator('body').innerText();
+    if (/7 Habits|深度導讀/.test(body)) throw new Error('仍有舊名稱');
+    await page.goto(BASE + '#/learn/ch7');
+    await page.getByRole('heading', { level: 1, name: /七個日常練習/ }).waitFor();
+    await page.goto(BASE + '#/data');
+    await page.getByText(/線上聲音/).first().waitFor();
+  });
   await step('（一）聲音選單：Google 國語（臺灣）優先、不列中國大陸聲音、國外版中文另成一組', async () => {
     const c2 = await browser.newContext();
     await c2.addInitScript(() => {
@@ -1177,8 +1200,8 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await page.locator('#mechanisms').getByText('注意力調節').waitFor();
     if (await page.getByRole('img', { name: /的心理循環/ }).count()) throw new Error('缺少獨處不應畫循環圖');
   });
-  await step('（二）第 4 步：7 Habits、章節、每日練習、計畫頁的圖解', async () => {
-    // 7 Habits：誤區對照、延伸推論標籤、情境圖示卡
+  await step('（二）第 4 步：高效能生活、章節、每日練習、計畫頁的圖解', async () => {
+    // 高效能生活：誤區對照、延伸推論標籤、情境圖示卡
     await page.goto(BASE + '#/habits7/proactive');
     await page.locator('#myths').getByText('常見誤解').first().waitFor();
     await page.locator('#myths').getByText('更貼近的理解').first().waitFor();
@@ -1275,7 +1298,7 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await m.getByRole('link', { name: /反思日誌/ }).waitFor();
     await bn.getByRole('link', { name: '學習' }).click();
     await m.waitForURL(/#\/learning$/);
-    await m.getByRole('link', { name: /深度導讀/ }).first().waitFor();
+    await m.getByRole('link', { name: /主題學習/ }).first().waitFor();
     await bn.getByRole('link', { name: '每日練習' }).click();
     await m.waitForURL(/#\/daily$/);
   });

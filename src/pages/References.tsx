@@ -1,7 +1,7 @@
 /**
  * 研究來源與延伸閱讀
  * 文獻有八十多筆，手機上很長，因此：
- * - 可依模組篩選（深度導讀／打破慣性／7 Habits），並可搜尋作者、標題、期刊或年份
+ * - 可依模組篩選（主題學習／打破慣性／高效能生活），並可搜尋作者、標題、期刊或年份
  * - 預設只列出前 10 筆，需要時再「顯示全部」
  * - 科學證據檢視卡維持展開，方便練習批判性閱讀
  */
@@ -18,9 +18,9 @@ import { SectionTitle } from '../components/ui/basics';
 type Filter = 'all' | 'learn' | 'pattern' | 'habits7';
 const FILTERS: { id: Filter; label: string; ids: Set<string> | null }[] = [
   { id: 'all', label: '全部', ids: null },
-  { id: 'learn', label: '深度導讀', ids: new Set(chapters.flatMap((c) => c.referenceIds)) },
+  { id: 'learn', label: '主題學習', ids: new Set(chapters.flatMap((c) => c.referenceIds)) },
   { id: 'pattern', label: '打破慣性', ids: new Set(patternHabits.flatMap((h) => h.referenceIds)) },
-  { id: 'habits7', label: '7 Habits', ids: new Set(h7Habits.flatMap((h) => h.referenceIds)) },
+  { id: 'habits7', label: '高效能生活', ids: new Set(h7Habits.flatMap((h) => h.referenceIds)) },
 ];
 const PREVIEW = 10;
 

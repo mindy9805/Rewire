@@ -12,7 +12,7 @@ import type { AppData } from '../types';
 
 export interface SearchResult {
   key: string;
-  type: '章節' | '概念' | '每日語句' | '14 天挑戰' | '打破慣性' | '7 Habits' | '輕鬆探索' | '我的筆記' | '我的日誌';
+  type: '章節' | '概念' | '每日語句' | '14 天挑戰' | '打破慣性' | '高效能生活' | '輕鬆探索' | '我的筆記' | '我的日誌';
   title: string;
   snippet: string;
   to: string;
@@ -74,7 +74,7 @@ const staticDocs: Doc[] = (() => {
   for (const h of h7Habits) {
     docs.push({
       key: `h7-${h.id}`,
-      type: '7 Habits',
+      type: '高效能生活',
       title: `習慣${h.no}｜${h.title} ${h.en}`,
       snippet: h.core,
       to: `/habits7/${h.id}`,

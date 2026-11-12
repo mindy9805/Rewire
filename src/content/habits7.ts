@@ -1,5 +1,5 @@
 /**
- * 7 Habits｜高效能生活實踐
+ * 高效能生活實踐
  *
  * 理論參考：Stephen R. Covey《The 7 Habits of Highly Effective People》（繁中版《與成功有約》）。
  * 撰寫原則：
@@ -9,7 +9,10 @@
  */
 import type { ChapterId, H7Id, PatternHabitId, QuizQuestion, RenewDim } from '../types';
 
-export const H7_MODULE = '7 Habits｜高效能生活實踐';
+export const H7_MODULE = '高效能生活實踐';
+/** 筆記標籤。舊版資料使用 '高效能生活'，讀取時兩者都要認得（不改動使用者已存的紀錄） */
+export const H7_TAG = '高效能生活';
+export const isH7Tag = (t: string) => t === H7_TAG || t === '7 Habits';
 export const H7_TITLE = '從管理自己，到與世界建立更好的關係';
 export const H7_SUBTITLE = '透過七個習慣，練習自主選擇、價值導向、優先管理、同理溝通、互利合作與持續更新。';
 export const H7_CORE = [
@@ -519,7 +522,7 @@ export const selfCheckScale = ['很少如此', '偶爾如此', '有時如此', '
 /* ========== 跨模組推薦規則（公開、可檢視） ========== */
 
 /**
- * Break the Pattern 習慣 → 推薦的 7 Habits 章節與 Rewire 練習。
+ * Break the Pattern 習慣 → 推薦的高效能生活章節與 Rewire 練習。
  * 規則刻意寫成簡單的對照表，並在頁面上完整列出，讓使用者知道推薦的依據。
  */
 export const recommendationRules: { patternId: PatternHabitId; habits: H7Id[]; practices: { label: string; to: string }[]; reason: string }[] = [

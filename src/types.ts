@@ -451,7 +451,7 @@ export interface PatternChallengeState {
   progress: Partial<Record<PatternHabitId, Record<string, PatternDayRecord>>>;
 }
 
-/* ========== 7 Habits｜高效能生活實踐 ========== */
+/* ========== 高效能生活實踐 ========== */
 
 export type H7Id = 'proactive' | 'end' | 'first' | 'winwin' | 'understand' | 'synergize' | 'renew';
 
@@ -684,7 +684,7 @@ export interface AppData {
   commitmentLogs: CommitmentLog[];
   workshops: Workshop[];
   patternChallenge: PatternChallengeState;
-  /* 7 Habits */
+  /* 高效能生活 */
   h7Progress: Partial<Record<H7Id, H7Progress>>;
   h7Quizzes: Partial<Record<H7Id, QuizResult>>;
   h7SelfChecks: H7SelfCheck[];

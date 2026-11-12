@@ -1,12 +1,12 @@
 /**
- * 儀表板：7 Habits 資料區（全部依實際紀錄計算）
+ * 儀表板：高效能生活資料區（全部依實際紀錄計算）
  * 七習慣學習進度、個人成功／公眾成功進度、自我更新紀錄、四維成長自評、本週三件要事、個人願景、21 天計畫、最近的實踐反思
  */
 import { Link } from 'react-router-dom';
 import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer } from 'recharts';
 import { useStore } from '../../store/AppStore';
 import { Card, EmptyState, ProgressBar } from '../ui/basics';
-import { h7Habits, planDays, renewDims } from '../../content/habits7';
+import { h7Habits, isH7Tag, planDays, renewDims } from '../../content/habits7';
 import { h7StageProgress, planProgress, renewalRadar, weekKey } from '../../lib/habits7';
 import { formatDate, formatDateTime, lastNDays } from '../../lib/date';
 import { H7Icon, StatusChip } from './shared';
@@ -23,7 +23,7 @@ export default function H7Dashboard() {
   const restWeek = data.restLogs.filter((r) => week.has(r.date));
   const habitWeek = data.renewalHabitLogs.filter((l) => week.has(l.date)).length;
   const reflections = [
-    ...data.notes.filter((n) => n.tags.includes('7 Habits')).map((n) => ({ id: n.id, at: n.updatedAt, title: n.source ?? '7 Habits', text: n.content })),
+    ...data.notes.filter((n) => n.tags.some(isH7Tag)).map((n) => ({ id: n.id, at: n.updatedAt, title: n.source ?? '高效能生活', text: n.content })),
     ...planDays.filter((p) => data.h7Plan.days[String(p.day)]?.reflection).map((p) => ({ id: `plan-${p.day}`, at: data.h7Plan.days[String(p.day)].updatedAt ?? '', title: `21 天計畫 Day ${p.day}`, text: data.h7Plan.days[String(p.day)].reflection })),
     ...data.renewalChecks.filter((c) => c.reflection).map((c) => ({ id: c.id, at: c.updatedAt, title: `四維成長週反思（${c.weekKey}）`, text: c.reflection })),
   ].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 5);
@@ -32,11 +32,11 @@ export default function H7Dashboard() {
   return (
     <section aria-labelledby="h7-dash" className="space-y-4">
       <div className="flex flex-wrap items-end gap-2">
-        <h2 id="h7-dash" className="font-serif text-xl font-bold">7 Habits｜高效能生活實踐</h2>
+        <h2 id="h7-dash" className="font-serif text-xl font-bold">高效能生活實踐</h2>
         <Link to="/habits7" className="ml-auto text-sm text-accent underline">前往模組</Link>
       </div>
       {!any ? (
-        <EmptyState title="還沒有 7 Habits 紀錄" desc="開始任一個習慣章節或使用互動工具後，這裡會顯示你的真實進度。" action={<Link to="/habits7" className="btn-secondary btn-sm">開始探索</Link>} />
+        <EmptyState title="還沒有高效能生活紀錄" desc="開始任一個習慣章節或使用互動工具後，這裡會顯示你的真實進度。" action={<Link to="/habits7" className="btn-secondary btn-sm">開始探索</Link>} />
       ) : (
         <>
           <div className="grid gap-4 lg:grid-cols-3">

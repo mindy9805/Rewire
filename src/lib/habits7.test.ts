@@ -1,4 +1,4 @@
-// 7 Habits 計算邏輯與內容完整性測試
+// 高效能生活計算邏輯與內容完整性測試
 import { describe, expect, it } from 'vitest';
 import { h7Habits, planDays, recommendFor, recommendationRules, H7_STAGES, empathyScenarios } from '../content/habits7';
 import { createEmptyData } from '../store/storage';

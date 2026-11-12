@@ -13,16 +13,17 @@ import type { AppData } from '../types';
 import { gardenThemes, plants, questMap } from '../content/play';
 import { CHAPTER_IDS, H7_IDS } from '../store/storage';
 import { challengeDays } from '../content/challenge';
+import { isH7Tag } from '../content/habits7';
 import { isoToDateKey, toDateKey } from './date';
 
 export type ActivityTheme = 'neuro' | 'daily' | 'pattern' | 'habits7' | 'play' | 'challenge' | 'journal';
 export type ActivityKind = 'read' | 'quiz' | 'practice' | 'reflect' | 'quest' | 'game' | 'challenge';
 
 export const THEME_LABEL: Record<ActivityTheme, string> = {
-  neuro: '深度導讀',
+  neuro: '主題學習',
   daily: '每日心智練習',
   pattern: '打破慣性',
-  habits7: '7 Habits',
+  habits7: '高效能生活',
   play: '輕鬆探索',
   challenge: '我的計畫',
   journal: '反思日誌',
@@ -65,7 +66,7 @@ export function collectActivity(d: AppData): ActivityEvent[] {
   const neuroTools: [keyof AppData, string][] = [['habitLogs', '習慣偵探'], ['emotionLogs', '情緒命名'], ['sleepLogs', '睡眠紀錄'], ['plans', 'If-Then 計畫'], ['rehearsals', '心智預演'], ['smallSteps', '微小行動'], ['sessions', '呼吸練習'], ['identityRewrites', '身份敘事改寫'], ['selfTalk', '自我對話轉換']];
   for (const [k, label] of neuroTools) for (const r of d[k] as { id: string; createdAt: string }[]) add(`${String(k)}:${r.id}`, r.createdAt, 'neuro', 'practice', label);
   // 筆記與日誌
-  for (const n of d.notes) add(`note:${n.id}`, n.createdAt, n.tags.includes('7 Habits') ? 'habits7' : n.tags.includes('打破慣性') ? 'pattern' : 'neuro', 'reflect', n.kind === 'highlight' ? '收藏重點' : '個人反思');
+  for (const n of d.notes) add(`note:${n.id}`, n.createdAt, n.tags.some(isH7Tag) ? 'habits7' : n.tags.includes('打破慣性') ? 'pattern' : 'neuro', 'reflect', n.kind === 'highlight' ? '收藏重點' : '個人反思');
   for (const j of d.journal) add(`journal:${j.id}`, j.createdAt, 'journal', 'reflect', '反思日誌');
   // Daily Rewire
   for (const l of d.dailyLogs) if (l.completedReading) add(`daily:${l.date}`, l.date, 'daily', 'practice', '每日七句練習');
@@ -82,14 +83,14 @@ export function collectActivity(d: AppData): ActivityEvent[] {
   for (const a of d.patternAssessments) add(`assess:${a.id}`, a.createdAt, 'pattern', 'quiz', '自我覺察評估');
   for (const w of d.workshops) add(`workshop:${w.id}`, w.createdAt, 'pattern', 'practice', '習慣改變工作坊');
   for (const l of d.commitmentLogs) if (l.status === 'done') add(`commit:${l.id}`, l.date, 'pattern', 'practice', '微承諾完成');
-  // 7 Habits
+  // 高效能生活
   for (const id of H7_IDS) {
     const p = d.h7Progress[id];
-    if (p?.status === 'done') add(`h7:${id}`, p.completedAt ?? p.startedAt, 'habits7', 'read', '完成 7 Habits 章節');
+    if (p?.status === 'done') add(`h7:${id}`, p.completedAt ?? p.startedAt, 'habits7', 'read', '完成高效能生活章節');
     const q = d.h7Quizzes[id];
-    if (q) add(`h7quiz:${id}`, q.submittedAt, 'habits7', 'quiz', '7 Habits 測驗');
+    if (q) add(`h7quiz:${id}`, q.submittedAt, 'habits7', 'quiz', '高效能生活測驗');
   }
-  for (const c of d.h7SelfChecks) add(`h7check:${c.id}`, c.createdAt, 'habits7', 'quiz', '7 Habits 自我評估');
+  for (const c of d.h7SelfChecks) add(`h7check:${c.id}`, c.createdAt, 'habits7', 'quiz', '高效能生活自我評估');
   const h7Tools: [keyof AppData, string][] = [['circles', '關注圈與影響圈'], ['negotiations', '雙贏協商'], ['empathyLogs', '同理溝通'], ['teamBoards', '團隊思考板'], ['renewalChecks', '四維自評'], ['restLogs', '休息紀錄']];
   for (const [k, label] of h7Tools) for (const r of d[k] as { id: string; createdAt: string }[]) add(`${String(k)}:${r.id}`, r.createdAt, 'habits7', 'practice', label);
   for (const t of d.quadrantTasks) if (t.done) add(`quad:${t.id}`, t.updatedAt, 'habits7', 'practice', '完成要事');

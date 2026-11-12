@@ -1,5 +1,5 @@
 /**
- * 7 Habits 學習總覽：核心理念、三階段學習地圖、內容來源說明、七個課程卡片（狀態）、
+ * 高效能生活學習總覽：核心理念、三階段學習地圖、內容來源說明、七個課程卡片（狀態）、
  * 互動工具入口、跨模組推薦、21 天探索計畫與個人實踐紀錄。
  */
 import { Link } from 'react-router-dom';
@@ -104,7 +104,7 @@ export default function Habits7Hub() {
       <section aria-labelledby="rec-list-h">
         <div className="flex flex-wrap items-center gap-2">
           <h2 id="rec-list-h" className="text-xl font-bold">個人實踐紀錄</h2>
-          <button className="btn-ghost btn-sm ml-auto" onClick={() => { downloadText(`rewire-7habits-${stamp()}.md`, habits7ToMarkdown(data), 'text/markdown'); toast('已匯出 7 Habits 紀錄'); }}><Download className="h-4 w-4" aria-hidden />匯出 Markdown</button>
+          <button className="btn-ghost btn-sm ml-auto" onClick={() => { downloadText(`rewire-7habits-${stamp()}.md`, habits7ToMarkdown(data), 'text/markdown'); toast('已匯出高效能生活紀錄'); }}><Download className="h-4 w-4" aria-hidden />匯出 Markdown</button>
         </div>
         <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {records.map((r) => (

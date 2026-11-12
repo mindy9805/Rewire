@@ -87,7 +87,7 @@ export interface ContinueItem {
 }
 
 /**
- * 「繼續上次」：在進行中的計畫、讀到一半的章節、學習中的 7 Habits 習慣之中，挑最近的一個。
+ * 「繼續上次」：在進行中的計畫、讀到一半的章節、學習中的高效能生活習慣之中，挑最近的一個。
  * 全部依真實紀錄；沒有任何進度時回傳 null（首頁就不顯示）。
  */
 export function continueItem(d: AppData): ContinueItem | null {
@@ -96,11 +96,11 @@ export function continueItem(d: AppData): ContinueItem | null {
   if (plan) items.push({ kind: 'plan', label: '我的計畫', title: plan.title, detail: `已完成 ${plan.done}/${plan.total} 天・下一個：第 ${plan.nextDay} 天`, to: plan.to, at: plan.lastAt });
   for (const c of chapters) {
     const p = d.chapters[c.id];
-    if (p?.lastVisitedAt && !p.completed) items.push({ kind: 'chapter', label: '深度導讀', title: `第 ${c.number} 章 ${c.title}`, detail: `上次看到這一章・全章約 ${c.minutes} 分鐘`, to: `/learn/${c.id}`, at: p.lastVisitedAt });
+    if (p?.lastVisitedAt && !p.completed) items.push({ kind: 'chapter', label: '主題學習', title: `第 ${c.number} 章 ${c.title}`, detail: `上次看到這一章・全章約 ${c.minutes} 分鐘`, to: `/learn/${c.id}`, at: p.lastVisitedAt });
   }
   for (const [id, p] of Object.entries(d.h7Progress)) {
     const h = h7Map[id as keyof typeof h7Map];
-    if (h && p?.status === 'learning') items.push({ kind: 'h7', label: '7 Habits 高效能生活', title: `習慣${'一二三四五六七'[h.no - 1]}：${h.title}`, detail: '學習中', to: `/habits7/${id}`, at: p.startedAt });
+    if (h && p?.status === 'learning') items.push({ kind: 'h7', label: '高效能生活', title: `習慣${'一二三四五六七'[h.no - 1]}：${h.title}`, detail: '學習中', to: `/habits7/${id}`, at: p.startedAt });
   }
   return items.sort((a, b) => b.at.localeCompare(a.at))[0] ?? null;
 }
