@@ -1114,6 +1114,43 @@ const AFF = ['我現在是安全的', '我的大腦可以改變', '我已經足�
     await p2.getByTestId('speech-check').getByText('否').first().waitFor();
     await c2.close();
   });
+  await step('（一）聲音選單：Google 國語（臺灣）優先、不列中國大陸聲音、國外版中文另成一組', async () => {
+    const c2 = await browser.newContext();
+    await c2.addInitScript(() => {
+      const mk = (name, lang, voiceURI) => ({ name, lang, voiceURI, localService: false, default: false });
+      const list = [mk('Google 普通话（中国大陆）', 'zh-CN', 'g-cn'), mk('Meijia', 'zh-TW', 'mj'), mk('Google 粤語（香港）', 'zh-HK', 'g-hk'), mk('Google 國語（臺灣）', 'zh-TW', 'g-tw'), mk('Tingting', 'zh-CN', 'tt')];
+      window.speechSynthesis.getVoices = () => list;
+      window.__voiceSet = [];
+      // 假聲音不是真正的 SpeechSynthesisVoice，原生 voice 屬性會拒絕；改成一般屬性以便記錄
+      const Orig = window.SpeechSynthesisUtterance;
+      window.SpeechSynthesisUtterance = class extends Orig { constructor(t) { super(t); Object.defineProperty(this, 'voice', { writable: true, value: null }); } };
+      window.speechSynthesis.speak = (u) => { window.__voiceSet.push(u.voice ? u.voice.name : ''); setTimeout(() => { u.onstart && u.onstart(); u.onend && u.onend(); }, 20); };
+    });
+    const p2 = await c2.newPage();
+    await p2.goto(BASE + '#/data');
+    const sel = p2.locator('#voice');
+    await sel.waitFor();
+    const opts = await sel.locator('option').allTextContents();
+    if (opts.some((t) => /普通话|Tingting|中国/.test(t))) throw new Error('不應列出中國大陸聲音 ' + JSON.stringify(opts));
+    if (!opts[0].includes('Google 國語（臺灣）')) throw new Error('自動應為 Google 國語（臺灣） ' + opts[0]);
+    const groups = await sel.locator('optgroup').evaluateAll((gs) => gs.map((g) => g.label));
+    if (groups.join() !== '臺灣國語,其他地區中文') throw new Error('分組 ' + groups);
+    await p2.getByRole('button', { name: '試聽' }).click();
+    const used = await p2.evaluate(() => window.__voiceSet.filter(Boolean));
+    if (used[used.length - 1] !== 'Google 國語（臺灣）') throw new Error('實際使用 ' + JSON.stringify(used));
+    await c2.close();
+  });
+  await step('（一）朗讀檢查：相容模式不指定聲音、測試音按鈕、發聲時間列', async () => {
+    await page.goto(BASE + '#/data');
+    await page.locator('#voice').selectOption('system');
+    await page.getByText('朗讀檢查（聽不到聲音時使用）').click();
+    const box = page.getByTestId('speech-check');
+    await box.getByText('相容模式：交給系統挑選（zh-TW）').waitFor();
+    await box.getByText('實際發聲時間').waitFor();
+    await page.getByRole('button', { name: '播放測試音' }).click();
+    await box.getByText(/已播放|無法播放/).waitFor();
+    await page.locator('#voice').selectOption('');
+  });
   await step('（二）樣板頁：過度尋求認可以圖解呈現，完整文字可展開且一字不少', async () => {
     await page.goto(BASE + '#/pattern/approval');
     await page.locator('#definition').waitFor();

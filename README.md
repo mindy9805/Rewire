@@ -112,9 +112,10 @@ rewire/
 - **頁面標題**：每頁一個 h1；用 `SectionTitle` 當頁面標題時傳 `level={1}`。
 - **按需載入**：新頁面在 `App.tsx` 的 `loaders` 加一行即可；首頁顯示約 3 秒後會在背景預先下載其他頁面，離線也能使用。
 - **水彩插畫**：小芽（`play/Buddy.tsx`）與花園植物（`play/PlantSvg.tsx`）共用 `play/watercolor.tsx` 的水彩濾鏡與調色盤，新增植物時沿用 `wash`／`bloom`／`ink` 三種效果。
-- **朗讀**：`lib/speech.ts` 會優先挑「台灣中文＋女聲＋自然語音」，長文字依句號切段；使用者可在「資料與隱私 → 朗讀聲音」指定聲音、試聽與使用「朗讀檢查」。實際可用的聲音由裝置提供。
+- **朗讀**：`lib/speech.ts` 第一優先「Google 國語（臺灣）」，其次「台灣中文＋女聲＋自然語音」；不列出中國大陸聲音（zh-CN 與未標地區的 zh），香港／澳門／新加坡／馬來西亞的中文另列「其他地區中文」。iPhone／iPad 上沒有 Google 聲音，會改用美佳。長文字依句號切段；使用者可在「資料與隱私 → 朗讀聲音」指定聲音、試聽與使用「朗讀檢查」。實際可用的聲音由裝置提供。
   - **手機規則（重要）**：`speak()` 必須在點擊或按鍵事件中**直接**呼叫，不可放在 `useEffect`、`await`、`setTimeout` 之後，否則 iPhone 會無聲擋下。語音清單未載入時不等待，直接以 `zh-TW` 朗讀。
   - 進入朗讀模式的連結加上 `onClick={unlockSpeech}`；介面用 `<SpeechStatus />` 顯示朗讀中／排除提示。
+  - **聽不到聲音的排查**：「朗讀檢查」記錄實際發聲時間（太快結束＝語音資料問題；時間正常＝靜音或音量），並提供非語音的「播放測試音」（`lib/testTone.ts`）。聲音選單有「相容模式」（`voiceURI='system'`），不指定聲音、只設 `lang='zh-TW'`。`unlockSpeech()` 不設 `volume=0`。
 - **圖解（內容視覺化）**：學習頁先以圖解呈現、完整文字收在「看完整說明」，內容一字不刪。元件在 `src/components/visual/`：
   - `KeyPointCard` 重點卡、`IconCardGrid` 圖示卡、`LoopDiagram` 循環圖、`ChainDiagram` 因果鏈（只用在有先後順序的內容）、`SpectrumBar` 光譜對照、`CompareColumns` 左右對照、`StepCards` 步驟卡、`EvidenceBadge` 證據標籤、`Timeline` 時間軸、`RangeChart` 研究數據範圍圖、`WatercolorSpot` 水彩小插畫、`MoreDetails` 看完整說明。
   - 開發時執行 `npm run dev` 後開啟 `#/dev/visual` 可預覽所有元件（正式建置不包含這一頁）。

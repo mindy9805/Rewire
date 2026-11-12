@@ -11,7 +11,10 @@
  *    之後頁面中的朗讀比較不會被擋。
  *
  * ── 聲音選擇 ──
- * 優先「台灣中文＋女聲」，其中又優先自然語音（Natural／Neural／Premium 等）。
+ * 第一優先「Google 國語（臺灣）」（Chrome 桌機與 Android 提供）；沒有時依序挑「台灣中文＋女聲＋自然語音」。
+ * 不提供中國大陸的聲音（zh-CN、cmn-Hans-CN 等，以及沒有標示地區的 zh）；
+ * 臺灣以外的「國外版中文」（香港、澳門、新加坡、馬來西亞）列在臺灣聲音之後，供使用者自行選擇。
+ * 注意：iPhone／iPad 上所有瀏覽器（含 Chrome）都使用 Apple 的聲音，沒有 Google 國語（臺灣），會改用美佳。
  * 實際可用的聲音取決於裝置：iPhone／Mac 常見「美佳 Meijia」、Windows／Edge 常見「HsiaoChen 曉臻」「HsiaoYu 曉雨」「Yating 雅婷」，
  * Chrome 有「Google 國語（臺灣）」。使用者也可以在「資料與隱私 → 朗讀聲音」自行指定。
  *
@@ -32,26 +35,49 @@ const SPEECH_PITCH = 1.05;
 /** 按下後多久仍未開始，就視為「可能被擋下」 */
 export const BLOCKED_AFTER_MS = 1500;
 
-const TW = /^(zh[-_]TW|cmn[-_]Hant[-_]TW|zh[-_]Hant)/i;
+const TW = /^(zh[-_]TW|cmn[-_]Hant[-_]TW|zh[-_]Hant([-_]TW)?$)/i;
+/** 臺灣以外、非中國大陸的中文（國外版中文） */
+const OVERSEAS = /^(zh|cmn|yue)[-_](Hant[-_]|Hans[-_])?(HK|MO|SG|MY)$/i;
+/** 第一優先的聲音 */
+const GOOGLE_TW = /Google\s*國語/i;
 const FEMALE = /(HsiaoChen|Hsiao-?Chen|曉臻|HsiaoYu|Hsiao-?Yu|曉雨|Yating|雅婷|Hanhan|涵涵|Mei-?Jia|美佳|Sin-?ji|善怡|Ting-?Ting|婷婷|Google\s*國語|female|女)/i;
 const MALE = /(Zhiwei|志偉|YunJhe|Yun-?Jhe|雲哲|male(?!.*female)|男)/i;
 const NATURAL = /(Natural|Neural|Online|Premium|Enhanced|高品質)/i;
 /** 常見 App 內建瀏覽器（常不支援朗讀） */
 const IN_APP = /(Line\/|FBAN|FBAV|FB_IAB|Instagram|MicroMessenger|KAKAOTALK|Threads|WhatsApp)/i;
 
-/** 依「台灣中文 → 女聲 → 自然語音」為聲音打分數；分數越高越優先；非中文回傳 -1 */
+/**
+ * 依「Google 國語（臺灣）→ 台灣中文 → 女聲 → 自然語音」為聲音打分數；分數越高越優先。
+ * 非中文與中國大陸的聲音回傳 -1（不列出、不使用）。
+ */
 export function voiceScore(v: Pick<SpeechSynthesisVoice, 'name' | 'lang' | 'localService'>): number {
   let s = 0;
   if (TW.test(v.lang)) s += 100;
-  else if (/^zh[-_]HK/i.test(v.lang)) s += 30;
-  else if (/^(zh|cmn)/i.test(v.lang)) s += 20;
+  else if (OVERSEAS.test(v.lang)) s += 30;
   else return -1;
+  if (TW.test(v.lang) && GOOGLE_TW.test(v.name)) s += 200;
   if (FEMALE.test(v.name)) s += 50;
   if (MALE.test(v.name) && !FEMALE.test(v.name)) s -= 60;
   if (NATURAL.test(v.name)) s += 15;
   if (v.localService) s += 3;
   return s;
 }
+
+/** 聲音所屬地區（設定頁分組與標示用） */
+export function voiceRegion(lang: string): string {
+  if (TW.test(lang)) return '臺灣';
+  if (/HK$/i.test(lang)) return '香港・粵語';
+  if (/MO$/i.test(lang)) return '澳門・粵語';
+  if (/SG$/i.test(lang)) return '新加坡';
+  if (/MY$/i.test(lang)) return '馬來西亞';
+  return '其他';
+}
+
+/** 是否為臺灣中文的聲音 */
+export const isTaiwanVoice = (v: Pick<SpeechSynthesisVoice, 'lang'>) => TW.test(v.lang);
+
+/** 是否為「Google 國語（臺灣）」 */
+export const isGoogleTaiwan = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) => TW.test(v.lang) && GOOGLE_TW.test(v.name);
 
 /** 是否為「台灣女聲」（設定頁用來提示使用者裝置是否有合適的聲音） */
 export const isTaiwanFemale = (v: Pick<SpeechSynthesisVoice, 'name' | 'lang'>) => TW.test(v.lang) && FEMALE.test(v.name);
@@ -112,8 +138,15 @@ export interface SpeechState {
   lastError: string;
   /** 最後一次實際使用的聲音名稱（空字串＝交給系統挑選的 zh-TW 聲音） */
   lastVoice: string;
+  /**
+   * 最後一次從開始到結束的毫秒數（-1＝尚未量到）。用來分辨「聽不到」的原因：
+   * 時間正常（每字約 0.2 秒以上）但沒聲音 → 多半是靜音模式或媒體音量；幾乎瞬間結束 → 多半是語音資料缺漏。
+   */
+  lastDurationMs: number;
+  /** 最後一次朗讀的字數（用來判斷時間長度是否合理） */
+  lastChars: number;
 }
-let state: SpeechState = { status: 'idle', lastResult: 'none', lastError: '', lastVoice: '' };
+let state: SpeechState = { status: 'idle', lastResult: 'none', lastError: '', lastVoice: '', lastDurationMs: -1, lastChars: 0 };
 const listeners = new Set<() => void>();
 const setState = (patch: Partial<SpeechState>) => { state = { ...state, ...patch }; listeners.forEach((l) => l()); };
 export const getSpeechState = () => state;
@@ -121,7 +154,12 @@ export function subscribeSpeech(l: () => void) { listeners.add(l); return () => 
 
 /* ───────── 朗讀 ───────── */
 
-/** 使用者指定的聲音（voiceURI）；空字串代表自動挑選 */
+/**
+ * 使用者指定的聲音（voiceURI）；空字串代表自動挑選台灣女聲。
+ * SYSTEM_VOICE（'system'）＝相容模式：不指定聲音、只設定 lang='zh-TW'，交給系統挑選；
+ * 部分 iOS 版本在網頁直接指定聲音時會發生「有朗讀事件、沒有聲音」，可改用這個模式。
+ */
+export const SYSTEM_VOICE = 'system';
 let preferredVoiceURI = '';
 export const setPreferredVoice = (uri: string) => { preferredVoiceURI = uri; };
 
@@ -139,8 +177,8 @@ let unlocked = false;
 export function unlockSpeech() {
   if (unlocked || !speechSupported()) return;
   try {
+    // 不設定 volume=0：避免部分 iOS 版本把音量設定沿用到之後的語句
     const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0;
     u.lang = 'zh-TW';
     window.speechSynthesis.speak(u);
     unlocked = true;
@@ -164,17 +202,19 @@ export function speak(text: string, rate = SPEECH_RATE): boolean {
     if (synth.speaking || synth.pending) synth.cancel();
     if (synth.paused) synth.resume();
     const voices = chineseVoicesNow();
-    const voice = voices.find((v) => v.voiceURI === preferredVoiceURI) ?? voices[0];
+    const voice = preferredVoiceURI === SYSTEM_VOICE ? undefined : voices.find((v) => v.voiceURI === preferredVoiceURI) ?? voices[0];
     const parts = splitForSpeech(tidyForSpeech(text));
-    setState({ status: 'starting', lastVoice: voice?.name ?? '' });
+    const chars = parts.join('').length;
+    let startedAt = 0;
+    setState({ status: 'starting', lastVoice: voice?.name ?? '', lastDurationMs: -1, lastChars: chars });
     parts.forEach((part, i) => {
       const u = new SpeechSynthesisUtterance(part);
       u.lang = voice?.lang || 'zh-TW';
       if (voice) u.voice = voice;
       u.rate = rate;
       u.pitch = SPEECH_PITCH;
-      if (i === 0) u.onstart = () => { if (my === token) { clearTimeout(watchdog); setState({ status: 'speaking' }); } };
-      if (i === parts.length - 1) u.onend = () => { if (my === token) setState({ status: 'idle', lastResult: 'success', lastError: '' }); };
+      if (i === 0) u.onstart = () => { if (my === token) { startedAt = Date.now(); clearTimeout(watchdog); setState({ status: 'speaking' }); } };
+      if (i === parts.length - 1) u.onend = () => { if (my === token) setState({ status: 'idle', lastResult: 'success', lastError: '', lastDurationMs: startedAt ? Date.now() - startedAt : -1 }); };
       u.onerror = (e: Event) => {
         const code = (e as SpeechSynthesisErrorEvent).error ?? 'unknown';
         if (my !== token || code === 'interrupted' || code === 'canceled') return; // 我們自己取消的不算錯誤
